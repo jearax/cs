@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.0.8
+
+### Patch Changes
+
+- 8405244: Update can be set token is empty
+
 ## 0.0.7
 
 ### Patch Changes
