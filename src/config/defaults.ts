@@ -8,7 +8,7 @@ export const OFFICIAL_PROFILE = {
 	token: '',
 	haiku: 'claude-haiku-4-5',
 	sonnet: 'claude-sonnet-4-6',
-	opus: 'claude-opus-4-6'
+	opus: 'claude-opus-4-7'
 }
 
 /** Paths to CLI tool config files that cs writes into */

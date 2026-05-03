@@ -59,7 +59,9 @@ export const configCommand = defineCommand({
 		const haiku = ctx.args.haiku as string | undefined
 		const sonnet = ctx.args.sonnet as string | undefined
 		const opus = ctx.args.opus as string | undefined
-		const hasUpdates = url || token || haiku || sonnet || opus
+
+		const hasUpdates =
+			url !== undefined || token !== undefined || haiku !== undefined || sonnet !== undefined || opus !== undefined
 
 		if (!hasUpdates) {
 			displayBanner()
@@ -82,23 +84,23 @@ export const configCommand = defineCommand({
 
 		const updates: Partial<Profile> = {}
 
-		if (url) {
+		if (url !== undefined) {
 			updates.url = url
 		}
 
-		if (token) {
+		if (token !== undefined) {
 			updates.token = token
 		}
 
-		if (haiku) {
+		if (haiku !== undefined) {
 			updates.haiku = haiku
 		}
 
-		if (sonnet) {
+		if (sonnet !== undefined) {
 			updates.sonnet = sonnet
 		}
 
-		if (opus) {
+		if (opus !== undefined) {
 			updates.opus = opus
 		}
 

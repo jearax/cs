@@ -50,19 +50,20 @@ export const generateOpenCodeSection = (profile: Profile, pkgName: string): Reco
 		models[model] = {}
 	}
 
+	const options: Record<string, unknown> = {
+		baseURL: ensureV1Suffix(profile.url),
+		apiKey: profile.token
+	}
+
 	return {
 		provider: {
 			[prefix]: {
 				name: pkgName,
 				npm: '@ai-sdk/anthropic',
-				options: {
-					apiKey: profile.token,
-					baseURL: ensureV1Suffix(profile.url)
-				},
+				options,
 				models
 			}
-		},
-		model: `${prefix}/${profile.sonnet}`
+		}
 	}
 }
 
