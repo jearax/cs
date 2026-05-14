@@ -4,6 +4,7 @@ import { dirname } from 'pathe'
 
 import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
+import { resolveTokenForWrite } from '@/utils/format'
 import { safeJsonParse } from '@/utils/validation'
 
 /** Read claude settings.json, return {} if missing or corrupted */
@@ -37,7 +38,7 @@ export const mergeClaudeSettings = (settings: ClaudeSettings, profile: Profile, 
 	settings.env = env
 
 	env.ANTHROPIC_BASE_URL = profile.url
-	env.ANTHROPIC_AUTH_TOKEN = profile.token
+	env.ANTHROPIC_AUTH_TOKEN = resolveTokenForWrite(profile.token)
 	env.ANTHROPIC_DEFAULT_HAIKU_MODEL = profile.haiku
 	env.ANTHROPIC_DEFAULT_SONNET_MODEL = profile.sonnet
 	env.ANTHROPIC_DEFAULT_OPUS_MODEL = profile.opus

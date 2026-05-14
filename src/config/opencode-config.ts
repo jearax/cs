@@ -4,6 +4,7 @@ import { dirname } from 'pathe'
 
 import { TOOL_SETTINGS_PATHS, getProviderPrefix } from '@/config/defaults'
 import { Profile } from '@/config/types'
+import { resolveTokenForWrite } from '@/utils/format'
 import { safeJsonParse } from '@/utils/validation'
 
 /** Read opencode config, return {} if missing or corrupted */
@@ -52,7 +53,7 @@ export const generateOpenCodeSection = (profile: Profile, pkgName: string): Reco
 
 	const options: Record<string, unknown> = {
 		baseURL: ensureV1Suffix(profile.url),
-		apiKey: profile.token
+		apiKey: resolveTokenForWrite(profile.token)
 	}
 
 	return {

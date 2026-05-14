@@ -1,6 +1,7 @@
 import { readClaudeSettings } from '@/config/claude-settings'
 import { getAllProfiles } from '@/config/cs-config'
 import { Profile, ClaudeSettings } from '@/config/types'
+import { isEmptyToken } from '@/utils/format'
 
 /** Reverse-detect active profile from claude settings env vars */
 export const detectActiveProfile = (
@@ -23,7 +24,7 @@ export const detectActiveProfile = (
 		if (p.url === url) {
 			const token = env.ANTHROPIC_AUTH_TOKEN
 
-			if (!p.token && !token) {
+			if (isEmptyToken(p.token) && isEmptyToken(token)) {
 				return p
 			}
 

@@ -20,5 +20,8 @@ export const TOOL_SETTINGS_PATHS = {
 /** cs config store path */
 export const CS_CONFIG_PATH = join(homedir(), '.config', 'cs', 'cs.json')
 
+/** Placeholder written to tool config files when profile.token is empty */
+export const EMPTY_TOKEN_PLACEHOLDER = 'xxxx-xxxx-xxxx-xxxx'
+
 /** Extract provider prefix from package name: "@jjuidev/cs" → "cs" */
 export const getProviderPrefix = (pkgName: string): string => pkgName.split('/').pop() ?? pkgName
