@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.0.9
+
+### Patch Changes
+
+- 90f5505: Update ci
+
 ## 0.0.8
 
 ### Patch Changes
