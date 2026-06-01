@@ -1,5 +1,5 @@
 import { readClaudeSettings } from '@/config/claude-settings'
-import { getAllProfiles } from '@/config/cs-config'
+import { getAllProfiles, getCurrentProfile } from '@/config/cs-config'
 import { Profile, ClaudeSettings } from '@/config/types'
 import { isEmptyToken } from '@/utils/format'
 
@@ -39,6 +39,12 @@ export const detectActiveProfile = (
 
 /** Convenience: get current active profile */
 export const getActiveProfile = (): (Profile & { name: string }) | null => {
+	const current = getCurrentProfile()
+
+	if (current) {
+		return current
+	}
+
 	const settings = readClaudeSettings()
 	const profiles = getAllProfiles()
 

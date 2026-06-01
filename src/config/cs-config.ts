@@ -10,12 +10,14 @@ import { safeJsonParse } from '@/utils/validation'
 export interface CsConfig {
 	claude: Record<string, Profile>
 	opencode: Record<string, unknown>
+	currentProfile?: string
 }
 
 /** Build initial config with default profile */
 const createInitialConfig = (): CsConfig => ({
 	claude: { default: { ...OFFICIAL_PROFILE } },
-	opencode: {}
+	opencode: {},
+	currentProfile: 'default'
 })
 
 /** Read cs.json — creates with default profile if missing or corrupted */
@@ -53,6 +55,41 @@ export const saveCsConfig = (config: CsConfig): void => {
 
 /** Get a claude profile by name, undefined if not found */
 export const getProfile = (name: string): Profile | undefined => loadCsConfig().claude[name]
+
+/** Persist the profile selected by `cs use` */
+export const setCurrentProfile = (name: string): boolean => {
+	const config = loadCsConfig()
+
+	if (!config.claude[name]) {
+		return false
+	}
+
+	config.currentProfile = name
+	saveCsConfig(config)
+	return true
+}
+
+/** Get persisted current profile name if it still exists */
+export const getCurrentProfileName = (): string | undefined => {
+	const config = loadCsConfig()
+	const name = config.currentProfile
+
+	return name && config.claude[name] ? name : undefined
+}
+
+/** Get persisted current profile with its name */
+export const getCurrentProfile = (): (Profile & { name: string }) | undefined => {
+	const config = loadCsConfig()
+	const name = config.currentProfile
+	const profile = name ? config.claude[name] : undefined
+
+	return name && profile
+		? {
+				name,
+				...profile
+			}
+		: undefined
+}
 
 /** Get all profile names */
 export const listProfileNames = (): string[] => Object.keys(loadCsConfig().claude)
@@ -92,6 +129,11 @@ export const removeProfile = (name: string): boolean => {
 	}
 
 	delete config.claude[name]
+
+	if (config.currentProfile === name) {
+		delete config.currentProfile
+	}
+
 	saveCsConfig(config)
 	return true
 }
@@ -102,6 +144,7 @@ export const resetProfiles = (): string[] => {
 	const removed = Object.keys(config.claude).filter((name) => name !== 'default')
 
 	config.claude = { default: { ...OFFICIAL_PROFILE } }
+	config.currentProfile = 'default'
 	saveCsConfig(config)
 	return removed
 }

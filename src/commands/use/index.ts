@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 
 import { mergeClaudeSettings, readClaudeSettings, writeClaudeSettings } from '@/config/claude-settings'
-import { getProfile } from '@/config/cs-config'
+import { getProfile, setCurrentProfile } from '@/config/cs-config'
 import {
 	generateOpenCodeSection,
 	mergeOpenCodeConfig,
@@ -47,6 +47,11 @@ export const useCommand = defineCommand({
 
 		mergeOpenCodeConfig(opencodeConfig, opencodeSection)
 		writeOpenCodeConfig(opencodeConfig)
+
+		if (!setCurrentProfile(profileName)) {
+			logger.error(`Profile "${profileName}" could not be set as current.`)
+			return
+		}
 
 		logger.success(`Switched to profile "${profileName}".`)
 		logger.log(`  URL:    ${profile.url}`)
