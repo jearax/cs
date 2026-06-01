@@ -4,7 +4,7 @@ import {
 	OpencodeModelVariant,
 	RemoteModel,
 	RemoteModelsResponse
-} from './opencode-model-types'
+} from '@/services/opencode-model-types'
 
 export const deriveModel = (key: string, remote: RemoteModel, prev?: OpencodeModel): OpencodeModel => {
 	const reasoning =
@@ -47,7 +47,7 @@ export const deriveModel = (key: string, remote: RemoteModel, prev?: OpencodeMod
 			output: ['text']
 		},
 		provider: {
-			npm: isMessagesApi ? '@ai-sdk/anthropic' : '@ai-sdk/github-copilot',
+			npm: isMessagesApi ? '@ai-sdk/anthropic' : '@ai-sdk/openai',
 			api: remote.id
 		},
 		options: prev?.options ?? {},
