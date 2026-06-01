@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname } from 'pathe'
 
 import { CS_CONFIG_PATH, OFFICIAL_PROFILE } from '@/config/defaults'
-import { Profile } from '@/config/types'
+import { ModelsCache, Profile } from '@/config/types'
 import { safeJsonParse } from '@/utils/validation'
 
 /** Full cs.json config shape */
@@ -11,6 +11,10 @@ export interface CsConfig {
 	claude: Record<string, Profile>
 	opencode: Record<string, unknown>
 	currentProfile?: string
+	env?: {
+		CS_API_KEY?: string
+	}
+	modelsCache?: ModelsCache
 }
 
 /** Build initial config with default profile */
@@ -55,6 +59,48 @@ export const saveCsConfig = (config: CsConfig): void => {
 
 /** Get a claude profile by name, undefined if not found */
 export const getProfile = (name: string): Profile | undefined => loadCsConfig().claude[name]
+
+/** Resolve API key from shell env first, then cs.json env */
+export const resolveCsApiKeyFromSources = (shellKey?: string, configKey?: string): string | undefined => {
+	const fromShell = shellKey?.trim()
+
+	if (fromShell) {
+		return fromShell
+	}
+
+	const fromConfig = configKey?.trim()
+
+	return fromConfig || undefined
+}
+
+/** Resolve CS API key used to fetch remote models */
+export const resolveCsApiKey = (): string | undefined => {
+	const config = loadCsConfig()
+
+	return resolveCsApiKeyFromSources(process.env.CS_API_KEY, config.env?.CS_API_KEY)
+}
+
+/** Normalize missing or malformed models cache into an empty cache */
+export const getModelsCacheFromConfig = (config: Pick<CsConfig, 'modelsCache'>): ModelsCache => {
+	const cache = config.modelsCache
+
+	if (!cache || !cache.models || Array.isArray(cache.models) || typeof cache.models !== 'object') {
+		return { models: {} }
+	}
+
+	return cache
+}
+
+/** Read cached remote models */
+export const getModelsCache = (): ModelsCache => getModelsCacheFromConfig(loadCsConfig())
+
+/** Persist cached remote models */
+export const saveModelsCache = (cache: ModelsCache): void => {
+	const config = loadCsConfig()
+
+	config.modelsCache = cache
+	saveCsConfig(config)
+}
 
 /** Persist the profile selected by `cs use` */
 export const setCurrentProfile = (name: string): boolean => {
