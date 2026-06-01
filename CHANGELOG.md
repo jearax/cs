@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.1.1
+
+### Patch Changes
+
+- c176d8a: Update commands
+
 ## 0.1.0
 
 ### Minor Changes
