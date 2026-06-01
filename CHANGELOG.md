@@ -1,5 +1,15 @@
 # @jjuidev/cs
 
+## 0.1.0
+
+### Minor Changes
+
+- 712b4b1: Add commands auth, integrated ai.jjuidev.com
+
+### Patch Changes
+
+- 712b4b1: Update command cs use
+
 ## 0.0.9
 
 ### Patch Changes
