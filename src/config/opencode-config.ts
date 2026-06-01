@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 
 import { dirname } from 'pathe'
 
+import { resolveCsApiKey } from '@/config/cs-config'
 import { TOOL_SETTINGS_PATHS, getProviderPrefix } from '@/config/defaults'
 import { Profile } from '@/config/types'
 import { OpencodeModel } from '@/services/opencode-model-types'
@@ -40,30 +41,22 @@ const ensureV1Suffix = (url: string): string => {
 	return url.endsWith('/') ? `${url}v1` : `${url}/v1`
 }
 
-/** Generate opencode section from claude profile */
+/** Generate opencode section from claude profile — models managed by cs ls --sync */
 export const generateOpenCodeSection = (profile: Profile, pkgName: string): Record<string, unknown> => {
 	const prefix = getProviderPrefix(pkgName)
-
-	// Deduplicate models
-	const uniqueModels = [...new Set([profile.haiku, profile.sonnet, profile.opus])]
-	const models: Record<string, Record<string, unknown>> = {}
-
-	for (const model of uniqueModels) {
-		models[model] = {}
-	}
+	// Prefer explicit profile token, fallback to resolved API key
+	const effectiveToken = profile.token || resolveCsApiKey() || ''
 
 	const options: Record<string, unknown> = {
 		baseURL: ensureV1Suffix(profile.url),
-		apiKey: resolveTokenForWrite(profile.token)
+		apiKey: resolveTokenForWrite(effectiveToken)
 	}
 
 	return {
 		provider: {
 			[prefix]: {
 				name: pkgName,
-				npm: '@ai-sdk/anthropic',
-				options,
-				models
+				options
 			}
 		}
 	}
@@ -85,7 +78,6 @@ export const mergeOpenCodeModels = (
 
 	provider[prefix] = {
 		name: currentSection.name ?? pkgName,
-		npm: currentSection.npm ?? '@ai-sdk/anthropic',
 		...currentSection,
 		models
 	}
@@ -105,12 +97,20 @@ export const writeOpenCodeModels = (models: Record<string, OpencodeModel>, pkgNa
 }
 
 export const mergeOpenCodeConfig = (config: Record<string, unknown>, section: Record<string, unknown>): void => {
-	// Deep merge provider block
+	// Deep merge provider block — preserve existing models
 	const existingProvider = (config.provider as Record<string, unknown>) ?? {}
 	const newProvider = (section.provider as Record<string, unknown>) ?? {}
 
 	for (const [key, value] of Object.entries(newProvider)) {
-		existingProvider[key] = value
+		const existingSection = (existingProvider[key] as Record<string, unknown>) ?? {}
+		const newSection = (value as Record<string, unknown>) ?? {}
+
+		// Merge new fields into existing, but keep existing models intact
+		existingProvider[key] = {
+			...existingSection,
+			...newSection,
+			models: existingSection.models ?? newSection.models
+		}
 	}
 
 	config.provider = existingProvider

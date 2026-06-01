@@ -24,7 +24,10 @@ describe('validateRemoteModelsResponse', () => {
 	})
 
 	test('rejects invalid response shape', () => {
-		expect(validateRemoteModelsResponse({ data: [{ id: 'missing-fields' }] })).toBeUndefined()
+		// Disabled models are skipped, so this passes validation (no enabled models to validate)
+		expect(validateRemoteModelsResponse({ data: [{ id: 'missing-fields' }] })?.data).toEqual([{ id: 'missing-fields' }])
+		// Enabled model with missing capabilities is rejected
+		expect(validateRemoteModelsResponse({ data: [{ id: 'x', model_picker_enabled: true, name: 'X', version: 'x' }] })).toBeUndefined()
 		expect(validateRemoteModelsResponse({})).toBeUndefined()
 	})
 })

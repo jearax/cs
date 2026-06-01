@@ -1,8 +1,9 @@
 import { defineCommand } from 'citty'
 
-import { getProfile, upsertProfile } from '@/config/cs-config'
+import { getProfile, resolveCsApiKey, upsertProfile } from '@/config/cs-config'
 import { Profile } from '@/config/types'
 import { displayBanner } from '@/utils/banner'
+import { denormalizeModelId } from '@/utils/claude-model-id'
 import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
 import { validateProfileName } from '@/utils/validation'
@@ -26,7 +27,7 @@ export const configCommand = defineCommand({
 		token: {
 			alias: 't',
 			type: 'string',
-			description: 'API token/key'
+			description: 'API token'
 		},
 		haiku: {
 			alias: 'h',
@@ -54,11 +55,11 @@ export const configCommand = defineCommand({
 			return
 		}
 
-		const url = ctx.args.url as string | undefined
+		const url = ctx.args.url
 		const token = ctx.args.token as string | undefined
-		const haiku = ctx.args.haiku as string | undefined
-		const sonnet = ctx.args.sonnet as string | undefined
-		const opus = ctx.args.opus as string | undefined
+		const haiku = ctx.args.haiku ? denormalizeModelId(ctx.args.haiku as string) : undefined
+		const sonnet = ctx.args.sonnet ? denormalizeModelId(ctx.args.sonnet as string) : undefined
+		const opus = ctx.args.opus ? denormalizeModelId(ctx.args.opus as string) : undefined
 
 		const hasUpdates =
 			url !== undefined || token !== undefined || haiku !== undefined || sonnet !== undefined || opus !== undefined
@@ -73,9 +74,12 @@ export const configCommand = defineCommand({
 				return
 			}
 
+			// Show token: prefer profile.token, fallback to resolved API key
+			const displayToken = profile.token || resolveCsApiKey()
+
 			logger.info(`Profile: ${profileName}`)
 			logger.log(`  URL:    ${profile.url}`)
-			logger.log(`  Token:  ${maskToken(profile.token)}`)
+			logger.log(`  Token:  ${displayToken ? maskToken(displayToken) : '<not set>'}`)
 			logger.log(`  Haiku:  ${profile.haiku}`)
 			logger.log(`  Sonnet: ${profile.sonnet}`)
 			logger.log(`  Opus:   ${profile.opus}`)

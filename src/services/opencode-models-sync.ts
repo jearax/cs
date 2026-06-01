@@ -1,7 +1,7 @@
-import { deriveModels } from './opencode-model-derive'
-import { OpencodeModel, RemoteModel, RemoteModelsResponse } from './opencode-model-types'
 import { mergeOpenCodeModels } from '@/config/opencode-config'
 import { ModelsCache } from '@/config/types'
+import { deriveModels } from '@/services/opencode-model-derive'
+import { OpencodeModel, RemoteModel, RemoteModelsResponse } from '@/services/opencode-model-types'
 
 const MODELS_ENDPOINT = 'https://ai.jjuidev.com/models'
 const DEFAULT_TIMEOUT_MS = 10_000
@@ -63,7 +63,12 @@ export const validateRemoteModelsResponse = (value: unknown): RemoteModelsRespon
 		return undefined
 	}
 
-	if (!value.data.every(isValidRemoteModel)) {
+	// Only validate enabled models — disabled ones are filtered out by deriveModels anyway
+	const enabled = value.data.filter(
+		(m: unknown) => isRecord(m) && (m as Record<string, unknown>).model_picker_enabled === true
+	)
+
+	if (!enabled.every(isValidRemoteModel)) {
 		return undefined
 	}
 

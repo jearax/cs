@@ -80,6 +80,30 @@ export const resolveCsApiKey = (): string | undefined => {
 	return resolveCsApiKeyFromSources(process.env.CS_API_KEY, config.env?.CS_API_KEY)
 }
 
+/** Save CS API key into cs.json env block */
+export const saveCsApiKey = (key: string): void => {
+	const config = loadCsConfig()
+
+	config.env = {
+		...config.env,
+		CS_API_KEY: key
+	}
+	saveCsConfig(config)
+}
+
+/** Remove CS API key from cs.json env block */
+export const removeCsApiKey = (): boolean => {
+	const config = loadCsConfig()
+
+	if (!config.env?.CS_API_KEY) {
+		return false
+	}
+
+	delete config.env.CS_API_KEY
+	saveCsConfig(config)
+	return true
+}
+
 /** Normalize missing or malformed models cache into an empty cache */
 export const getModelsCacheFromConfig = (config: Pick<CsConfig, 'modelsCache'>): ModelsCache => {
 	const cache = config.modelsCache

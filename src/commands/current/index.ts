@@ -1,5 +1,6 @@
 import { defineCommand } from 'citty'
 
+import { resolveCsApiKey } from '@/config/cs-config'
 import { getActiveProfile } from '@/utils/active-profile'
 import { displayBanner } from '@/utils/banner'
 import { maskToken } from '@/utils/format'
@@ -20,9 +21,11 @@ export const currentCommand = defineCommand({
 			return
 		}
 
+		const displayToken = active.token || resolveCsApiKey()
+
 		logger.success(`Active: ${active.name}`)
 		logger.log(`  URL:    ${active.url}`)
-		logger.log(`  Token:  ${maskToken(active.token)}`)
+		logger.log(`  Token:  ${displayToken ? maskToken(displayToken) : '<not set>'}`)
 		logger.log(`  Haiku:  ${active.haiku}`)
 		logger.log(`  Sonnet: ${active.sonnet}`)
 		logger.log(`  Opus:   ${active.opus}`)

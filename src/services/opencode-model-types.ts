@@ -72,17 +72,23 @@ export interface RemoteModelCapabilities {
 	supports: RemoteModelSupports
 }
 
+export type ModelPickerCategory = 'powerful' | 'versatile' | 'lightweight' | string
+
 export interface RemoteModel {
-	model_picker_enabled: boolean
+	object?: 'model'
 	id: string
 	name: string
 	version: string
 	vendor?: string
+	model_picker_enabled: boolean
+	model_picker_category?: ModelPickerCategory
+	preview?: boolean
 	supported_endpoints?: string[]
-	policy?: { state?: string }
+	policy?: { state?: string; terms?: string }
 	capabilities: RemoteModelCapabilities
 }
 
 export interface RemoteModelsResponse {
+	object?: 'list'
 	data: RemoteModel[]
 }

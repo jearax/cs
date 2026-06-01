@@ -29,8 +29,24 @@ const renderModels = (cache: ModelsCache, vendor?: string): void => {
 		return
 	}
 
+	// Group by vendor, sort groups and models alphabetically
+	const groups = new Map<string, [string, (typeof models)[string]][]>()
+
 	for (const [id, model] of Object.entries(models)) {
-		logger.log(`  ${id}${model.name ? ` - ${model.name}` : ''}`)
+		const vendor = model.vendor || 'Other'
+		const list = groups.get(vendor) ?? []
+
+		list.push([id, model])
+		groups.set(vendor, list)
+	}
+
+	for (const [vendor, list] of [...groups].sort(([a], [b]) => a.localeCompare(b))) {
+		logger.muted(`  [${vendor}]`)
+		list.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+
+		for (const [id, model] of list) {
+			logger.log(`    ${id}${model.name ? ` - ${model.name}` : ''}`)
+		}
 	}
 }
 
@@ -110,10 +126,11 @@ export const lsCommand = defineCommand({
 
 		for (const p of profiles) {
 			const marker = active?.name === p.name ? '*' : ' '
+			const displayToken = p.token || resolveCsApiKey()
 
 			logger.log(`  ${marker} ${p.name}`)
 			logger.muted(`    URL:    ${p.url}`)
-			logger.muted(`    Token:  ${maskToken(p.token)}`)
+			logger.muted(`    Token:  ${displayToken ? maskToken(displayToken) : '<not set>'}`)
 			logger.muted(`    Haiku:  ${p.haiku}`)
 			logger.muted(`    Sonnet: ${p.sonnet}`)
 			logger.muted(`    Opus:   ${p.opus}`)

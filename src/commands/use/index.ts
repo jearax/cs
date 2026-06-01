@@ -1,13 +1,14 @@
 import { defineCommand } from 'citty'
 
 import { mergeClaudeSettings, readClaudeSettings, writeClaudeSettings } from '@/config/claude-settings'
-import { getProfile, setCurrentProfile } from '@/config/cs-config'
+import { getProfile, resolveCsApiKey, setCurrentProfile } from '@/config/cs-config'
 import {
 	generateOpenCodeSection,
 	mergeOpenCodeConfig,
 	readOpenCodeConfig,
 	writeOpenCodeConfig
 } from '@/config/opencode-config'
+import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
 
 import { name as pkgName } from '@/../package.json'
@@ -53,8 +54,14 @@ export const useCommand = defineCommand({
 			return
 		}
 
+		// Show effective token: profile.token → resolveCsApiKey() → placeholder
+		const effectiveToken = profile.token || resolveCsApiKey()
+
 		logger.success(`Switched to profile "${profileName}".`)
 		logger.log(`  URL:    ${profile.url}`)
+		logger.log(`  Token:  ${effectiveToken ? maskToken(effectiveToken) : '<not set>'}`)
+		logger.log(`  Haiku:  ${profile.haiku}`)
 		logger.log(`  Sonnet: ${profile.sonnet}`)
+		logger.log(`  Opus:   ${profile.opus}`)
 	}
 })
