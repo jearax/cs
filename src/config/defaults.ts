@@ -1,4 +1,4 @@
-import { homedir } from 'os'
+import { homedir, platform } from 'os'
 
 import { join } from 'pathe'
 
@@ -11,10 +11,23 @@ export const OFFICIAL_PROFILE = {
 	opus: 'claude-opus-4-7'
 }
 
+/** Resolve OpenCode config path for each operating system */
+export const getOpencodeConfigPathForPlatform = (
+	currentPlatform: NodeJS.Platform,
+	home: string,
+	env: NodeJS.ProcessEnv
+): string => {
+	if (currentPlatform === 'win32') {
+		return join(env.APPDATA || join(home, 'AppData', 'Roaming'), 'opencode', 'opencode.json')
+	}
+
+	return join(home, '.config', 'opencode', 'opencode.json')
+}
+
 /** Paths to CLI tool config files that cs writes into */
 export const TOOL_SETTINGS_PATHS = {
 	claude: join(homedir(), '.claude', 'settings.json'),
-	opencode: join(homedir(), '.config', 'opencode', 'opencode.json')
+	opencode: getOpencodeConfigPathForPlatform(platform(), homedir(), process.env)
 }
 
 /** cs config store path */

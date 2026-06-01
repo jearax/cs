@@ -1,10 +1,20 @@
 /** A claude profile stored in cs.json */
+import { OpencodeModel } from '@/services/opencode-model-types'
+
 export interface Profile {
 	url: string
 	token: string
 	haiku: string
 	sonnet: string
 	opus: string
+}
+
+/** Cached OpenCode models derived from remote registry */
+export interface ModelsCache {
+	updatedAt?: string
+	models: Record<string, OpencodeModel>
+	rawCount?: number
+	derivedCount?: number
 }
 
 /** Typed env block for Claude settings.json — all optional, populated by merge */

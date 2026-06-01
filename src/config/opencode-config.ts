@@ -4,6 +4,7 @@ import { dirname } from 'pathe'
 
 import { TOOL_SETTINGS_PATHS, getProviderPrefix } from '@/config/defaults'
 import { Profile } from '@/config/types'
+import { OpencodeModel } from '@/services/opencode-model-types'
 import { resolveTokenForWrite } from '@/utils/format'
 import { safeJsonParse } from '@/utils/validation'
 
@@ -69,6 +70,40 @@ export const generateOpenCodeSection = (profile: Profile, pkgName: string): Reco
 }
 
 /** Deep merge opencode section into existing config */
+export const mergeOpenCodeModels = (
+	config: Record<string, unknown>,
+	models: Record<string, OpencodeModel>,
+	pkgName: string
+): boolean => {
+	if (Object.keys(models).length === 0) {
+		return false
+	}
+
+	const prefix = getProviderPrefix(pkgName)
+	const provider = (config.provider as Record<string, unknown>) ?? {}
+	const currentSection = (provider[prefix] as Record<string, unknown>) ?? {}
+
+	provider[prefix] = {
+		name: currentSection.name ?? pkgName,
+		npm: currentSection.npm ?? '@ai-sdk/anthropic',
+		...currentSection,
+		models
+	}
+	config.provider = provider
+	return true
+}
+
+export const writeOpenCodeModels = (models: Record<string, OpencodeModel>, pkgName: string): boolean => {
+	const config = readOpenCodeConfig()
+	const changed = mergeOpenCodeModels(config, models, pkgName)
+
+	if (changed) {
+		writeOpenCodeConfig(config)
+	}
+
+	return changed
+}
+
 export const mergeOpenCodeConfig = (config: Record<string, unknown>, section: Record<string, unknown>): void => {
 	// Deep merge provider block
 	const existingProvider = (config.provider as Record<string, unknown>) ?? {}

@@ -1,0 +1,900 @@
+{
+  "claude-opus-4.7": {
+    "id": "claude-opus-4.7",
+    "name": "Claude Opus 4.7",
+    "family": "claude-opus-4.7",
+    "release_date": "claude-opus-4.7",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 144000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/anthropic",
+      "api": "claude-opus-4.7"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "medium": {
+        "thinking": {
+          "type": "adaptive",
+          "display": "summarized"
+        },
+        "effort": "medium"
+      }
+    }
+  },
+  "claude-sonnet-4.6": {
+    "id": "claude-sonnet-4.6",
+    "name": "Claude Sonnet 4.6",
+    "family": "claude-sonnet-4.6",
+    "release_date": "claude-sonnet-4.6",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 200000,
+      "input": 128000,
+      "output": 32000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/anthropic",
+      "api": "claude-sonnet-4.6"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "effort": "low"
+      },
+      "medium": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "effort": "medium"
+      },
+      "high": {
+        "thinking": {
+          "type": "adaptive"
+        },
+        "effort": "high"
+      }
+    }
+  },
+  "gemini-3.1-pro-preview": {
+    "id": "gemini-3.1-pro-preview",
+    "name": "Gemini 3.1 Pro",
+    "family": "gemini-3.1-pro-preview",
+    "release_date": "gemini-3.1-pro-preview",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 128000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gemini-3.1-pro-preview"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gemini-3.5-flash": {
+    "id": "gemini-3.5-flash",
+    "name": "Gemini 3.5 Flash",
+    "family": "gemini-3.5-flash",
+    "release_date": "gemini-3.5-flash",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 200000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gemini-3.5-flash"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5.2-codex": {
+    "id": "gpt-5.2-codex",
+    "name": "GPT-5.2-Codex",
+    "family": "gpt-5.2-codex",
+    "release_date": "gpt-5.2-codex",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 400000,
+      "input": 272000,
+      "output": 128000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.2-codex"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5.3-codex": {
+    "id": "gpt-5.3-codex",
+    "name": "GPT-5.3-Codex",
+    "family": "gpt-5.3-codex",
+    "release_date": "gpt-5.3-codex",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 400000,
+      "input": 272000,
+      "output": 128000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.3-codex"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5.4-mini": {
+    "id": "gpt-5.4-mini",
+    "name": "GPT-5.4 mini",
+    "family": "gpt-5.4-mini",
+    "release_date": "gpt-5.4-mini",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 400000,
+      "input": 272000,
+      "output": 128000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.4-mini"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "none": {
+        "reasoningEffort": "none",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5.4": {
+    "id": "gpt-5.4",
+    "name": "GPT-5.4",
+    "family": "gpt-5.4",
+    "release_date": "gpt-5.4",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 400000,
+      "input": 272000,
+      "output": 128000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.4"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5.5": {
+    "id": "gpt-5.5",
+    "name": "GPT-5.5",
+    "family": "gpt-5.5",
+    "release_date": "gpt-5.5",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 400000,
+      "input": 272000,
+      "output": 128000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.5"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "none": {
+        "reasoningEffort": "none",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-5-mini": {
+    "id": "gpt-5-mini",
+    "name": "GPT-5 mini",
+    "family": "gpt-5-mini",
+    "release_date": "gpt-5-mini",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 264000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5-mini"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "claude-sonnet-4.5": {
+    "id": "claude-sonnet-4.5",
+    "name": "Claude Sonnet 4.5",
+    "family": "claude-sonnet-4.5",
+    "release_date": "claude-sonnet-4.5",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 144000,
+      "input": 128000,
+      "output": 32000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/anthropic",
+      "api": "claude-sonnet-4.5"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "max": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 31999
+        }
+      },
+      "high": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 16000
+        }
+      }
+    }
+  },
+  "claude-opus-4.5": {
+    "id": "claude-opus-4.5",
+    "name": "Claude Opus 4.5",
+    "family": "claude-opus-4.5",
+    "release_date": "claude-opus-4.5",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 160000,
+      "input": 128000,
+      "output": 32000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/anthropic",
+      "api": "claude-opus-4.5"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "max": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 31999
+        }
+      },
+      "high": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 16000
+        }
+      }
+    }
+  },
+  "claude-haiku-4.5": {
+    "id": "claude-haiku-4.5",
+    "name": "Claude Haiku 4.5",
+    "family": "claude-haiku-4.5",
+    "release_date": "claude-haiku-4.5",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 144000,
+      "input": 128000,
+      "output": 32000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/anthropic",
+      "api": "claude-haiku-4.5"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "max": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 31999
+        }
+      },
+      "high": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 16000
+        }
+      }
+    }
+  },
+  "gemini-3-flash-preview": {
+    "id": "gemini-3-flash-preview",
+    "name": "Gemini 3 Flash (Preview)",
+    "family": "gemini-3-flash",
+    "release_date": "gemini-3-flash-preview",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 128000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gemini-3-flash-preview"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gemini-2.5-pro": {
+    "id": "gemini-2.5-pro",
+    "name": "Gemini 2.5 Pro",
+    "family": "gemini-2.5-pro",
+    "release_date": "gemini-2.5-pro",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 128000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gemini-2.5-pro"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "max": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 32767
+        }
+      },
+      "high": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 16384
+        }
+      }
+    }
+  },
+  "gpt-5.2": {
+    "id": "gpt-5.2",
+    "name": "GPT-5.2",
+    "family": "gpt-5.2",
+    "release_date": "gpt-5.2",
+    "attachment": true,
+    "reasoning": true,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 264000,
+      "input": 128000,
+      "output": 64000
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-5.2"
+    },
+    "options": {},
+    "headers": {},
+    "variants": {
+      "low": {
+        "reasoningEffort": "low",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "medium": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "high": {
+        "reasoningEffort": "high",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      },
+      "xhigh": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ]
+      }
+    }
+  },
+  "gpt-4.1": {
+    "id": "gpt-4.1",
+    "name": "GPT-4.1",
+    "family": "gpt-4.1",
+    "release_date": "2025-04-14",
+    "attachment": true,
+    "reasoning": false,
+    "temperature": true,
+    "tool_call": true,
+    "status": "active",
+    "limit": {
+      "context": 128000,
+      "input": 64000,
+      "output": 16384
+    },
+    "modalities": {
+      "input": [
+        "text",
+        "image"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "provider": {
+      "npm": "@ai-sdk/github-copilot",
+      "api": "gpt-4.1"
+    },
+    "options": {},
+    "headers": {}
+  }
+}
