@@ -17,6 +17,12 @@ export interface ModelsCache {
 	derivedCount?: number
 }
 
+/** Minimal third-party model — user-configured, not from remote registry */
+export interface ThirdPartyModel {
+	id: string
+	name: string
+}
+
 /** Typed env block for Claude settings.json — all optional, populated by merge */
 export interface ClaudeEnv {
 	ANTHROPIC_AUTH_TOKEN?: string

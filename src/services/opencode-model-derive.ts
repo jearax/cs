@@ -101,7 +101,8 @@ export const deriveModel = (key: string, remote: RemoteModel, prev?: OpencodeMod
 
 export const deriveModels = (
 	response: RemoteModelsResponse,
-	existing: Record<string, OpencodeModel> = {}
+	existing: Record<string, OpencodeModel> = {},
+	thirdPartyModelIds?: Set<string>
 ): Record<string, OpencodeModel> => {
 	const result = { ...existing }
 
@@ -112,6 +113,11 @@ export const deriveModels = (
 	for (const [key, model] of Object.entries(result)) {
 		const apiId = model.provider?.api ?? model.id ?? key
 		const match = remote.get(apiId)
+
+		// Preserve third-party models — don't delete just because not in remote
+		if (!match && thirdPartyModelIds?.has(key)) {
+			continue
+		}
 
 		if (!match) {
 			delete result[key]

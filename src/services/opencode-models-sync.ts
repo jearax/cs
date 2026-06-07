@@ -24,6 +24,7 @@ interface SyncOpenCodeModelsOptions {
 	saveModelsCache: (cache: ModelsCache) => void
 	pkgName: string
 	now?: () => Date
+	thirdPartyModelIds?: Set<string>
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -89,7 +90,7 @@ export const syncOpenCodeModelsFromRemote = async (
 	const provider = config.provider as Record<string, unknown> | undefined
 	const csProvider = provider?.cs as Record<string, unknown> | undefined
 	const existingModels = (csProvider?.models as Record<string, OpencodeModel> | undefined) ?? {}
-	const models = deriveModels(fetched.response, existingModels)
+	const models = deriveModels(fetched.response, existingModels, options.thirdPartyModelIds)
 	const derivedCount = Object.keys(models).length
 
 	if (derivedCount === 0) {

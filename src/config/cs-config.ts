@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname } from 'pathe'
 
 import { CS_CONFIG_PATH, OFFICIAL_PROFILE } from '@/config/defaults'
-import { ModelsCache, Profile } from '@/config/types'
+import { ModelsCache, Profile, ThirdPartyModel } from '@/config/types'
 import { safeJsonParse } from '@/utils/validation'
 
 /** Full cs.json config shape */
@@ -15,6 +15,7 @@ export interface CsConfig {
 		CS_API_KEY?: string
 	}
 	modelsCache?: ModelsCache
+	thirdPartyModels?: Record<string, ThirdPartyModel>
 }
 
 /** Build initial config with default profile */
@@ -215,6 +216,27 @@ export const resetProfiles = (): string[] => {
 
 	config.claude = { default: { ...OFFICIAL_PROFILE } }
 	config.currentProfile = 'default'
+	delete config.thirdPartyModels
 	saveCsConfig(config)
 	return removed
+}
+
+/** Get all third-party model definitions */
+export const getThirdPartyModels = (): Record<string, ThirdPartyModel> => {
+	return loadCsConfig().thirdPartyModels ?? {}
+}
+
+/** Add or update a third-party model — unique by ID, skips if already exists */
+export const upsertThirdPartyModel = (model: ThirdPartyModel): boolean => {
+	const config = loadCsConfig()
+
+	config.thirdPartyModels = config.thirdPartyModels ?? {}
+
+	if (config.thirdPartyModels[model.id]) {
+		return false // already exists, skip
+	}
+
+	config.thirdPartyModels[model.id] = model
+	saveCsConfig(config)
+	return true
 }

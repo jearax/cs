@@ -2,7 +2,13 @@ import { confirm } from '@clack/prompts'
 import { defineCommand } from 'citty'
 
 import { filterModelsForDisplay, getModelsCacheCount, hasModelsCache, shouldPromptForEmptyCache } from './model-display'
-import { getAllProfiles, getModelsCache, resolveCsApiKey, saveModelsCache } from '@/config/cs-config'
+import {
+	getAllProfiles,
+	getModelsCache,
+	getThirdPartyModels,
+	resolveCsApiKey,
+	saveModelsCache
+} from '@/config/cs-config'
 import { readOpenCodeConfig, writeOpenCodeConfig } from '@/config/opencode-config'
 import { ModelsCache } from '@/config/types'
 import { syncOpenCodeModelsFromRemote } from '@/services/opencode-models-sync'
@@ -59,12 +65,18 @@ const runModelsSync = async (): Promise<ModelsCache | undefined> => {
 		return undefined
 	}
 
+	// Collect third-party model IDs to preserve during derive
+	const thirdPartyModels = getThirdPartyModels()
+	const thirdPartyModelIds =
+		Object.keys(thirdPartyModels).length > 0 ? new Set(Object.keys(thirdPartyModels)) : undefined
+
 	const result = await syncOpenCodeModelsFromRemote({
 		apiKey,
 		readOpenCodeConfig,
 		writeOpenCodeConfig,
 		saveModelsCache,
-		pkgName
+		pkgName,
+		thirdPartyModelIds
 	})
 
 	if (!result.ok) {

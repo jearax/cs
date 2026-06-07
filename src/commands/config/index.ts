@@ -1,10 +1,11 @@
 import { defineCommand } from 'citty'
 
-import { getProfile, resolveCsApiKey, upsertProfile } from '@/config/cs-config'
+import { hasModelsCache } from '@/commands/ls/model-display'
+import { getModelsCache, getProfile, resolveCsApiKey, upsertProfile, upsertThirdPartyModel } from '@/config/cs-config'
 import { Profile } from '@/config/types'
 import { displayBanner } from '@/utils/banner'
 import { denormalizeModelId } from '@/utils/claude-model-id'
-import { maskToken } from '@/utils/format'
+import { maskToken, normalizeModelName } from '@/utils/format'
 import { logger } from '@/utils/logger'
 import { validateProfileName } from '@/utils/validation'
 
@@ -106,6 +107,34 @@ export const configCommand = defineCommand({
 
 		if (opus !== undefined) {
 			updates.opus = opus
+		}
+
+		// Detect third-party models (not in remote registry)
+		const modelIds = [haiku, sonnet, opus].filter((id): id is string => id !== undefined)
+
+		if (modelIds.length > 0) {
+			const cache = getModelsCache()
+
+			if (!hasModelsCache(cache)) {
+				logger.error('Models cache empty. Run `cs ls` to see supported models first.')
+
+				return
+			}
+
+			for (const modelId of modelIds) {
+				if (!(modelId in cache.models)) {
+					const displayName = normalizeModelName(modelId)
+
+					const added = upsertThirdPartyModel({
+						id: modelId,
+						name: displayName
+					})
+
+					if (added) {
+						logger.info(`Third-party model "${displayName}" registered.`)
+					}
+				}
+			}
 		}
 
 		upsertProfile(profileName, updates)
