@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 
 import { dirname } from 'pathe'
 
-import { resolveCsApiKey } from '@/config/cs-config'
 import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
 import { resolveTokenForWrite } from '@/utils/format'
@@ -32,17 +31,14 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
 }
 
 /** Deep merge profile values into claude settings env block */
-export const mergeClaudeSettings = (settings: ClaudeSettings, profile: Profile, _pkgName: string): void => {
+export const mergeClaudeSettings = (settings: ClaudeSettings, profile: Profile): void => {
 	// Ensure env block exists
 	const env: ClaudeEnv = settings.env ?? {}
 
 	settings.env = env
 
-	// Prefer explicit profile token, fallback to resolved API key
-	const effectiveToken = profile.token || resolveCsApiKey() || ''
-
 	env.ANTHROPIC_BASE_URL = profile.url
-	env.ANTHROPIC_AUTH_TOKEN = resolveTokenForWrite(effectiveToken)
+	env.ANTHROPIC_AUTH_TOKEN = resolveTokenForWrite(profile.token)
 	env.ANTHROPIC_DEFAULT_HAIKU_MODEL = profile.haiku
 	env.ANTHROPIC_DEFAULT_SONNET_MODEL = profile.sonnet
 	env.ANTHROPIC_DEFAULT_OPUS_MODEL = profile.opus

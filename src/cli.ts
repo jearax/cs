@@ -1,23 +1,11 @@
 import { defineCommand, runMain } from 'citty'
 
 import { description, name, version } from '../package.json'
-import {
-	authCommand,
-	configCommand,
-	currentCommand,
-	lsCommand,
-	removeCommand,
-	resetCommand,
-	useCommand
-} from '@/commands'
+import { configCommand, currentCommand, lsCommand, removeCommand, resetCommand, useCommand } from '@/commands'
 import { displayBanner } from '@/utils/banner'
 import { logger } from '@/utils/logger'
 
 const COMMANDS = [
-	{
-		name: 'auth',
-		description: 'Manage authentication (API key)'
-	},
 	{
 		name: 'config',
 		description: 'Manage profile configuration'
@@ -51,7 +39,6 @@ const main = defineCommand({
 		description
 	},
 	subCommands: {
-		auth: authCommand,
 		ls: lsCommand,
 		config: configCommand,
 		current: currentCommand,

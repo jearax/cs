@@ -1,5 +1,4 @@
 // Re-export all subcommands
-export { authCommand } from './auth'
 export { configCommand } from './config'
 export { currentCommand } from './current'
 export { lsCommand } from './ls'

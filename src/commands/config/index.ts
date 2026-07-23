@@ -1,11 +1,10 @@
 import { defineCommand } from 'citty'
 
-import { hasModelsCache } from '@/commands/ls/model-display'
-import { getModelsCache, getProfile, resolveCsApiKey, upsertProfile, upsertThirdPartyModel } from '@/config/cs-config'
+import { getProfile, upsertProfile } from '@/config/cs-config'
 import { Profile } from '@/config/types'
 import { displayBanner } from '@/utils/banner'
 import { denormalizeModelId } from '@/utils/claude-model-id'
-import { maskToken, normalizeModelName } from '@/utils/format'
+import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
 import { validateProfileName } from '@/utils/validation'
 
@@ -75,12 +74,9 @@ export const configCommand = defineCommand({
 				return
 			}
 
-			// Show token: prefer profile.token, fallback to resolved API key
-			const displayToken = profile.token || resolveCsApiKey()
-
 			logger.info(`Profile: ${profileName}`)
 			logger.log(`  URL:    ${profile.url}`)
-			logger.log(`  Token:  ${displayToken ? maskToken(displayToken) : '<not set>'}`)
+			logger.log(`  Token:  ${maskToken(profile.token)}`)
 			logger.log(`  Haiku:  ${profile.haiku}`)
 			logger.log(`  Sonnet: ${profile.sonnet}`)
 			logger.log(`  Opus:   ${profile.opus}`)
@@ -107,34 +103,6 @@ export const configCommand = defineCommand({
 
 		if (opus !== undefined) {
 			updates.opus = opus
-		}
-
-		// Detect third-party models (not in remote registry)
-		const modelIds = [haiku, sonnet, opus].filter((id): id is string => id !== undefined)
-
-		if (modelIds.length > 0) {
-			const cache = getModelsCache()
-
-			if (!hasModelsCache(cache)) {
-				logger.error('Models cache empty. Run `cs ls` to see supported models first.')
-
-				return
-			}
-
-			for (const modelId of modelIds) {
-				if (!(modelId in cache.models)) {
-					const displayName = normalizeModelName(modelId)
-
-					const added = upsertThirdPartyModel({
-						id: modelId,
-						name: displayName
-					})
-
-					if (added) {
-						logger.info(`Third-party model "${displayName}" registered.`)
-					}
-				}
-			}
 		}
 
 		upsertProfile(profileName, updates)
