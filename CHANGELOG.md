@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.1.4
+
+### Patch Changes
+
+- Fix: cs use now removes stale CLAUDE_CODE_AUTO_COMPACT_WINDOW when profile has no [1m] suffix.
+
 ## 0.1.4-alpha.0
 
 ### Patch Changes

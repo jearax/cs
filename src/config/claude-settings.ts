@@ -34,16 +34,27 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
  * Merge profile fields + extraEnv into Claude settings env block.
  * Layering: DEFAULT_GLOBAL_ENV → existing settings.env → extraEnv → profile fields.
  * Existing settings.env is preserved (merge, not sync).
+ *
+ * When profile has no `[1m]` model suffix, CLAUDE_CODE_AUTO_COMPACT_WINDOW is
+ * explicitly removed from the final env (overrides any stale value from
+ * settings.env or extraEnv).
  */
 export const mergeClaudeSettings = (
 	settings: ClaudeSettings,
 	profile: Profile,
 	extraEnv: Record<string, string> = {}
 ): void => {
+	const profileHas1m = [profile.haiku, profile.sonnet, profile.opus].some((id) => id?.endsWith('[1m]'))
+
 	const env: ClaudeEnv = {
 		...DEFAULT_GLOBAL_ENV,
 		...settings.env,
 		...extraEnv
+	}
+
+	// Drop stale AUTO_COMPACT_WINDOW when no [1m] suffix in profile
+	if (!profileHas1m) {
+		delete env.CLAUDE_CODE_AUTO_COMPACT_WINDOW
 	}
 
 	settings.env = env
