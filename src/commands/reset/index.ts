@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 
 import { mergeClaudeSettings, readClaudeSettings, writeClaudeSettings } from '@/config/claude-settings'
-import { getProfile, resetProfiles } from '@/config/cs-config'
+import { getProfile, loadCsConfig, resetProfiles } from '@/config/cs-config'
 import { logger } from '@/utils/logger'
 
 export const resetCommand = defineCommand({
@@ -24,9 +24,18 @@ export const resetCommand = defineCommand({
 			return
 		}
 
+		const config = loadCsConfig()
+		const globalEnv = config.env ?? {}
+		const profileEnv = profile.env ?? {}
+
+		const finalEnv = {
+			...globalEnv,
+			...profileEnv
+		}
+
 		const claudeSettings = readClaudeSettings()
 
-		mergeClaudeSettings(claudeSettings, profile)
+		mergeClaudeSettings(claudeSettings, profile, finalEnv)
 		writeClaudeSettings(claudeSettings)
 
 		logger.success('Reset complete. Active profile: default')

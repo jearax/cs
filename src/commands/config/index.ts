@@ -8,6 +8,20 @@ import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
 import { validateProfileName } from '@/utils/validation'
 
+/** Auto-derived env vars from model suffix detection */
+const detectEnvFromModels = (haiku?: string, sonnet?: string, opus?: string): Record<string, string> => {
+	const has1m = [haiku, sonnet, opus].some((id) => id?.endsWith('[1m]'))
+
+	return has1m
+		? {
+				CLAUDE_CODE_AUTO_COMPACT_WINDOW: '1000000',
+				CLAUDE_CODE_DISABLE_1M_CONTEXT: '0'
+			}
+		: {
+				CLAUDE_CODE_DISABLE_1M_CONTEXT: '1'
+			}
+}
+
 export const configCommand = defineCommand({
 	meta: {
 		name: 'config',
@@ -103,6 +117,31 @@ export const configCommand = defineCommand({
 
 		if (opus !== undefined) {
 			updates.opus = opus
+		}
+
+		// Auto-detect env vars from model suffix when any model flag is provided.
+		// Trigger only on model flag changes (not url/token).
+		if (haiku !== undefined || sonnet !== undefined || opus !== undefined) {
+			// Compute auto-env from EFFECTIVE profile (current flags + existing values)
+			// so partial updates correctly reflect the actual [1m] state.
+			const existingProfile = getProfile(profileName)
+
+			const effectiveHaiku = haiku ?? existingProfile?.haiku
+			const effectiveSonnet = sonnet ?? existingProfile?.sonnet
+			const effectiveOpus = opus ?? existingProfile?.opus
+			const autoEnv = detectEnvFromModels(effectiveHaiku, effectiveSonnet, effectiveOpus)
+
+			const mergedEnv = {
+				...(existingProfile?.env ?? {}),
+				...autoEnv
+			}
+
+			// Drop AUTO_COMPACT_WINDOW when no [1m] suffix present
+			if (![effectiveHaiku, effectiveSonnet, effectiveOpus].some((id) => id?.endsWith('[1m]'))) {
+				delete mergedEnv.CLAUDE_CODE_AUTO_COMPACT_WINDOW
+			}
+
+			updates.env = mergedEnv
 		}
 
 		upsertProfile(profileName, updates)

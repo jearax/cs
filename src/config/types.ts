@@ -5,6 +5,7 @@ export interface Profile {
 	haiku: string
 	sonnet: string
 	opus: string
+	env?: Record<string, string>
 }
 
 /** Typed env block for Claude settings.json — all optional, populated by merge */

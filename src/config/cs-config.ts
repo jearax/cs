@@ -10,6 +10,7 @@ import { safeJsonParse } from '@/utils/validation'
 export interface CsConfig {
 	claude: Record<string, Profile>
 	currentProfile?: string
+	env?: Record<string, string>
 }
 
 /** Build initial config with default profile */

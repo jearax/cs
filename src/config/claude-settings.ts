@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 
 import { dirname } from 'pathe'
 
-import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
+import { DEFAULT_GLOBAL_ENV, TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
 import { resolveTokenForWrite } from '@/utils/format'
 import { safeJsonParse } from '@/utils/validation'
@@ -30,10 +30,21 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
 	writeFileSync(TOOL_SETTINGS_PATHS.claude, JSON.stringify(settings, null, 2), { mode: 0o600 })
 }
 
-/** Deep merge profile values into claude settings env block */
-export const mergeClaudeSettings = (settings: ClaudeSettings, profile: Profile): void => {
-	// Ensure env block exists
-	const env: ClaudeEnv = settings.env ?? {}
+/**
+ * Merge profile fields + extraEnv into Claude settings env block.
+ * Layering: DEFAULT_GLOBAL_ENV → existing settings.env → extraEnv → profile fields.
+ * Existing settings.env is preserved (merge, not sync).
+ */
+export const mergeClaudeSettings = (
+	settings: ClaudeSettings,
+	profile: Profile,
+	extraEnv: Record<string, string> = {}
+): void => {
+	const env: ClaudeEnv = {
+		...DEFAULT_GLOBAL_ENV,
+		...settings.env,
+		...extraEnv
+	}
 
 	settings.env = env
 

@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 
 import { mergeClaudeSettings, readClaudeSettings, writeClaudeSettings } from '@/config/claude-settings'
-import { getProfile, setCurrentProfile } from '@/config/cs-config'
+import { loadCsConfig, setCurrentProfile } from '@/config/cs-config'
 import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
 
@@ -20,7 +20,8 @@ export const useCommand = defineCommand({
 	},
 	run: async (ctx) => {
 		const profileName = ctx.args.name as string
-		const profile = getProfile(profileName)
+		const config = loadCsConfig()
+		const profile = config.claude[profileName]
 
 		if (!profile) {
 			logger.error(`Profile "${profileName}" not found.`)
@@ -28,10 +29,19 @@ export const useCommand = defineCommand({
 			return
 		}
 
-		// Deep merge into Claude settings
+		// Build final env from cs.json (cs.env + profile.env). Profile wins.
+		const globalEnv = config.env ?? {}
+		const profileEnv = profile.env ?? {}
+
+		const finalEnv = {
+			...globalEnv,
+			...profileEnv
+		}
+
+		// Read settings + merge (DEFAULT_GLOBAL_ENV applied inside mergeClaudeSettings)
 		const claudeSettings = readClaudeSettings()
 
-		mergeClaudeSettings(claudeSettings, profile)
+		mergeClaudeSettings(claudeSettings, profile, finalEnv)
 		writeClaudeSettings(claudeSettings)
 
 		if (!setCurrentProfile(profileName)) {

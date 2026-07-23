@@ -1,7 +1,15 @@
 import { defineCommand, runMain } from 'citty'
 
 import { description, name, version } from '../package.json'
-import { configCommand, currentCommand, lsCommand, removeCommand, resetCommand, useCommand } from '@/commands'
+import {
+	configCommand,
+	currentCommand,
+	envCommand,
+	lsCommand,
+	removeCommand,
+	resetCommand,
+	useCommand
+} from '@/commands'
 import { displayBanner } from '@/utils/banner'
 import { logger } from '@/utils/logger'
 
@@ -29,6 +37,10 @@ const COMMANDS = [
 	{
 		name: 'reset',
 		description: 'Reset to default profile'
+	},
+	{
+		name: 'env',
+		description: 'Configure env vars (global or per-profile)'
 	}
 ]
 
@@ -44,7 +56,8 @@ const main = defineCommand({
 		current: currentCommand,
 		use: useCommand,
 		remove: removeCommand,
-		reset: resetCommand
+		reset: resetCommand,
+		env: envCommand
 	},
 	run: async (ctx) => {
 		// Only show commands list when no subcommand is invoked
