@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.1.4-alpha.0
+
+### Patch Changes
+
+- cs-cli simplification: drop OpenCode sync, drop auth command, drop cross-os env. Add cs env command, auto-detect 1m model suffix.
+
 ## 0.1.2
 
 ### Patch Changes
