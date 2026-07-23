@@ -38,7 +38,7 @@ export const useCommand = defineCommand({
 			...profileEnv
 		}
 
-		// Read settings + merge (DEFAULT_GLOBAL_ENV applied inside mergeClaudeSettings)
+		// Read settings + merge (DEFAULT_GLOBAL_ENV is part of finalEnv)
 		const claudeSettings = readClaudeSettings()
 
 		mergeClaudeSettings(claudeSettings, profile, finalEnv)

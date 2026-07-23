@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 
 import { dirname } from 'pathe'
 
-import { DEFAULT_GLOBAL_ENV, TOOL_SETTINGS_PATHS } from '@/config/defaults'
+import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
 import { resolveTokenForWrite } from '@/utils/format'
 import { safeJsonParse } from '@/utils/validation'
@@ -31,13 +31,18 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
 }
 
 /**
- * Merge profile fields + extraEnv into Claude settings env block.
- * Layering: DEFAULT_GLOBAL_ENV → existing settings.env → extraEnv → profile fields.
- * Existing settings.env is preserved (merge, not sync).
+ * Replace settings.env with cs-managed keys (sync semantics, not merge).
  *
- * When profile has no `[1m]` model suffix, CLAUDE_CODE_AUTO_COMPACT_WINDOW is
- * explicitly removed from the final env (overrides any stale value from
- * settings.env or extraEnv).
+ * Sources (in order, last wins):
+ * - 5 ANTHROPIC_* fields (from profile)
+ * - extraEnv (from cs.json global env + profile env)
+ *
+ * Side effect: any other keys previously in settings.env (e.g., env vars
+ * written by a different profile) are removed. This provides profile env
+ * isolation when switching profiles.
+ *
+ * When profile has no `[1m]` model suffix, CLAUDE_CODE_AUTO_COMPACT_WINDOW
+ * is explicitly removed (overrides any value in extraEnv).
  */
 export const mergeClaudeSettings = (
 	settings: ClaudeSettings,
@@ -47,8 +52,11 @@ export const mergeClaudeSettings = (
 	const profileHas1m = [profile.haiku, profile.sonnet, profile.opus].some((id) => id?.endsWith('[1m]'))
 
 	const env: ClaudeEnv = {
-		...DEFAULT_GLOBAL_ENV,
-		...settings.env,
+		ANTHROPIC_BASE_URL: profile.url,
+		ANTHROPIC_AUTH_TOKEN: resolveTokenForWrite(profile.token),
+		ANTHROPIC_DEFAULT_HAIKU_MODEL: profile.haiku,
+		ANTHROPIC_DEFAULT_SONNET_MODEL: profile.sonnet,
+		ANTHROPIC_DEFAULT_OPUS_MODEL: profile.opus,
 		...extraEnv
 	}
 
@@ -58,10 +66,4 @@ export const mergeClaudeSettings = (
 	}
 
 	settings.env = env
-
-	env.ANTHROPIC_BASE_URL = profile.url
-	env.ANTHROPIC_AUTH_TOKEN = resolveTokenForWrite(profile.token)
-	env.ANTHROPIC_DEFAULT_HAIKU_MODEL = profile.haiku
-	env.ANTHROPIC_DEFAULT_SONNET_MODEL = profile.sonnet
-	env.ANTHROPIC_DEFAULT_OPUS_MODEL = profile.opus
 }

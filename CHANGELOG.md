@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.1.5
+
+### Patch Changes
+
+- Fix: cs use now removes env from previous profile when switching. mergeClaudeSettings now uses sync semantics (replaces env block) instead of merge, so old profile env keys are cleared.
+
 ## 0.1.4
 
 ### Patch Changes
