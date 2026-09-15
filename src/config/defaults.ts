@@ -20,9 +20,6 @@ export const TOOL_SETTINGS_PATHS = {
 /** cs config store path */
 export const CS_CONFIG_PATH = join(HOME, '.config', 'cs', 'cs.json')
 
-/** Placeholder written to tool config files when API key is not configured */
-export const EMPTY_TOKEN_PLACEHOLDER = 'xxxx-xxxx-xxxx-xxxx'
-
 /** Hardcoded global env defaults — merged into cs.json.env at save point */
 export const DEFAULT_GLOBAL_ENV: Record<string, string> = {
 	CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'

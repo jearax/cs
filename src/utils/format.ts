@@ -1,5 +1,3 @@
-import { EMPTY_TOKEN_PLACEHOLDER } from '@/config/defaults'
-
 /** Mask token for display: show prefix + masked middle + suffix */
 export const maskToken = (token: string): string => {
 	if (!token) {
@@ -13,14 +11,14 @@ export const maskToken = (token: string): string => {
 	return `${token.slice(0, 8)}...${token.slice(-4)}`
 }
 
-/** Resolve token for writing to tool config files (empty → placeholder) */
+/** Resolve token for writing to tool config files */
 export const resolveTokenForWrite = (token: string): string => {
-	return token === '' ? EMPTY_TOKEN_PLACEHOLDER : token
+	return token
 }
 
-/** Check if token value should be treated as empty (real empty OR placeholder) */
+/** Check if token value should be treated as empty */
 export const isEmptyToken = (token: string | undefined): boolean => {
-	return !token || token === EMPTY_TOKEN_PLACEHOLDER
+	return !token
 }
 
 /** Normalize model ID to display name: "glm-5.1" → "Glm 5.1" */
