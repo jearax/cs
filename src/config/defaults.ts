@@ -5,11 +5,11 @@ const HOME = process.env.HOME!
 
 /** Official Anthropic config — used as the "default" profile */
 export const OFFICIAL_PROFILE = {
-	url: 'https://api.anthropic.com/v1',
+	url: '',
 	token: '',
 	haiku: 'claude-haiku-4-5',
-	sonnet: 'claude-sonnet-4-6',
-	opus: 'claude-opus-4-7'
+	sonnet: 'claude-sonnet-5',
+	opus: 'claude-opus-5'
 }
 
 /** Path to Claude settings.json that cs writes into */
