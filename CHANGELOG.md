@@ -1,5 +1,12 @@
 # @jjuidev/cs
 
+## 0.1.7
+
+### Patch Changes
+
+- a3ce4b0: Add Fable model support (`cs config --fable`, `ANTHROPIC_DEFAULT_FABLE_MODEL`) and write `ANTHROPIC_DEFAULT_MODEL` from the profile's Sonnet value. Fable also participates in `[1m]` context detection. Adds a README with the full CLI reference.
+- f09db7c: Update default profile: empty base URL, bump Sonnet to `claude-sonnet-5` and Opus to `claude-opus-5`.
+
 ## 0.1.6
 
 ### Patch Changes
