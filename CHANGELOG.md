@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.1.6
+
+### Patch Changes
+
+- 3a8388a: Remove `EMPTY_TOKEN_PLACEHOLDER` logic — token now writes empty string `''` directly instead of a dummy value.
+
 ## 0.1.5
 
 ### Patch Changes
