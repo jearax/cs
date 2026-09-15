@@ -26,5 +26,6 @@ export const currentCommand = defineCommand({
 		logger.log(`  Haiku:  ${active.haiku}`)
 		logger.log(`  Sonnet: ${active.sonnet}`)
 		logger.log(`  Opus:   ${active.opus}`)
+		logger.log(`  Fable:  ${active.fable}`)
 	}
 })

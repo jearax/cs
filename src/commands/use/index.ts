@@ -55,5 +55,6 @@ export const useCommand = defineCommand({
 		logger.log(`  Haiku:  ${profile.haiku}`)
 		logger.log(`  Sonnet: ${profile.sonnet}`)
 		logger.log(`  Opus:   ${profile.opus}`)
+		logger.log(`  Fable:  ${profile.fable}`)
 	}
 })

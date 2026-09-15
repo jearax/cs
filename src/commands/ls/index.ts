@@ -27,6 +27,7 @@ export const lsCommand = defineCommand({
 			logger.muted(`    Haiku:  ${p.haiku}`)
 			logger.muted(`    Sonnet: ${p.sonnet}`)
 			logger.muted(`    Opus:   ${p.opus}`)
+			logger.muted(`    Fable:  ${p.fable}`)
 		}
 	}
 })

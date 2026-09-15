@@ -9,8 +9,13 @@ import { logger } from '@/utils/logger'
 import { validateProfileName } from '@/utils/validation'
 
 /** Auto-derived env vars from model suffix detection */
-const detectEnvFromModels = (haiku?: string, sonnet?: string, opus?: string): Record<string, string> => {
-	const has1m = [haiku, sonnet, opus].some((id) => id?.endsWith('[1m]'))
+const detectEnvFromModels = (
+	haiku?: string,
+	sonnet?: string,
+	opus?: string,
+	fable?: string
+): Record<string, string> => {
+	const has1m = [haiku, sonnet, opus, fable].some((id) => id?.endsWith('[1m]'))
 
 	return has1m
 		? {
@@ -57,6 +62,11 @@ export const configCommand = defineCommand({
 			alias: 'o',
 			type: 'string',
 			description: 'Opus model'
+		},
+		fable: {
+			alias: 'f',
+			type: 'string',
+			description: 'Fable model'
 		}
 	},
 	run: async (ctx) => {
@@ -74,9 +84,15 @@ export const configCommand = defineCommand({
 		const haiku = ctx.args.haiku ? denormalizeModelId(ctx.args.haiku as string) : undefined
 		const sonnet = ctx.args.sonnet ? denormalizeModelId(ctx.args.sonnet as string) : undefined
 		const opus = ctx.args.opus ? denormalizeModelId(ctx.args.opus as string) : undefined
+		const fable = ctx.args.fable ? denormalizeModelId(ctx.args.fable as string) : undefined
 
 		const hasUpdates =
-			url !== undefined || token !== undefined || haiku !== undefined || sonnet !== undefined || opus !== undefined
+			url !== undefined ||
+			token !== undefined ||
+			haiku !== undefined ||
+			sonnet !== undefined ||
+			opus !== undefined ||
+			fable !== undefined
 
 		if (!hasUpdates) {
 			displayBanner()
@@ -94,6 +110,7 @@ export const configCommand = defineCommand({
 			logger.log(`  Haiku:  ${profile.haiku}`)
 			logger.log(`  Sonnet: ${profile.sonnet}`)
 			logger.log(`  Opus:   ${profile.opus}`)
+			logger.log(`  Fable:  ${profile.fable}`)
 			return
 		}
 
@@ -119,9 +136,13 @@ export const configCommand = defineCommand({
 			updates.opus = opus
 		}
 
+		if (fable !== undefined) {
+			updates.fable = fable
+		}
+
 		// Auto-detect env vars from model suffix when any model flag is provided.
 		// Trigger only on model flag changes (not url/token).
-		if (haiku !== undefined || sonnet !== undefined || opus !== undefined) {
+		if (haiku !== undefined || sonnet !== undefined || opus !== undefined || fable !== undefined) {
 			// Compute auto-env from EFFECTIVE profile (current flags + existing values)
 			// so partial updates correctly reflect the actual [1m] state.
 			const existingProfile = getProfile(profileName)
@@ -129,7 +150,8 @@ export const configCommand = defineCommand({
 			const effectiveHaiku = haiku ?? existingProfile?.haiku
 			const effectiveSonnet = sonnet ?? existingProfile?.sonnet
 			const effectiveOpus = opus ?? existingProfile?.opus
-			const autoEnv = detectEnvFromModels(effectiveHaiku, effectiveSonnet, effectiveOpus)
+			const effectiveFable = fable ?? existingProfile?.fable
+			const autoEnv = detectEnvFromModels(effectiveHaiku, effectiveSonnet, effectiveOpus, effectiveFable)
 
 			const mergedEnv = {
 				...(existingProfile?.env ?? {}),
@@ -137,7 +159,7 @@ export const configCommand = defineCommand({
 			}
 
 			// Drop AUTO_COMPACT_WINDOW when no [1m] suffix present
-			if (![effectiveHaiku, effectiveSonnet, effectiveOpus].some((id) => id?.endsWith('[1m]'))) {
+			if (![effectiveHaiku, effectiveSonnet, effectiveOpus, effectiveFable].some((id) => id?.endsWith('[1m]'))) {
 				delete mergedEnv.CLAUDE_CODE_AUTO_COMPACT_WINDOW
 			}
 

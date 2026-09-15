@@ -9,7 +9,8 @@ export const OFFICIAL_PROFILE = {
 	token: '',
 	haiku: 'claude-haiku-4-5',
 	sonnet: 'claude-sonnet-5',
-	opus: 'claude-opus-5'
+	opus: 'claude-opus-5',
+	fable: 'claude-fable-5-1'
 }
 
 /** Path to Claude settings.json that cs writes into */

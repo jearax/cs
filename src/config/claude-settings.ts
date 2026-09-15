@@ -34,7 +34,7 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
  * Replace settings.env with cs-managed keys (sync semantics, not merge).
  *
  * Sources (in order, last wins):
- * - 5 ANTHROPIC_* fields (from profile)
+ * - 7 ANTHROPIC_* fields (from profile)
  * - extraEnv (from cs.json global env + profile env)
  *
  * Side effect: any other keys previously in settings.env (e.g., env vars
@@ -49,14 +49,16 @@ export const mergeClaudeSettings = (
 	profile: Profile,
 	extraEnv: Record<string, string> = {}
 ): void => {
-	const profileHas1m = [profile.haiku, profile.sonnet, profile.opus].some((id) => id?.endsWith('[1m]'))
+	const profileHas1m = [profile.haiku, profile.sonnet, profile.opus, profile.fable].some((id) => id?.endsWith('[1m]'))
 
 	const env: ClaudeEnv = {
 		ANTHROPIC_BASE_URL: profile.url,
 		ANTHROPIC_AUTH_TOKEN: resolveTokenForWrite(profile.token),
+		ANTHROPIC_DEFAULT_MODEL: profile.sonnet,
 		ANTHROPIC_DEFAULT_HAIKU_MODEL: profile.haiku,
 		ANTHROPIC_DEFAULT_SONNET_MODEL: profile.sonnet,
 		ANTHROPIC_DEFAULT_OPUS_MODEL: profile.opus,
+		ANTHROPIC_DEFAULT_FABLE_MODEL: profile.fable,
 		...extraEnv
 	}
 
