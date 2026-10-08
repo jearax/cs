@@ -1,4 +1,4 @@
-import { defineCommand, runMain } from 'citty'
+import { defineCommand, runMain, showUsage } from 'citty'
 
 import { description, name, version } from '../package.json'
 import {
@@ -76,4 +76,9 @@ const main = defineCommand({
 	}
 })
 
-runMain(main)
+runMain(main, {
+	showUsage: async (cmd, parent) => {
+		displayBanner()
+		await showUsage(cmd, parent)
+	}
+})
