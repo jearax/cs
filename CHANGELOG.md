@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.2.2
+
+### Patch Changes
+
+- 7838ffc: Show the ASCII banner on `cs --help` and `cs <command> --help`; citty printed usage without it.
+
 ## 0.2.1
 
 ### Patch Changes
