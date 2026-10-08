@@ -3,7 +3,7 @@ import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFile
 import { dirname } from 'pathe'
 
 import { CURRENT_CS_CONFIG_SCHEMA_VERSION, migrateCsConfig } from '@/config/cs-config-migration'
-import { CS_CONFIG_PATH, OFFICIAL_PROFILE } from '@/config/defaults'
+import { CS_CONFIG_PATH, EMPTY_PROFILE, OFFICIAL_PROFILE } from '@/config/defaults'
 import { Profile } from '@/config/types'
 import { safeJsonParse } from '@/utils/validation'
 
@@ -107,7 +107,7 @@ export const getAllProfiles = (): (Profile & { name: string })[] => {
 
 export const upsertProfile = (name: string, partial: Partial<Profile>): void => {
 	const config = loadCsConfig()
-	const existing = config.claude[name] ?? { ...OFFICIAL_PROFILE }
+	const existing = config.claude[name] ?? { ...EMPTY_PROFILE }
 
 	config.claude[name] = {
 		...existing,

@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 
 import { getProfile, upsertProfile } from '@/config/cs-config'
-import { OFFICIAL_PROFILE } from '@/config/defaults'
+import { EMPTY_PROFILE } from '@/config/defaults'
 import { Profile } from '@/config/types'
 import { displayBanner } from '@/utils/banner'
 import { denormalizeModelId } from '@/utils/claude-model-id'
@@ -121,11 +121,13 @@ export const configCommand = defineCommand({
 
 		if (fable !== undefined) {
 			updates.fable = fable
+		} else if (opus !== undefined) {
+			// Most providers expose no fable tier; mirror opus until -f says otherwise
+			updates.fable = opus
 		}
 
-		// Same fallback upsertProfile uses for a new profile
 		const effective = {
-			...OFFICIAL_PROFILE,
+			...EMPTY_PROFILE,
 			...getProfile(profileName),
 			...updates
 		}

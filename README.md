@@ -17,7 +17,7 @@ npm install -g @jjuidev/cs
 
 ```bash
 # Create a profile
-cs config -n work -u https://api.anthropic.com/v1 -t sk-ant-...
+cs config -n work -u https://api.anthropic.com -t sk-ant-...
 
 # Switch to it
 cs use work
@@ -57,13 +57,17 @@ cs config -n glm -u https://open.bigmodel.cn/api/anthropic -t <token> \
   -s glm-4.6 -o glm-4.6
 ```
 
-Flags are partial — omitted fields keep their current value.
+Flags are partial — omitted fields keep their current value. A new profile starts blank:
+only the flags you pass are set, and nothing is inherited from the `default` profile.
 
-Leave both `--url` and `--token` empty (the `default` profile does) to let Claude Code use its own
-`/login` authentication. A token without a URL is rejected.
+Omit `--fable` and it mirrors `--opus`, since most providers expose no fable tier. Pass
+`--fable` to set it apart.
+
+Leave both `--url` and `--token` empty to let Claude Code use its own `/login`
+authentication. A token without a URL is rejected.
 
 > Unknown flags are silently ignored. `--sonet` is not `--sonnet`; a typo means the field
-> is left untouched, and a brand-new profile falls back to its default model.
+> is left untouched, and on a new profile it stays empty.
 
 ## 1M context: the `[1m]` suffix
 
