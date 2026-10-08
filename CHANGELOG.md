@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.3.0
+
+### Minor Changes
+
+- 20d1594: `cs config` no longer merges the official default profile into the profile you are editing: a new profile starts blank and only the flags you pass are set. Omitting `--fable` now mirrors `--opus`. The `default` profile seed moves to `https://api.anthropic.com` with the Claude 5.5 model line at 1M context.
+
 ## 0.2.2
 
 ### Patch Changes
