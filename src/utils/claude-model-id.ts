@@ -1,12 +1,6 @@
 /**
- * Convert Copilot registry id (dot version) → claude CLI / Anthropic-style id
- * (dash version):
- *
- *   claude-opus-4.7   → claude-opus-4-7
- *   claude-sonnet-4.5 → claude-sonnet-4-5
- *
- * Restricted to `claude-` prefix to avoid touching IDs like `gpt-5.5`,
- * `gemini-2.5-pro`, `gpt-4.1` whose canonical form remains dotted.
+ * `claude-opus-4.7` → `claude-opus-4-7` (Copilot dot form to Anthropic dash form).
+ * Only `claude-` IDs: `gpt-4.1`, `gemini-2.5-pro` stay dotted.
  */
 export const denormalizeModelId = (modelId: string): string => {
 	if (!modelId.startsWith('claude-')) {
@@ -17,11 +11,8 @@ export const denormalizeModelId = (modelId: string): string => {
 }
 
 /**
- * Normalize model id: `claude-{name}-{N}-{M}` → `claude-{name}-{N}.{M}`.
- *
- * Some clients (e.g. claude CLI) emit version with dash (`claude-opus-4-7`),
- * while Copilot registry uses dot (`claude-opus-4.7`). Restricted to `claude-`
- * prefix to avoid touching IDs like `gpt-5-2024-08-06`.
+ * `claude-opus-4-7` → `claude-opus-4.7` (Anthropic dash form to Copilot dot form).
+ * Only `claude-` IDs, so dated IDs like `gpt-5-2024-08-06` are untouched.
  */
 export const normalizeAnthropicModelId = (modelId: string): string => {
 	if (!modelId.startsWith('claude-')) {

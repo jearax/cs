@@ -1,4 +1,3 @@
-// Re-export all subcommands
 export { configCommand } from './config'
 export { currentCommand } from './current'
 export { envCommand } from './env'

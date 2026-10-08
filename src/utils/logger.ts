@@ -1,7 +1,6 @@
 import consola from 'consola'
 import { colors } from 'consola/utils'
 
-// Unified logger wrapping consola with color helpers
 export const logger = {
 	error: (message: string) => consola.error(message),
 	success: (message: string) => consola.success(message),

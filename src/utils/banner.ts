@@ -6,7 +6,6 @@ import { logger } from '@/utils/logger'
 let cachedBanner: string | null = null
 let bannerDisplayed = false
 
-/** Generate ASCII art banner (cached after first call) */
 export const getBanner = (): string => {
 	if (cachedBanner) {
 		return cachedBanner

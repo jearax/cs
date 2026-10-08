@@ -1,6 +1,5 @@
 import { logger } from '@/utils/logger'
 
-/** Validate profile name — reject empty, __proto__, paths, special chars */
 export const validateProfileName = (name: string): string | null => {
 	if (!name || !name.trim()) {
 		return 'Profile name cannot be empty.'
@@ -23,7 +22,6 @@ export const validateProfileName = (name: string): string | null => {
 	return null
 }
 
-/** Safe JSON parse with error message */
 export const safeJsonParse = <T>(content: string, filePath: string): T | null => {
 	try {
 		return JSON.parse(content) as T

@@ -37,7 +37,6 @@ export const detectActiveProfile = (
 	return null
 }
 
-/** Convenience: get current active profile */
 export const getActiveProfile = (): (Profile & { name: string }) | null => {
 	const current = getCurrentProfile()
 
