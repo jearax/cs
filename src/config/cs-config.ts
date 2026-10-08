@@ -1,25 +1,36 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 
 import { dirname } from 'pathe'
 
+import { CURRENT_CS_CONFIG_SCHEMA_VERSION, migrateCsConfig } from '@/config/cs-config-migration'
 import { CS_CONFIG_PATH, OFFICIAL_PROFILE } from '@/config/defaults'
 import { Profile } from '@/config/types'
 import { safeJsonParse } from '@/utils/validation'
 
-/** Full cs.json config shape */
 export interface CsConfig {
+	schemaVersion?: number
 	claude: Record<string, Profile>
 	currentProfile?: string
 	env?: Record<string, string>
+	/** Top-level settings.json keys cs added itself; only these may be removed by cs */
+	ownedClaudeSettingsKeys?: string[]
 }
 
-/** Build initial config with default profile */
 const createInitialConfig = (): CsConfig => ({
+	schemaVersion: CURRENT_CS_CONFIG_SCHEMA_VERSION,
 	claude: { default: { ...OFFICIAL_PROFILE } },
 	currentProfile: 'default'
 })
 
-/** Read cs.json — creates with default profile if missing or corrupted */
+/** Keep the pre-migration file next to cs.json so a user can recover hand-set values */
+const backupCsConfig = (): void => {
+	const backupPath = `${CS_CONFIG_PATH}.bak`
+
+	copyFileSync(CS_CONFIG_PATH, backupPath)
+	chmodSync(backupPath, 0o600)
+}
+
+/** Recreates the default config when missing or corrupted */
 export const loadCsConfig = (): CsConfig => {
 	if (!existsSync(CS_CONFIG_PATH)) {
 		const initial = createInitialConfig()
@@ -38,10 +49,14 @@ export const loadCsConfig = (): CsConfig => {
 		return initial
 	}
 
+	if (migrateCsConfig(parsed)) {
+		backupCsConfig()
+		saveCsConfig(parsed)
+	}
+
 	return parsed
 }
 
-/** Write cs.json (mkdir -p, mode 0o600 for security) */
 export const saveCsConfig = (config: CsConfig): void => {
 	const dir = dirname(CS_CONFIG_PATH)
 
@@ -52,23 +67,13 @@ export const saveCsConfig = (config: CsConfig): void => {
 	writeFileSync(CS_CONFIG_PATH, JSON.stringify(config, null, 2), { mode: 0o600 })
 }
 
-/** Get a claude profile by name, undefined if not found */
-export const getProfile = (name: string): Profile | undefined => loadCsConfig().claude[name]
+/** Own-property lookup so names like "toString" never resolve to Object.prototype members */
+export const findProfile = (config: CsConfig, name: string): Profile | undefined =>
+	Object.hasOwn(config.claude, name) ? config.claude[name] : undefined
 
-/** Persist the profile selected by `cs use` */
-export const setCurrentProfile = (name: string): boolean => {
-	const config = loadCsConfig()
+export const getProfile = (name: string): Profile | undefined => findProfile(loadCsConfig(), name)
 
-	if (!config.claude[name]) {
-		return false
-	}
-
-	config.currentProfile = name
-	saveCsConfig(config)
-	return true
-}
-
-/** Get persisted current profile name if it still exists */
+/** Undefined when the stored profile has since been removed */
 export const getCurrentProfileName = (): string | undefined => {
 	const config = loadCsConfig()
 	const name = config.currentProfile
@@ -76,7 +81,6 @@ export const getCurrentProfileName = (): string | undefined => {
 	return name && config.claude[name] ? name : undefined
 }
 
-/** Get persisted current profile with its name */
 export const getCurrentProfile = (): (Profile & { name: string }) | undefined => {
 	const config = loadCsConfig()
 	const name = config.currentProfile
@@ -90,10 +94,8 @@ export const getCurrentProfile = (): (Profile & { name: string }) | undefined =>
 		: undefined
 }
 
-/** Get all profile names */
 export const listProfileNames = (): string[] => Object.keys(loadCsConfig().claude)
 
-/** Get all profiles as { name, ...profile } array */
 export const getAllProfiles = (): (Profile & { name: string })[] => {
 	const config = loadCsConfig()
 
@@ -103,7 +105,6 @@ export const getAllProfiles = (): (Profile & { name: string })[] => {
 	}))
 }
 
-/** Partial upsert a profile — only updates provided fields */
 export const upsertProfile = (name: string, partial: Partial<Profile>): void => {
 	const config = loadCsConfig()
 	const existing = config.claude[name] ?? { ...OFFICIAL_PROFILE }
@@ -115,7 +116,7 @@ export const upsertProfile = (name: string, partial: Partial<Profile>): void => 
 	saveCsConfig(config)
 }
 
-/** Remove a profile by name. Returns false if profile not found or is "default" */
+/** Returns false when the profile is missing or is "default" */
 export const removeProfile = (name: string): boolean => {
 	if (name === 'default') {
 		return false
@@ -137,7 +138,7 @@ export const removeProfile = (name: string): boolean => {
 	return true
 }
 
-/** Reset all profiles — keep only default, restore it to official values */
+/** Keeps only "default", restored to official values; returns the removed names */
 export const resetProfiles = (): string[] => {
 	const config = loadCsConfig()
 	const removed = Object.keys(config.claude).filter((name) => name !== 'default')

@@ -13,15 +13,8 @@ export const OFFICIAL_PROFILE = {
 	fable: 'claude-fable-5-1'
 }
 
-/** Path to Claude settings.json that cs writes into */
 export const TOOL_SETTINGS_PATHS = {
 	claude: join(HOME, '.claude', 'settings.json')
 }
 
-/** cs config store path */
 export const CS_CONFIG_PATH = join(HOME, '.config', 'cs', 'cs.json')
-
-/** Hardcoded global env defaults — merged into cs.json.env at save point */
-export const DEFAULT_GLOBAL_ENV: Record<string, string> = {
-	CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
-}

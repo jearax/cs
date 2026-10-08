@@ -1,4 +1,3 @@
-/** A claude profile stored in cs.json */
 export interface Profile {
 	url: string
 	token: string
@@ -9,7 +8,6 @@ export interface Profile {
 	env?: Record<string, string>
 }
 
-/** Typed env block for Claude settings.json — all optional, populated by merge */
 export interface ClaudeEnv {
 	ANTHROPIC_AUTH_TOKEN?: string
 	ANTHROPIC_BASE_URL?: string
@@ -21,8 +19,8 @@ export interface ClaudeEnv {
 	[key: string]: string | undefined
 }
 
-/** Claude settings.json top-level shape */
 export interface ClaudeSettings {
 	env?: ClaudeEnv
+	disableClaudeAiConnectors?: boolean
 	[key: string]: unknown
 }

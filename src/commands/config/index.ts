@@ -1,31 +1,14 @@
 import { defineCommand } from 'citty'
 
 import { getProfile, upsertProfile } from '@/config/cs-config'
+import { OFFICIAL_PROFILE } from '@/config/defaults'
 import { Profile } from '@/config/types'
 import { displayBanner } from '@/utils/banner'
 import { denormalizeModelId } from '@/utils/claude-model-id'
 import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
+import { hasTokenWithoutUrl, TOKEN_WITHOUT_URL_HINT } from '@/utils/login-mode-profile'
 import { validateProfileName } from '@/utils/validation'
-
-/** Auto-derived env vars from model suffix detection */
-const detectEnvFromModels = (
-	haiku?: string,
-	sonnet?: string,
-	opus?: string,
-	fable?: string
-): Record<string, string> => {
-	const has1m = [haiku, sonnet, opus, fable].some((id) => id?.endsWith('[1m]'))
-
-	return has1m
-		? {
-				CLAUDE_CODE_AUTO_COMPACT_WINDOW: '1000000',
-				CLAUDE_CODE_DISABLE_1M_CONTEXT: '0'
-			}
-		: {
-				CLAUDE_CODE_DISABLE_1M_CONTEXT: '1'
-			}
-}
 
 export const configCommand = defineCommand({
 	meta: {
@@ -140,30 +123,17 @@ export const configCommand = defineCommand({
 			updates.fable = fable
 		}
 
-		// Auto-detect env vars from model suffix when any model flag is provided.
-		// Trigger only on model flag changes (not url/token).
-		if (haiku !== undefined || sonnet !== undefined || opus !== undefined || fable !== undefined) {
-			// Compute auto-env from EFFECTIVE profile (current flags + existing values)
-			// so partial updates correctly reflect the actual [1m] state.
-			const existingProfile = getProfile(profileName)
+		// Same fallback upsertProfile uses for a new profile
+		const effective = {
+			...OFFICIAL_PROFILE,
+			...getProfile(profileName),
+			...updates
+		}
 
-			const effectiveHaiku = haiku ?? existingProfile?.haiku
-			const effectiveSonnet = sonnet ?? existingProfile?.sonnet
-			const effectiveOpus = opus ?? existingProfile?.opus
-			const effectiveFable = fable ?? existingProfile?.fable
-			const autoEnv = detectEnvFromModels(effectiveHaiku, effectiveSonnet, effectiveOpus, effectiveFable)
-
-			const mergedEnv = {
-				...(existingProfile?.env ?? {}),
-				...autoEnv
-			}
-
-			// Drop AUTO_COMPACT_WINDOW when no [1m] suffix present
-			if (![effectiveHaiku, effectiveSonnet, effectiveOpus, effectiveFable].some((id) => id?.endsWith('[1m]'))) {
-				delete mergedEnv.CLAUDE_CODE_AUTO_COMPACT_WINDOW
-			}
-
-			updates.env = mergedEnv
+		if (hasTokenWithoutUrl(effective)) {
+			logger.error(`Profile "${profileName}" would have a token but no URL.`)
+			logger.muted(TOKEN_WITHOUT_URL_HINT)
+			return
 		}
 
 		upsertProfile(profileName, updates)

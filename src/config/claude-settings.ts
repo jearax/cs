@@ -5,9 +5,11 @@ import { dirname } from 'pathe'
 import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
 import { resolveTokenForWrite } from '@/utils/format'
+import { isLoginModeProfile } from '@/utils/login-mode-profile'
+import { deriveOneMillionContextEnv } from '@/utils/one-million-context-env'
 import { safeJsonParse } from '@/utils/validation'
 
-/** Read claude settings.json, return {} if missing or corrupted */
+/** Returns {} when missing or corrupted */
 export const readClaudeSettings = (): ClaudeSettings => {
 	if (!existsSync(TOOL_SETTINGS_PATHS.claude)) {
 		return {}
@@ -19,7 +21,6 @@ export const readClaudeSettings = (): ClaudeSettings => {
 	return parsed ?? {}
 }
 
-/** Write claude settings.json (mode 0o600 for security) */
 export const writeClaudeSettings = (settings: ClaudeSettings): void => {
 	const dir = dirname(TOOL_SETTINGS_PATHS.claude)
 
@@ -35,23 +36,17 @@ export const writeClaudeSettings = (settings: ClaudeSettings): void => {
  *
  * Sources (in order, last wins):
  * - 7 ANTHROPIC_* fields (from profile)
- * - extraEnv (from cs.json global env + profile env)
+ * - `[1m]` defaults derived from the profile models
+ * - extraEnv (from cs.json global env + profile env), so user-set values win
  *
- * Side effect: any other keys previously in settings.env (e.g., env vars
- * written by a different profile) are removed. This provides profile env
- * isolation when switching profiles.
- *
- * When profile has no `[1m]` model suffix, CLAUDE_CODE_AUTO_COMPACT_WINDOW
- * is explicitly removed (overrides any value in extraEnv).
+ * Keys a previous profile wrote are dropped, keeping profiles isolated.
  */
 export const mergeClaudeSettings = (
 	settings: ClaudeSettings,
 	profile: Profile,
 	extraEnv: Record<string, string> = {}
 ): void => {
-	const profileHas1m = [profile.haiku, profile.sonnet, profile.opus, profile.fable].some((id) => id?.endsWith('[1m]'))
-
-	const env: ClaudeEnv = {
+	settings.env = {
 		ANTHROPIC_BASE_URL: profile.url,
 		ANTHROPIC_AUTH_TOKEN: resolveTokenForWrite(profile.token),
 		ANTHROPIC_DEFAULT_MODEL: profile.sonnet,
@@ -59,13 +54,33 @@ export const mergeClaudeSettings = (
 		ANTHROPIC_DEFAULT_SONNET_MODEL: profile.sonnet,
 		ANTHROPIC_DEFAULT_OPUS_MODEL: profile.opus,
 		ANTHROPIC_DEFAULT_FABLE_MODEL: profile.fable,
+		...deriveOneMillionContextEnv(profile),
 		...extraEnv
+	} satisfies ClaudeEnv
+}
+
+const CONNECTORS_SETTING_KEY = 'disableClaudeAiConnectors'
+
+/**
+ * Login-mode profiles turn off claude.ai connectors. cs only removes the key when it
+ * added it itself (tracked in `ownedKeys`); a value the user set is never touched.
+ */
+export const syncLoginModeSettings = (settings: ClaudeSettings, profile: Profile, ownedKeys: string[]): string[] => {
+	const owned = ownedKeys.includes(CONNECTORS_SETTING_KEY)
+	const others = ownedKeys.filter((key) => key !== CONNECTORS_SETTING_KEY)
+
+	if (isLoginModeProfile(profile)) {
+		if (owned || !(CONNECTORS_SETTING_KEY in settings)) {
+			settings[CONNECTORS_SETTING_KEY] = true
+			return [...others, CONNECTORS_SETTING_KEY]
+		}
+
+		return ownedKeys
 	}
 
-	// Drop stale AUTO_COMPACT_WINDOW when no [1m] suffix in profile
-	if (!profileHas1m) {
-		delete env.CLAUDE_CODE_AUTO_COMPACT_WINDOW
+	if (owned) {
+		delete settings[CONNECTORS_SETTING_KEY]
 	}
 
-	settings.env = env
+	return others
 }

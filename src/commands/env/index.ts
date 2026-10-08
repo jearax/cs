@@ -2,7 +2,6 @@ import { select, text } from '@clack/prompts'
 import { defineCommand } from 'citty'
 
 import { getAllProfiles, loadCsConfig, saveCsConfig } from '@/config/cs-config'
-import { DEFAULT_GLOBAL_ENV } from '@/config/defaults'
 import { displayBanner } from '@/utils/banner'
 import { logger } from '@/utils/logger'
 
@@ -130,13 +129,7 @@ export const envCommand = defineCommand({
 				env: newEnv
 			}
 		} else {
-			// Global env — merge DEFAULT_GLOBAL_ENV at save point
-			const existingEnv = config.env ?? {}
-
-			const newEnv = {
-				...DEFAULT_GLOBAL_ENV,
-				...existingEnv
-			}
+			const newEnv = { ...config.env }
 
 			if (action === 'set' && value !== undefined) {
 				newEnv[key] = value

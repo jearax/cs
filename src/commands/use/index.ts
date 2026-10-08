@@ -1,9 +1,11 @@
 import { defineCommand } from 'citty'
 
-import { mergeClaudeSettings, readClaudeSettings, writeClaudeSettings } from '@/config/claude-settings'
-import { loadCsConfig, setCurrentProfile } from '@/config/cs-config'
+import { activateProfile } from '@/config/activate-profile'
+import { findProfile, loadCsConfig } from '@/config/cs-config'
 import { maskToken } from '@/utils/format'
 import { logger } from '@/utils/logger'
+import { hasTokenWithoutUrl, TOKEN_WITHOUT_URL_HINT } from '@/utils/login-mode-profile'
+import { validateProfileName } from '@/utils/validation'
 
 export const useCommand = defineCommand({
 	meta: {
@@ -19,9 +21,17 @@ export const useCommand = defineCommand({
 		}
 	},
 	run: async (ctx) => {
-		const profileName = ctx.args.name as string
+		const profileName = (ctx.args.name as string).trim()
+
+		const nameError = validateProfileName(profileName)
+
+		if (nameError) {
+			logger.error(nameError)
+			return
+		}
+
 		const config = loadCsConfig()
-		const profile = config.claude[profileName]
+		const profile = findProfile(config, profileName)
 
 		if (!profile) {
 			logger.error(`Profile "${profileName}" not found.`)
@@ -29,25 +39,14 @@ export const useCommand = defineCommand({
 			return
 		}
 
-		// Build final env from cs.json (cs.env + profile.env). Profile wins.
-		const globalEnv = config.env ?? {}
-		const profileEnv = profile.env ?? {}
-
-		const finalEnv = {
-			...globalEnv,
-			...profileEnv
-		}
-
-		// Read settings + merge (DEFAULT_GLOBAL_ENV is part of finalEnv)
-		const claudeSettings = readClaudeSettings()
-
-		mergeClaudeSettings(claudeSettings, profile, finalEnv)
-		writeClaudeSettings(claudeSettings)
-
-		if (!setCurrentProfile(profileName)) {
-			logger.error(`Profile "${profileName}" could not be set as current.`)
+		// Legacy cs.json may predate the `cs config` guard
+		if (hasTokenWithoutUrl(profile)) {
+			logger.error(`Profile "${profileName}" has a token but no URL.`)
+			logger.muted(TOKEN_WITHOUT_URL_HINT)
 			return
 		}
+
+		activateProfile(config, profileName, profile)
 
 		logger.success(`Switched to profile "${profileName}".`)
 		logger.log(`  URL:    ${profile.url}`)
