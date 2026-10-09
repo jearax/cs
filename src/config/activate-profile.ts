@@ -1,7 +1,7 @@
 import {
 	mergeClaudeSettings,
 	readClaudeSettings,
-	syncLoginModeSettings,
+	syncConnectorSettings,
 	writeClaudeSettings
 } from '@/config/claude-settings'
 import { CsConfig, saveCsConfig } from '@/config/cs-config'
@@ -15,7 +15,7 @@ export const activateProfile = (config: CsConfig, name: string, profile: Profile
 		...config.env,
 		...profile.env
 	})
-	const ownedKeys = syncLoginModeSettings(claudeSettings, profile, config.ownedClaudeSettingsKeys ?? [])
+	const ownedKeys = syncConnectorSettings(claudeSettings, config.ownedClaudeSettingsKeys ?? [])
 
 	writeClaudeSettings(claudeSettings)
 

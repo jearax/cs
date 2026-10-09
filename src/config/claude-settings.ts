@@ -5,7 +5,6 @@ import { dirname } from 'pathe'
 import { TOOL_SETTINGS_PATHS } from '@/config/defaults'
 import { Profile, ClaudeSettings, ClaudeEnv } from '@/config/types'
 import { resolveTokenForWrite } from '@/utils/format'
-import { isLoginModeProfile } from '@/utils/login-mode-profile'
 import { deriveOneMillionContextEnv } from '@/utils/one-million-context-env'
 import { safeJsonParse } from '@/utils/validation'
 
@@ -61,26 +60,9 @@ export const mergeClaudeSettings = (
 
 const CONNECTORS_SETTING_KEY = 'disableClaudeAiConnectors'
 
-/**
- * Login-mode profiles turn off claude.ai connectors. cs only removes the key when it
- * added it itself (tracked in `ownedKeys`); a value the user set is never touched.
- */
-export const syncLoginModeSettings = (settings: ClaudeSettings, profile: Profile, ownedKeys: string[]): string[] => {
-	const owned = ownedKeys.includes(CONNECTORS_SETTING_KEY)
-	const others = ownedKeys.filter((key) => key !== CONNECTORS_SETTING_KEY)
+/** cs always disables claude.ai connectors, whatever auth mode the profile uses */
+export const syncConnectorSettings = (settings: ClaudeSettings, ownedKeys: string[]): string[] => {
+	settings[CONNECTORS_SETTING_KEY] = true
 
-	if (isLoginModeProfile(profile)) {
-		if (owned || !(CONNECTORS_SETTING_KEY in settings)) {
-			settings[CONNECTORS_SETTING_KEY] = true
-			return [...others, CONNECTORS_SETTING_KEY]
-		}
-
-		return ownedKeys
-	}
-
-	if (owned) {
-		delete settings[CONNECTORS_SETTING_KEY]
-	}
-
-	return others
+	return ownedKeys.includes(CONNECTORS_SETTING_KEY) ? ownedKeys : [...ownedKeys, CONNECTORS_SETTING_KEY]
 }

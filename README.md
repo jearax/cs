@@ -108,9 +108,9 @@ Then, later wins: `[1m]` defaults → global `cs env` → profile `cs env`.
 `cs use` **replaces** the `env` block rather than merging it, so keys left over from a
 previous profile are cleared. Profiles stay isolated from each other.
 
-For a profile with empty URL and token, `cs use` also sets top-level
-`"disableClaudeAiConnectors": true`. Switching to a profile with a URL or token removes it again,
-but only if `cs` added it — a value you set yourself is left alone.
+`cs use` also sets top-level `"disableClaudeAiConnectors": true` on every profile, overwriting
+the key if you set it yourself. There is no profile for which `cs` leaves claude.ai connectors
+enabled.
 
 ## `cs env`
 
