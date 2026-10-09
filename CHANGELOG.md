@@ -1,5 +1,11 @@
 # @jjuidev/cs
 
+## 0.3.1
+
+### Patch Changes
+
+- 64dbbaa: `cs use` now sets `"disableClaudeAiConnectors": true` for every profile, not only for profiles with an empty URL and token, and overwrites the key if you set it yourself.
+
 ## 0.3.0
 
 ### Minor Changes
