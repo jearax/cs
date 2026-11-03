@@ -1,0 +1,56 @@
+{
+	"private": true,
+	"name": "cs",
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json --resolve-full-paths",
+		"dev": "tsx watch src/main.ts",
+		"format": "pnpm lint:fix && prettier --write .",
+		"lint": "eslint \"{src,lib{,s},bin{,s},script{,s},tool{,s},config{,s},type{,s},test{,s},__test{s,}__,spec{,s},e2e}/**/*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\" \"*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\"",
+		"lint:fix": "eslint --fix \"{src,lib{,s},bin{,s},script{,s},tool{,s},config{,s},type{,s},test{,s},__test{s,}__,spec{,s},e2e}/**/*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\" \"*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\"",
+		"prepare": "husky",
+		"start": "node dist/main.js",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^21.2.4",
+		"@commitlint/config-conventional": "^21.2.4",
+		"@eslint/js": "^10.0.1",
+		"@types/node": "^24.19.2",
+		"eslint": "^10.13.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-autofix": "^2.2.0",
+		"eslint-plugin-import-x": "^4.17.1",
+		"eslint-plugin-prefer-arrow-functions": "^3.10.2",
+		"eslint-plugin-prettier": "^5.5.7",
+		"globals": "^17.13.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.6.0",
+		"prettier": "^3.9.10",
+		"prettier-package-json": "^2.8.0",
+		"tsc-alias": "^1.9.9",
+		"tsx": "^4.23.15",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.72.0",
+		"vitest": "5.0.5"
+	},
+	"engines": {
+		"node": ">=24.11.0"
+	},
+	"lint-staged": {
+		"{{src,lib{,s},bin{,s},script{,s},tool{,s},config{,s},type{,s},test{,s},__test{s,}__,spec{,s},e2e}/**/*,*}.{cjs,mjs,js,jsx,cts,mts,ts,tsx}": [
+			"eslint --fix"
+		],
+		"**/!(package).{json,md,yml,yaml}": [
+			"prettier --write"
+		],
+		"package.json": [
+			"prettier-package-json --write",
+			"prettier --write"
+		]
+	},
+	"packageManager": "pnpm@11.24.0"
+}
