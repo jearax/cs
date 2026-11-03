@@ -35,7 +35,7 @@ describe('cli program', () => {
 		});
 
 		expect(output).toContain('Usage: cs');
-		expect(output).toContain('Switch Claude Code between API providers and model sets');
+		expect(output).toContain('Claude code switch');
 		expect(output).toContain('Output the version number');
 		expect(output).toContain('Display help for command');
 		expect(process.exitCode).toBe(0);
@@ -55,8 +55,17 @@ describe('cli program', () => {
 			return main(['node', 'cs', 'inti'], { exitOverride: true });
 		});
 
-		expect(output).toContain('Error: too many arguments');
+		expect(output).toContain("Error: unknown command 'inti'");
 		expect(output).toContain('inti');
+		expect(process.exitCode).toBe(1);
+	});
+
+	it('has no help subcommand', async () => {
+		const output = await capture(process.stderr, () => {
+			return main(['node', 'cs', 'help'], { exitOverride: true });
+		});
+
+		expect(output).toContain("Error: unknown command 'help'");
 		expect(process.exitCode).toBe(1);
 	});
 

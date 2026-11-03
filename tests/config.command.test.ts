@@ -1,0 +1,230 @@
+import { readFile, stat } from 'node:fs/promises';
+import { stripVTControlCharacters } from 'node:util';
+
+import { describe, expect, it } from 'vitest';
+
+import { csConfigPath, launcherPath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
+
+import { runCli } from './support/cli';
+import { useTempHome } from './support/temp-home';
+
+useTempHome();
+
+const readJson = async (path: string): Promise<Record<string, unknown>> => {
+	return JSON.parse(await readFile(path, 'utf8')) as Record<string, unknown>;
+};
+
+describe('cs config', () => {
+	it('declares every paired option long-first in its help', async () => {
+		const { stdout } = await runCli(['config', '--help']);
+
+		const help = stripVTControlCharacters(stdout);
+
+		expect(help).toContain('--name, -n <name>');
+		expect(help).toContain('--url, -u <url>');
+		expect(help).toContain('--token, -t <token>');
+		expect(help).toContain('--sonnet, -s <model>');
+		expect(help).toContain('--opus, -o <model>');
+		expect(help).toContain('--fable, -f <model>');
+		expect(help).toContain('--oauth-token <token>');
+		expect(help).toContain('--haiku <model>');
+	});
+
+	it('shows the default profile when no flag is passed', async () => {
+		const { stdout, exitCode } = await runCli(['config']);
+
+		expect(stdout).toContain('Profile: default');
+		expect(stdout).toContain('https://api.anthropic.com');
+		expect(stdout).toContain('<not set>');
+		expect(exitCode).toBe(0);
+	});
+
+	it('creates a profile from the flags', async () => {
+		const { stdout, exitCode } = await runCli([
+			'config',
+			'-n',
+			'work',
+			'-u',
+			'https://example.com',
+			'-t',
+			'sk-secret-token',
+			'-s',
+			'claude-sonnet-5-5'
+		]);
+
+		expect(stdout).toContain('Profile "work" updated.');
+		expect(exitCode).toBe(0);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['url']).toBe('https://example.com');
+		expect(profile?.['token']).toBe('sk-secret-token');
+		expect(profile?.['haiku']).toBe('');
+	});
+
+	it('renders the profile artifact and the launcher', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const artifact = await readJson(profileArtifactPath('work'));
+		const env = artifact['env'] as Record<string, string>;
+
+		expect(env['ANTHROPIC_BASE_URL']).toBe('https://example.com');
+		expect(env['ANTHROPIC_AUTH_TOKEN']).toBe('sk-secret-token');
+		expect(artifact['disableClaudeAiConnectors']).toBe(true);
+
+		const launcher = await readFile(launcherPath('work'), 'utf8');
+
+		expect(launcher).toBe('#!/bin/sh\nexec claude --settings ~/.config/cs/profiles/work.json\n');
+
+		const info = await stat(launcherPath('work'));
+
+		expect(info.mode & 0o777).toBe(0o755);
+	});
+
+	it('keeps the fields that no flag touches', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+		await runCli(['config', '-n', 'work', '-s', 'claude-sonnet-5-5']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['url']).toBe('https://example.com');
+		expect(profile?.['token']).toBe('sk-secret-token');
+		expect(profile?.['sonnet']).toBe('claude-sonnet-5-5');
+	});
+
+	it('mirrors opus into fable when fable is omitted', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-o', 'claude-opus-5-5']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['opus']).toBe('claude-opus-5-5');
+		expect(profile?.['fable']).toBe('claude-opus-5-5');
+	});
+
+	it('keeps a fable model that is passed on its own', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-f', 'claude-fable-5-1']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['fable']).toBe('claude-fable-5-1');
+	});
+
+	it('denormalizes a claude model id and leaves other ids alone', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-o', 'claude-opus-4.7', '--haiku', 'gpt-4.1']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['opus']).toBe('claude-opus-4-7');
+		expect(profile?.['haiku']).toBe('gpt-4.1');
+	});
+
+	it('rejects a token without a url', async () => {
+		const { stderr, exitCode } = await runCli(['config', '-n', 'work', '-t', 'sk-secret-token']);
+
+		expect(stderr).toContain('would have a token but no URL');
+		expect(stderr).toContain('-u <url>');
+		expect(exitCode).toBe(1);
+	});
+
+	it('rejects an invalid profile name', async () => {
+		const { stderr, exitCode } = await runCli(['config', '-n', '../escape', '-u', 'https://example.com']);
+
+		expect(stderr).toContain('path separators');
+		expect(exitCode).toBe(1);
+	});
+
+	it('masks the token when a profile is shown', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const { stdout } = await runCli(['config', '-n', 'work']);
+
+		expect(stdout).toContain('Profile: work');
+		expect(stdout).toContain('sk-secre...oken');
+		expect(stdout).not.toContain('sk-secret-token');
+	});
+
+	it('fails when a profile that does not exist is shown', async () => {
+		const { stderr, exitCode } = await runCli(['config', '-n', 'ghost']);
+
+		expect(stderr).toContain('Profile "ghost" not found');
+		expect(exitCode).toBe(1);
+	});
+
+	it('writes the oauth token into the rendered env', async () => {
+		const { exitCode } = await runCli(['config', '-n', 'work', '--oauth-token', 'oauth-secret-token']);
+
+		expect(exitCode).toBe(0);
+
+		const artifact = await readJson(profileArtifactPath('work'));
+		const env = artifact['env'] as Record<string, string>;
+
+		expect(env['CLAUDE_CODE_OAUTH_TOKEN']).toBe('oauth-secret-token');
+	});
+
+	it('accepts an oauth token without a url', async () => {
+		const { stderr, exitCode } = await runCli(['config', '-n', 'work', '--oauth-token', 'oauth-secret-token']);
+
+		expect(stderr).not.toContain('token but no URL');
+		expect(exitCode).toBe(0);
+	});
+
+	it('rejects a token and an oauth token set together', async () => {
+		const { stderr, exitCode } = await runCli([
+			'config',
+			'-n',
+			'work',
+			'-u',
+			'https://example.com',
+			'-t',
+			'sk-secret-token',
+			'--oauth-token',
+			'oauth-secret-token'
+		]);
+
+		expect(stderr).toContain('cannot have both --token and --oauth-token');
+		expect(stderr).toContain('Clear one with -t "" or --oauth-token "".');
+		expect(exitCode).toBe(1);
+
+		const config = await readJson(csConfigPath());
+		const profiles = config['profiles'] as Record<string, Record<string, string>>;
+
+		expect(profiles['work']).toBeUndefined();
+	});
+
+	it('rejects an oauth token added to a profile that already has a token', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const { stderr, exitCode } = await runCli(['config', '-n', 'work', '--oauth-token', 'oauth-secret-token']);
+
+		expect(stderr).toContain('cannot have both --token and --oauth-token');
+		expect(exitCode).toBe(1);
+	});
+
+	it('accepts the oauth token once the api token is cleared', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const { exitCode } = await runCli(['config', '-n', 'work', '-t', '', '--oauth-token', 'oauth-secret-token']);
+
+		expect(exitCode).toBe(0);
+
+		const artifact = await readJson(profileArtifactPath('work'));
+		const env = artifact['env'] as Record<string, string>;
+
+		expect(env['ANTHROPIC_AUTH_TOKEN']).toBe('');
+		expect(env['CLAUDE_CODE_OAUTH_TOKEN']).toBe('oauth-secret-token');
+	});
+
+	it('masks the oauth token when a profile is shown', async () => {
+		await runCli(['config', '-n', 'work', '--oauth-token', 'oauth-secret-token']);
+
+		const { stdout } = await runCli(['config', '-n', 'work']);
+
+		expect(stdout).toContain('oauth-se...oken');
+		expect(stdout).not.toContain('oauth-secret-token');
+	});
+});

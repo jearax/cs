@@ -32,7 +32,12 @@ const ROLE_SUFFIXES: readonly (readonly [RegExp, readonly string[]])[] = [
 	[/^commands\/[^/]+\/checks\//, ['.check.ts']],
 	[/^commands\/[^/]+\/types\//, ['.type.ts']],
 	[/^commands\/[^/]+\/services\//, ['.service.ts']],
-	[/^commands\/[^/]+\//, ['.command.ts']]
+	[/^commands\/[^/]+\//, ['.command.ts']],
+	[/^modules\/[^/]+\/constants\//, ['.constant.ts']],
+	[/^modules\/[^/]+\/checks\//, ['.check.ts']],
+	[/^modules\/[^/]+\/types\//, ['.type.ts']],
+	[/^modules\/[^/]+\/services\//, ['.service.ts']],
+	[/^modules\/[^/]+\/utils\//, ['.util.ts']]
 ];
 
 const isCommandFile = (logicalPath: string): boolean => {
@@ -111,7 +116,8 @@ export const rules: readonly ArchitectureRule[] = [
 			'tests/fixtures/architecture/src/core/utils/legacy-helper.ts',
 			'tests/fixtures/architecture/src/commands/alpha/constants/legacy-helper.ts',
 			'tests/fixtures/architecture/src/commands/alpha/templates/legacy-helper.ts',
-			'tests/fixtures/architecture/src/commands/alpha/misplaced.service.ts'
+			'tests/fixtures/architecture/src/commands/alpha/misplaced.service.ts',
+			'tests/fixtures/architecture/src/modules/profiles/misplaced-helper.ts'
 		]
 	},
 	{
@@ -133,6 +139,16 @@ export const rules: readonly ArchitectureRule[] = [
 		allow: [],
 		reason: 'a command imports nothing from another command',
 		fixtures: ['tests/fixtures/architecture/src/commands/alpha/services/imports-other.service.ts']
+	},
+	{
+		id: 'module-imports-no-command',
+		scope: (logicalPath) => {
+			return logicalPath.startsWith('modules/');
+		},
+		pattern: /from\s+['"][^'"]*commands\//,
+		allow: [],
+		reason: 'a module is shared and imports no command',
+		fixtures: ['tests/fixtures/architecture/src/modules/profiles/services/imports-command.service.ts']
 	},
 	{
 		id: 'commander-in-command-files-only',

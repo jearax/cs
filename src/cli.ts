@@ -3,9 +3,18 @@ import { styleText } from 'node:util';
 
 import { Command, CommanderError, Help } from 'commander';
 
+import { registerAliasCommand } from '@/commands/alias/alias.command';
+import { registerConfigCommand } from '@/commands/config/config.command';
+import { registerCurrentCommand } from '@/commands/current/current.command';
+import { registerEnvCommand } from '@/commands/env/env.command';
+import { registerListCommand } from '@/commands/list/list.command';
+import { registerRemoveCommand } from '@/commands/remove/remove.command';
+import { registerResetCommand } from '@/commands/reset/reset.command';
+import { registerUseCommand } from '@/commands/use/use.command';
 import { PACKAGE } from '@/core/constants/package.constant';
 import { CliError } from '@/core/errors/cli.error';
-import { helpTitle, renderError } from '@/core/ui/terminal.ui';
+import { bannerText, showBanner } from '@/core/ui/banner.ui';
+import { helpTitle, isInteractive, renderError } from '@/core/ui/terminal.ui';
 
 export type ProgramOptions = {
 	exitOverride?: boolean;
@@ -41,12 +50,17 @@ export const createProgram = ({ exitOverride = false }: ProgramOptions = {}): Co
 		program.exitOverride();
 	}
 
+	// Before `.version()`, so the banner comes before the version it belongs to.
+	program.on('option:version', () => {
+		showBanner();
+	});
+
 	program
 		.name(PACKAGE.name)
 		.description(PACKAGE.description)
 		.version(PACKAGE.version, '--version, -v', 'Output the version number')
 		.helpOption('--help, -h', 'Display help for command')
-		.helpCommand('help [command]', 'Display help for command')
+		.helpCommand(false)
 		.showHelpAfterError(true)
 		.showSuggestionAfterError(true)
 		.allowExcessArguments(false);
@@ -108,6 +122,23 @@ export const createProgram = ({ exitOverride = false }: ProgramOptions = {}): Co
 				: `${description.slice(0, start)} ${styleText('dim', description.slice(start + 1))}`;
 		}
 	});
+
+	program.addHelpText('beforeAll', (context) => {
+		if (context.error || !isInteractive()) {
+			return '';
+		}
+
+		return `${bannerText()}\n`;
+	});
+
+	registerConfigCommand(program);
+	registerUseCommand(program);
+	registerCurrentCommand(program);
+	registerListCommand(program);
+	registerRemoveCommand(program);
+	registerResetCommand(program);
+	registerEnvCommand(program);
+	registerAliasCommand(program);
 
 	return program;
 };
