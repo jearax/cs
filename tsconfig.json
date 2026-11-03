@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"target": "ES2023",
 		"lib": ["ES2023"],
-		"module": "esnext",
-		"moduleResolution": "bundler",
+		"module": "Preserve",
+		"moduleResolution": "Bundler",
 		"paths": {
 			"@/*": ["./src/*"]
 		},
@@ -22,5 +22,6 @@
 		"skipLibCheck": true,
 		"noEmit": true
 	},
-	"include": ["src", "vitest.config.ts"]
+	"include": ["**/*"],
+	"exclude": ["node_modules", "dist", "coverage", ".harness"]
 }

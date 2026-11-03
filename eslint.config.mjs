@@ -172,6 +172,11 @@ const eslintConfig = defineConfig(
 		}
 	},
 
+	{
+		files: ['tests/fixtures/**/*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}'],
+		rules: { 'no-restricted-imports': 'off' }
+	},
+
 	eslintConfigPrettier
 );
 

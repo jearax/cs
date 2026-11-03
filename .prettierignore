@@ -7,3 +7,5 @@ bun.lock
 
 .harness/bin/
 .harness/core/
+.harness/plans/
+.agentkit/

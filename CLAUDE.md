@@ -51,3 +51,13 @@ Claim done only with commands you ran and output you saw. Report what changed, h
 what you did not check, and what harness knowledge changed. Commit harness changes with the work;
 the harness never commits.
 <!-- HARNESS:END -->
+
+# Project: cs
+
+`cs` (code switch) switches Claude Code between API providers and model sets through named
+profiles written into `~/.claude/settings.json`. It is a rewrite, not a port, of `cs-cli`.
+
+- Product intent, boundaries, terminology: `.harness/docs/cs-project-overview.md`
+- Old CLI behaviour map (read-only reference): `.harness/docs/cs-cli-feature-inventory.md`
+- Do not port a cs-cli workflow unless the user named it (decision 0001); packaging follows
+  jss-devtools (decision 0002).
