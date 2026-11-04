@@ -4,34 +4,26 @@ Short facts about this repository, injected at every session start. Size limits 
 `.harness/config.json` under `memory`.
 
 - One `- ` line per entry: a fact, convention, trap or user correction, and its reason.
-- Cite the source when there is one: `(src: path:line)`.
-- Longer than a line: write `.harness/docs/<topic>.md` and leave
-  `- <fact>. See .harness/docs/<topic>.md`.
+- Cite the source when one exists; longer than a line: write `.harness/docs/<topic>.md`.
 - Lessons, not logs: no dates, PR numbers or narration.
 - Never a secret. Name where it is kept.
 
-- `cs` (`@jjuidev/cs`, "Claude code switch") is the from-scratch refactor of `cs-cli` (`/Users/tandm/Documents/jearax/npm/cs-cli`, bun + citty): behaviour reference only, never copy code. See .harness/docs/cs-cli-feature-inventory.md and cs-project-overview.md.
+- `cs` (`@jjuidev/cs`) is the from-scratch refactor of `cs-cli` (`../cs-cli`): behaviour reference only, never copy code. Docs: .harness/docs/cs-cli-feature-inventory.md, cs-project-overview.md.
 - Builds with tsdown into one ESM bundle `dist/cli.mjs` (decision 0002); `tsc` only type-checks.
-- Working layout: planner plans/reviews, `cooker-glm` (sibling Herdr pane) implements via `/ak-cook` (first `cooker` retired at its limit). Dispatch without `--wait`; brief it to ping back `herdr agent prompt planner "<status>"`, then apply /antislop-code before reporting.
-- `/clear` via `agent prompt` returns `agent_prompt_stalled` (nothing to observe) — confirm the reset in the viewport before resending; a blind retry can wipe a mid-task session.
-- Only the user tests the real environment: planner/cooker smoke with tmp `HOME=$H` per command, fake tokens — never real `~/.config/cs`, `~/.claude`, or the real `claude` binary.
-- Inline `node -e` parsing a rendered profile trips the privacy-block hook (it reads `j.env` as a file path): put the check in a script file and pass its path.
-- `cs use <profile>` renders the profile files and writes the global settings; there is no `--file` flag, and `cs help` is not a command (decision 0007).
-- One token per profile: `cs config` rejects `--token` + `--oauth-token` together, and `token` without `url` stays blocked (decision 0008). See .harness/docs/auth-modes.md.
-- Command declarations: the domain noun for a positional (`use <profile>`, `remove <profile>`; `cs alias <name> <profile>` excepted) and the long form first for a flag (`--name, -n`, as jss-devtools) — the placeholder and the declaration surface in the help and in the error text.
-- `-h` is help everywhere; Haiku is set with `--haiku` only (decision 0005).
-- Tests live in `tests/`; `vitest.config.ts` includes `tests/**` and a global setup builds the bundle, so a green `pnpm test` also proves the build.
-- Layout rules are enforced by `tests/support/architecture-rules.ts`, one negative fixture per rule; the conventions live in .harness/docs/code-standards.md.
-- `scripts/package-info.d.mts` is required (`allowJs` off, so the `.mjs` imports fail TS7016 without it). Porting jss-devtools: copy its code, not its docs prose — they contradict.
-- Unknown arguments exit 1 "unknown command" now that the seven commands exist; `tests/cli.test.ts` asserts the wording.
-- `.prettierignore` excludes `.harness/plans/` and `.agentkit/` (their owners rewrite those tables); use `pnpm lint:fix` instead of `pnpm format` when only source changed.
-- `pnpm-workspace.yaml` sets `strictPeerDependencies` and `engineStrict`: an unresolvable peer fails the install instead of warning.
-- Profiles live in `~/.config/cs/cs.json` (0600) under the key `profiles`; a profile renders only `profiles/<name>.json` (decision 0013). Only `cs alias` creates a launcher; `bin/` mirrors the `aliases` map, which cs.json owns (decisions 0011, 0013).
-- `cs.json` is schema 1 and nothing is migrated; an old-shape file is kept at `cs.json.corrupt` for a manual conversion (decision 0012).
-- `cs.json` is rewritten from the fields cs owns (`toCsConfig`), so a hand-added key in that file is lost on the next save.
-- AgentKit owns `.harness/{docs,plans}/`; plans live at `.harness/plans/<YYMMDD>-<HHMM>-<slug>/` — the `active/`+`completed/` layout in CLAUDE.md's table and plans/README.md is stale, do not follow it.
-- Public repo: `github.com/jearax/cs` (curl-install script at `scripts/install.sh`); remote is HTTPS — SSH has no key on this machine. Commits: conventional format, no AI attribution.
-- Scaffold came from the local jss-devtools bin; published `@jjuidev/jss-devtools@0.6.4` has no create mode.
-- Terminal-only paths (the banner, the rc PATH write) need a real TTY: a fake pty reports 0 columns, so `isInteractive()` stays false; macOS `script` fails here, use a Python pty (see the cs-command-test skill).
-- `CLAUDE_CODE_OAUTH_TOKEN` may be ignored via the launcher path (`claude --settings` file): docs say oauth is ignored in project/local settings; verify with `/status` before trusting it — the global-write path is unaffected.
-- Antislop-code on the pending diff before each report (comments only), then re-run the gate.
+- `cooker-glm` (Herdr sibling) implements via /ak-cook: dispatch without `--wait`, pings back `herdr agent prompt planner "<status>"`, antislop-code before reporting.
+- `/clear` via `agent prompt` returns `agent_prompt_stalled` — confirm the reset in the viewport before resending; a retry can wipe a session.
+- Only the user tests the real environment: planner/cooker smoke with tmp `HOME=$H`, fake tokens — never real `~/.config/cs`, `~/.claude`, or the real `claude` binary.
+- Inline `node -e` with profile fields trips the privacy-block hook (it reads `j.env` as a path): use a script file with paths as args.
+- `cs use` renders the profile files and writes the global settings; no `--file` flag, no `cs help` command (decision 0007).
+- One token per profile: `cs config` rejects both tokens together, and `token` without `url` (decision 0008). See .harness/docs/auth-modes.md.
+- `-h` is help everywhere (decision 0005); unknown arguments exit 1 "unknown command" (`tests/cli.test.ts` asserts it).
+- Tests live in `tests/`; the vitest global setup builds the bundle, so a green `pnpm test` proves the build. Layout rules: `tests/support/architecture-rules.ts` (one negative fixture per rule); conventions in .harness/docs/code-standards.md.
+- `scripts/package-info.d.mts` is required (`allowJs` off, else TS7016). Port jss-devtools code, not its docs prose — they contradict.
+- `.prettierignore` excludes `.harness/plans/` and `.agentkit/`; use `pnpm lint:fix` instead of `pnpm format` when only source changed.
+- Profiles live in `~/.config/cs/cs.json` (0600) under the key `profiles`; a profile renders only `profiles/<name>.json` (decision 0013); only `cs alias` creates launchers (decision 0011).
+- `cs.json` is schema 1, nothing migrated — old shape kept at `cs.json.corrupt` (decision 0012); rewritten from the fields cs owns (`toCsConfig`), so hand-added keys are lost on save.
+- Plans live at `.harness/plans/<YYMMDD>-<HHMM>-<slug>/` — the `active/`+`completed/` layout in CLAUDE.md is stale, do not follow it.
+- Public repo `github.com/jearax/cs` (curl install at `scripts/install.sh`); HTTPS remote — no SSH key here. Commits: conventional, no AI attribution.
+- Banner and rc PATH write need a real TTY (fake pty reports 0 columns); macOS `script` fails — use a Python pty (see the cs-command-test skill).
+- `CLAUDE_CODE_OAUTH_TOKEN` may be ignored via the `claude --settings` launcher path; verify with `/status` — the global-write path is unaffected.
+- Antislop-code on the pending diff (comments only) before each report, then re-run the gate.

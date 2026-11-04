@@ -173,6 +173,9 @@ later `--verbose` cannot use it.
 An option declares the long form first (`--name, -n`), and an option with no short form declares the
 long form alone. The help table prints the declaration verbatim, so the order is what a user reads.
 
+A positional takes the domain noun it names (`use <profile>`, `remove <profile>`); the exception is
+`cs alias <name> <profile>`, whose two positionals are the launcher and its target.
+
 Only `src/cli.ts` builds the root command and only it owns the process: `process.exitCode`, the
 global handlers and the fatal error path. A command attaches to the program, it does not replace it.
 

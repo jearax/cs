@@ -9,9 +9,9 @@ this file records only what code cannot express. Decisions live in
 
 `cs` (package `@jjuidev/cs`) — **Claude code switch** — switches Claude Code between API providers
 and model sets through named profiles. `cs use` writes the global `~/.claude/settings.json`; the
-rendered profile files and `claude-<profile>` launchers are the `claude --settings` delivery
-(decision 0007). macOS-first: the old CLI was macOS-only by choice, and no cross-platform request
-exists.
+rendered profile files and the `claude-<alias>` launchers are the `claude --settings` delivery
+(decisions 0011, 0013 — only an alias creates a launcher). macOS-first: the old CLI was macOS-only
+by choice, and no cross-platform request exists.
 
 ## Confirmed boundaries
 
@@ -33,8 +33,9 @@ exists.
 - **Login mode** — a profile with an empty url and token; Claude Code then uses its own `/login`.
   A token without a URL is invalid in every mode.
 - **OAuth token** — the Claude Code login token of a profile (`--oauth-token`), written as
-  `CLAUDE_CODE_OAUTH_TOKEN`. It is independent of the API token and valid without a URL; both may
-  be set at once, since the precedence belongs to Claude Code.
+  `CLAUDE_CODE_OAUTH_TOKEN`. It is a login credential, not an API token, so it is valid without a
+  URL; it and the API token are mutually exclusive — one credential per profile (decision 0008).
+  Only a hand-edited `cs.json` can hold both, and the renderer passes them through as they are.
 - **`[1m]` marker** — a suffix on a model ID opting the profile into the 1M context window. It is
   a cs marker, never sent to the API, and its env defaults are derived at switch time, not stored.
 - **Owned keys** — the `settings.json` keys cs itself added (tracked in cs's own config); the only

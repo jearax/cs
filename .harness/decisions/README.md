@@ -25,3 +25,5 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0018 | Env keys render in an explicit semantic order, unknown keys appended alphabetically            | Accepted           | 2026-11-04 |
 | 0019 | The models catalog is removed — model IDs are provider-specific and drift                      | Accepted           | 2026-11-04 |
 | 0020 | cs config show on a missing name creates the profile with creation defaults — for every name   | Accepted           | 2026-11-04 |
+| 0021 | A corrupt settings.json is refused with an error, never overwritten                            | Accepted           | 2026-11-04 |
+| 0022 | GitHub Actions CI runs lint, typecheck and test on push and pull requests                      | Accepted           | 2026-11-04 |

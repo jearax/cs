@@ -11,17 +11,24 @@ active one to Claude Code in two ways:
 
 Both targets are produced by the same renderer, so a profile behaves the same either way.
 
-**macOS only.** Requires Node.js >= 24.11.0.
+**macOS-first.** Requires Node.js >= 24.11.0.
 
 ## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jearax/cs/main/scripts/install.sh | sh
+```
+
+The script checks git, Node.js >= 24.11 and pnpm, clones the repo, builds and copies `cs` to
+`~/.local/bin` (override with `CS_INSTALL_DIR`). Make sure that directory is on your PATH.
+
+Or from source:
 
 ```bash
 pnpm install
 pnpm build
 pnpm link
 ```
-
-`pnpm link` puts `cs` on your PATH.
 
 ## Quick start
 
@@ -71,7 +78,7 @@ cs config -n glm -u https://open.bigmodel.cn/api/anthropic -t <token> \
 
 Flags are partial — an omitted flag keeps its current value. A new profile is created from the
 current `default` record: every flag you do not pass inherits that field from `default`, so
-`cs config -n claude -t <key>` alone yields the official endpoint and model line with your key
+`cs config -n official -t <key>` alone yields the official endpoint and model line with your key
 (function default params). Updating an existing profile never re-inherits — omitted flags keep the
 profile's own values, and later changes to `default` do not propagate.
 
