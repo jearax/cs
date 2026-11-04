@@ -9,6 +9,10 @@ import type { CsConfig, Profile } from '@/modules/profiles/types/profile.type';
  * The global target. The keys the user keeps stay; the env block is replaced, so a profile
  * never inherits the env of the profile before it. settings.json is written first, so the
  * owned-key list never claims a key that was not written.
+ *
+ * disableClaudeAiConnectors is set unconditionally: the user needs connectors disabled even in
+ * mixed login+env scenarios (user, 2026-11-04). ownedClaudeSettingsKeys is a write-only
+ * ownership ledger — no consumer today, kept for a future un-owner path; do not remove.
  */
 export const writeProfileGlobally = async (config: CsConfig, name: string, profile: Profile): Promise<void> => {
 	const rendered = renderProfileSettings({

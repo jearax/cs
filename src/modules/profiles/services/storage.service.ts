@@ -161,13 +161,27 @@ export const getCurrentProfileName = (config: CsConfig): string | undefined => {
 	return name !== undefined && findProfile(config, name) !== undefined ? name : undefined;
 };
 
+/** The field order of a saved profile record; oauthToken and env are left out when unset. */
+const canonicalProfile = (record: Profile): Profile => {
+	return {
+		url: record.url,
+		token: record.token,
+		...(record.oauthToken === undefined ? {} : { oauthToken: record.oauthToken }),
+		haiku: record.haiku,
+		sonnet: record.sonnet,
+		opus: record.opus,
+		fable: record.fable,
+		...(record.env === undefined ? {} : { env: record.env })
+	};
+};
+
 export const upsertProfile = (config: CsConfig, name: string, update: ProfileUpdate): Profile => {
 	const existing = findProfile(config, name) ?? { ...EMPTY_PROFILE };
 
-	const merged: Profile = {
+	const merged = canonicalProfile({
 		...existing,
 		...update
-	};
+	});
 
 	writeProfile(config, name, merged);
 
