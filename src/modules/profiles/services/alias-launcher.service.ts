@@ -1,20 +1,16 @@
-import { access, chmod, mkdir, rm, writeFile } from 'node:fs/promises';
+import { access, rm } from 'node:fs/promises';
 
-import { binDir, launcherPath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
+import { atomicWriteFile } from '@/core/utils/atomic-write.util';
+import { launcherPath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
 import { buildLauncherContent } from '@/modules/profiles/services/launcher.service';
 
 const LAUNCHER_FILE_MODE = 0o755;
 
-/**
- * The alias launcher carries no secret: it names the artifact of the target profile, which
- * holds the token. The name it points at is the only thing an alias owns.
- */
+/** The launcher carries no secret: it names the artifact that holds the token. */
 export const renderAliasLauncher = async (aliasName: string, targetProfileName: string): Promise<string> => {
 	const path = launcherPath(aliasName);
 
-	await mkdir(binDir(), { recursive: true });
-	await writeFile(path, buildLauncherContent(targetProfileName), { mode: LAUNCHER_FILE_MODE });
-	await chmod(path, LAUNCHER_FILE_MODE);
+	await atomicWriteFile(path, buildLauncherContent(targetProfileName), LAUNCHER_FILE_MODE);
 
 	return path;
 };

@@ -183,6 +183,19 @@ describe('the cs config file', () => {
 
 		expect(corrupt).toBe('{ not json');
 	});
+
+	it('numbers the next corrupt backup instead of replacing it', async () => {
+		await writeRawConfig('{ not json a');
+
+		await loadCsConfig();
+
+		await writeRawConfig('{ not json b');
+
+		await loadCsConfig();
+
+		expect(await readFile(`${csConfigPath()}.corrupt`, 'utf8')).toBe('{ not json a');
+		expect(await readFile(`${csConfigPath()}.corrupt.1`, 'utf8')).toBe('{ not json b');
+	});
 });
 
 describe('the profile store', () => {
@@ -310,7 +323,7 @@ describe('the profile store', () => {
 		expect(Object.keys(saved.profiles['bare'] ?? {})).toEqual(['url', 'token', 'haiku', 'sonnet', 'opus', 'fable']);
 	});
 
-	it('writes the config back to disk', async () => {
+	it('writes the config back to disk through a rename', async () => {
 		const { config } = await loadCsConfig();
 
 		upsertProfile(config, 'work', { url: 'https://example.com' });
@@ -320,6 +333,7 @@ describe('the profile store', () => {
 		const written = JSON.parse(await readFile(csConfigPath(), 'utf8')) as CsConfig;
 
 		expect(written.profiles['work']?.url).toBe('https://example.com');
+		await expect(readFile(`${csConfigPath()}.tmp`)).rejects.toThrow();
 	});
 
 	it('keeps the config inside the cs home directory', async () => {

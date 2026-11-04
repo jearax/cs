@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { chmod, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { access, chmod, readFile, rename } from 'node:fs/promises';
 
+import { atomicWriteFile } from '@/core/utils/atomic-write.util';
+import { maskToken } from '@/core/utils/mask-token.util';
 import { csConfigPath } from '@/modules/profiles/constants/paths.constant';
 import { CURRENT_SCHEMA_VERSION, EMPTY_PROFILE, OFFICIAL_PROFILE } from '@/modules/profiles/constants/profile.constant';
 
@@ -23,9 +24,8 @@ export type CsConfigLoad = {
 export type LiveDefaultField = 'url' | 'token' | 'haiku' | 'sonnet' | 'opus' | 'fable';
 
 /**
- * The synchronous read for help rendering only: a field of the current `default` record. A
- * missing file, an empty value and a missing field all yield undefined — an empty default is
- * noise in a help line.
+ * The synchronous read for help rendering only: a missing file or field yields undefined, so an
+ * empty default never reaches a help line.
  */
 export const readLiveDefault = (field: LiveDefaultField): string | undefined => {
 	try {
@@ -33,7 +33,12 @@ export const readLiveDefault = (field: LiveDefaultField): string | undefined => 
 		const record = typeof raw.profiles === 'object' && raw.profiles !== null ? raw.profiles['default'] : undefined;
 		const value = record?.[field];
 
-		return value === undefined || value === '' ? undefined : value;
+		if (value === undefined || value === '') {
+			return undefined;
+		}
+
+		// A help line must never carry a raw credential, even as a "default".
+		return field === 'token' ? maskToken(value) : value;
 	} catch {
 		return undefined;
 	}
@@ -56,10 +61,7 @@ const createInitialConfig = (): CsConfig => {
 };
 
 const writeJsonFile = async (path: string, data: unknown): Promise<void> => {
-	await mkdir(dirname(path), { recursive: true });
-	await writeFile(path, JSON.stringify(data, null, 2), { mode: CONFIG_FILE_MODE });
-	// The mode of writeFile only applies when the file is created, so it is enforced here.
-	await chmod(path, CONFIG_FILE_MODE);
+	await atomicWriteFile(path, JSON.stringify(data, null, 2), CONFIG_FILE_MODE);
 };
 
 /** The key the profiles live under; a file without it is not a cs config. */
@@ -97,12 +99,33 @@ const toCsConfig = (raw: RawCsConfig, profiles: Record<string, Profile>, schemaV
 	return config;
 };
 
-/** A file cs cannot use is moved aside, so its content stays available for a manual conversion. */
-const keepUnreadableConfig = async (): Promise<void> => {
-	const corruptPath = `${csConfigPath()}.corrupt`;
+const fileExists = async (path: string): Promise<boolean> => {
+	try {
+		await access(path);
+
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+/**
+ * A file cs cannot use is moved aside, so its content stays available for a manual conversion. An
+ * older backup is never silently replaced: the next one gets a numbered name.
+ */
+const keepUnreadableConfig = async (): Promise<string> => {
+	let corruptPath = `${csConfigPath()}.corrupt`;
+	let suffix = 0;
+
+	while (await fileExists(corruptPath)) {
+		suffix += 1;
+		corruptPath = `${csConfigPath()}.corrupt.${suffix}`;
+	}
 
 	await rename(csConfigPath(), corruptPath);
 	await chmod(corruptPath, CONFIG_FILE_MODE);
+
+	return corruptPath;
 };
 
 export const loadCsConfig = async (): Promise<CsConfigLoad> => {
@@ -125,7 +148,7 @@ export const loadCsConfig = async (): Promise<CsConfigLoad> => {
 	const profiles = parsed === null ? undefined : readProfiles(parsed);
 
 	if (parsed === null || profiles === undefined) {
-		await keepUnreadableConfig();
+		const corruptPath = await keepUnreadableConfig();
 
 		const config = createInitialConfig();
 
@@ -134,7 +157,7 @@ export const loadCsConfig = async (): Promise<CsConfigLoad> => {
 		return {
 			config,
 			notices: [
-				`cs.json is not a cs config: it could not be parsed, or it has no \`profiles\` key. It was replaced by a default config and kept at ${csConfigPath()}.corrupt`
+				`cs.json is not a cs config: it could not be parsed, or it has no \`profiles\` key. It was replaced by a default config and kept at ${corruptPath}`
 			]
 		};
 	}

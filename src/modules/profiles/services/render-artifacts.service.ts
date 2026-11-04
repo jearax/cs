@@ -1,6 +1,5 @@
-import { chmod, mkdir, writeFile } from 'node:fs/promises';
-
-import { profileArtifactHomePath, profileArtifactPath, profilesDir } from '@/modules/profiles/constants/paths.constant';
+import { atomicWriteFile } from '@/core/utils/atomic-write.util';
+import { profileArtifactHomePath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
 import { renderAliasLaunchers } from '@/modules/profiles/services/alias-launcher.service';
 import { renderProfileSettings } from '@/modules/profiles/services/render.service';
 
@@ -28,9 +27,7 @@ export const renderProfileArtifacts = async (
 
 	const artifactPath = profileArtifactPath(profileName);
 
-	await mkdir(profilesDir(), { recursive: true });
-	await writeFile(artifactPath, JSON.stringify(rendered, null, 2), { mode: ARTIFACT_FILE_MODE });
-	await chmod(artifactPath, ARTIFACT_FILE_MODE);
+	await atomicWriteFile(artifactPath, JSON.stringify(rendered, null, 2), ARTIFACT_FILE_MODE);
 
 	// Every alias that points at this profile is re-rendered with it.
 	await renderAliasLaunchers(aliases, profileName);
