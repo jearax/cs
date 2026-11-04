@@ -12,8 +12,8 @@ const listDir = async (dir: string): Promise<string[]> => {
 };
 
 /**
- * Only a valid profile name is ever touched, so nothing else in the folder can be lost.
- * A profile leaves only its artifact behind: launchers belong to the aliases registry.
+ * Only a valid profile name is touched, so nothing else in the folder is lost. A profile leaves
+ * only its artifact behind: launchers belong to the aliases registry.
  */
 export const removeProfileArtifacts = async (profileName: string): Promise<void> => {
 	if (!isValidProfileName(profileName)) {
@@ -23,7 +23,6 @@ export const removeProfileArtifacts = async (profileName: string): Promise<void>
 	await rm(profileArtifactPath(profileName), { force: true });
 };
 
-/** The names cs renders: the profile files in the artifacts dir. */
 export const listArtifactProfiles = async (): Promise<string[]> => {
 	const names: string[] = [];
 

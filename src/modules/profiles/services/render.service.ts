@@ -60,10 +60,8 @@ const compareEnvKeys = (left: string, right: string): number => {
 };
 
 /**
- * The one renderer behind both delivery targets: the global settings.json and the profile
- * artifact. Sources, in order, last wins: the seven ANTHROPIC_* fields, the oauth token, the
- * derived `[1m]` defaults, then the global env and the profile env. The env keys are returned
- * in the explicit semantic order, user extras following alphabetically.
+ * The one renderer behind both delivery targets. Sources apply in order, last wins: the profile
+ * fields, the derived `[1m]` defaults, then the global env and the profile env.
  */
 export const renderProfileSettings = ({ profile, globalEnv }: RenderProfileInput): RenderedSettings => {
 	const env = {

@@ -9,9 +9,8 @@ export type EnvCatalogEntry = {
 export const ENV_DOCS_URL = 'https://code.claude.com/docs/en/env-vars';
 
 /**
- * Only the keys cs itself interacts with: the pair it derives from the `[1m]` markers. Everything
- * else is a pass-through — the docs reference in the SET flow covers it. Hand-curated, no
- * fetching at build time; the credential keys cs manages through profiles are never suggested.
+ * Only the keys cs interacts with; everything else is a pass-through the docs reference covers.
+ * Hand-curated — the credential keys cs manages through profiles are never suggested.
  */
 export const ENV_CATALOG: EnvCatalogEntry[] = [
 	{

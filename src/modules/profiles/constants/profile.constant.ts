@@ -1,8 +1,8 @@
 import type { Profile } from '@/modules/profiles/types/profile.type';
 
 /**
- * Schema version of `cs.json`. Version 1 is the baseline: the profiles live under `profiles` and
- * no older shape is migrated — a file in an old shape is converted by hand (decision 0012).
+ * Schema version of `cs.json`: 1 is the baseline, no older shape is migrated — an old-shape file
+ * is converted by hand (decision 0012).
  */
 export const CURRENT_SCHEMA_VERSION = 1;
 
