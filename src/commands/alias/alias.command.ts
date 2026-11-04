@@ -1,14 +1,21 @@
 import { runAlias } from '@/commands/alias/services/alias.service';
 import { showBinPathNotice } from '@/core/ui/artifact.ui';
+import { examplesText } from '@/core/ui/help-examples.ui';
 import { binHomePath } from '@/modules/profiles/constants/paths.constant';
 import { buildLauncherName } from '@/modules/profiles/services/launcher.service';
 
 import type { Command } from 'commander';
 
+const EXAMPLE_ROWS: ReadonlyArray<readonly [string, string]> = [
+	['cs alias planner work', 'Create claude-planner, running the work profile'],
+	['cs alias planner other', 'Re-point claude-planner to the other profile']
+];
+
 export const registerAliasCommand = (program: Command): void => {
 	program
 		.command('alias <name> <profile>')
-		.description('Point an alias launcher at a profile')
+		.description('Create or re-point the claude-<name> launcher: a standalone claude command bound to a profile')
+		.addHelpText('after', examplesText(EXAMPLE_ROWS))
 		.action(async (name: string, profile: string) => {
 			const result = await runAlias(name, profile);
 

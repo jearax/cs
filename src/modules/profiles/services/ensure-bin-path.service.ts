@@ -1,4 +1,4 @@
-import { appendFile, mkdir, readdir, readFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -92,9 +92,11 @@ export const ensureBinPath = async (options: EnsureBinPathOptions = {}): Promise
 
 	await mkdir(dirname(target.rcPath), { recursive: true });
 
-	const separator = content.length > 0 && !content.endsWith('\n') ? '\n' : '';
+	// The block carries its own blank separator line, so the rc content is normalized to exactly
+	// one trailing newline first — the gap stays one blank line whatever the file ended with.
+	const base = content === '' ? '' : `${content.endsWith('\n') ? content.slice(0, -1) : content}\n`;
 
-	await appendFile(target.rcPath, `${separator}${target.block}`);
+	await writeFile(target.rcPath, `${base}${target.block}`);
 
 	return {
 		status: 'added',

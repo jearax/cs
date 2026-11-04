@@ -16,7 +16,7 @@ import {
 
 import type { BinPathOutcome } from '@/core/ui/artifact.ui';
 import type { ProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
-import type { Profile, ProfileUpdate } from '@/modules/profiles/types/profile.type';
+import type { CsConfig, Profile, ProfileUpdate } from '@/modules/profiles/types/profile.type';
 
 export type ConfigOptions = {
 	name?: string;
@@ -31,7 +31,7 @@ export type ConfigOptions = {
 };
 
 export type ConfigResult = {
-	kind: 'shown' | 'updated';
+	kind: 'shown' | 'created' | 'updated';
 	name: string;
 	profile: Profile;
 	artifacts: ProfileArtifacts | null;
@@ -88,39 +88,13 @@ const buildUpdate = (options: ConfigOptions): ProfileUpdate => {
 	return update;
 };
 
-export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> => {
-	const name = options.name?.trim() || 'default';
-	const nameError = validateProfileName(name);
-
-	if (nameError !== null) {
-		throw new CliError(nameError);
-	}
-
-	const { config, notices } = await loadCsConfig();
-
-	if (!hasUpdates(options)) {
-		const profile = findProfile(config, name);
-
-		if (profile === undefined) {
-			throw new CliError(`Profile "${name}" not found.`, {
-				hint: `Create it: cs config -n ${name} -u <url>`,
-				commands: [`cs config -n ${name} -u <url> -t <token>`]
-			});
-		}
-
-		return {
-			kind: 'shown',
-			name,
-			profile,
-			artifacts: null,
-			notices,
-			binPath: null
-		};
-	}
-
-	const update = buildUpdate(options);
-	const existing = findProfile(config, name);
-
+/** The alias guard, the default-record merge and the credential guards — shared by every creation. */
+const applyProfileRecord = (
+	config: CsConfig,
+	name: string,
+	existing: Profile | undefined,
+	update: ProfileUpdate
+): Profile => {
 	// One name, one launcher: an alias may not shadow a profile of the same name, and the other
 	// way round. The alias name stays taken until its target profile is removed.
 	const aliasTarget = findAliasTarget(config, name);
@@ -156,7 +130,53 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 		});
 	}
 
-	const profile = upsertProfile(config, name, existing === undefined ? effective : update);
+	return upsertProfile(config, name, existing === undefined ? effective : update);
+};
+
+export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> => {
+	const name = options.name?.trim() || 'default';
+	const nameError = validateProfileName(name);
+
+	if (nameError !== null) {
+		throw new CliError(nameError);
+	}
+
+	const { config, notices } = await loadCsConfig();
+
+	if (!hasUpdates(options)) {
+		const existing = findProfile(config, name);
+
+		if (existing === undefined) {
+			// A show on a missing name creates the profile with the same defaults a creation
+			// applies, so the name always resolves (decision 0020).
+			const created = applyProfileRecord(config, name, undefined, {});
+
+			await saveCsConfig(config);
+			await renderProfileArtifacts(name, created, config.env ?? {}, config.aliases ?? {});
+
+			return {
+				kind: 'created',
+				name,
+				profile: created,
+				artifacts: null,
+				notices,
+				binPath: null
+			};
+		}
+
+		return {
+			kind: 'shown',
+			name,
+			profile: existing,
+			artifacts: null,
+			notices,
+			binPath: null
+		};
+	}
+
+	const update = buildUpdate(options);
+	const existing = findProfile(config, name);
+	const profile = applyProfileRecord(config, name, existing, update);
 
 	await saveCsConfig(config);
 

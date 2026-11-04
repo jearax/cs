@@ -30,11 +30,11 @@ describe('the rc target resolver', () => {
 		expect(resolveRcTarget(shell, HOME)).toBeNull();
 	});
 
-	it('builds a block of exactly two lines, the marker first', () => {
+	it('builds a block with a leading blank line, the marker first', () => {
 		const target = resolveRcTarget('/bin/zsh', HOME);
 
 		expect(RC_PATH_MARKER).toBe('# Added by @jjuidev/cs');
-		expect(target?.block).toBe(`${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+		expect(target?.block).toBe(`\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 		expect(
 			target?.block.split('\n').filter((line) => {
 				return line !== '';
@@ -45,7 +45,7 @@ describe('the rc target resolver', () => {
 	it('builds the fish block with the fish syntax', () => {
 		const target = resolveRcTarget('/usr/bin/fish', HOME);
 
-		expect(target?.block).toBe(`${RC_PATH_MARKER}\n${FISH_EXPORT_LINE}\n`);
+		expect(target?.block).toBe(`\n${RC_PATH_MARKER}\n${FISH_EXPORT_LINE}\n`);
 	});
 });
 

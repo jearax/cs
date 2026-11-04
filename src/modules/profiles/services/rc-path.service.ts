@@ -48,7 +48,7 @@ export const resolveRcTarget = (shell: string | undefined, home: string): RcTarg
 		rcPath: join(home, ...relativePath.split('/')),
 		rcDisplayPath: `~/${relativePath}`,
 		exportLine,
-		block: `${RC_PATH_MARKER}\n${exportLine}\n`
+		block: `\n${RC_PATH_MARKER}\n${exportLine}\n`
 	};
 };
 

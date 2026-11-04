@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { chmod, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
@@ -17,6 +18,25 @@ const CONFIG_FILE_MODE = 0o600;
 export type CsConfigLoad = {
 	config: CsConfig;
 	notices: string[];
+};
+
+export type LiveDefaultField = 'url' | 'token' | 'haiku' | 'sonnet' | 'opus' | 'fable';
+
+/**
+ * The synchronous read for help rendering only: a field of the current `default` record. A
+ * missing file, an empty value and a missing field all yield undefined — an empty default is
+ * noise in a help line.
+ */
+export const readLiveDefault = (field: LiveDefaultField): string | undefined => {
+	try {
+		const raw = JSON.parse(readFileSync(csConfigPath(), 'utf8')) as RawCsConfig;
+		const record = typeof raw.profiles === 'object' && raw.profiles !== null ? raw.profiles['default'] : undefined;
+		const value = record?.[field];
+
+		return value === undefined || value === '' ? undefined : value;
+	} catch {
+		return undefined;
+	}
 };
 
 const parseJson = <T>(content: string): T | null => {

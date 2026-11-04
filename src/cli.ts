@@ -15,6 +15,9 @@ import { PACKAGE } from '@/core/constants/package.constant';
 import { CliError } from '@/core/errors/cli.error';
 import { bannerText, showBanner } from '@/core/ui/banner.ui';
 import { helpTitle, isInteractive, renderError } from '@/core/ui/terminal.ui';
+import { readLiveDefault } from '@/modules/profiles/services/storage.service';
+
+import type { LiveDefaultField } from '@/modules/profiles/services/storage.service';
 
 export type ProgramOptions = {
 	exitOverride?: boolean;
@@ -97,13 +100,20 @@ export const createProgram = ({ exitOverride = false }: ProgramOptions = {}): Co
 				);
 			}
 
-			// A default value renders as a literal; a description renders as the note it is.
+			// A default value renders as a literal; a description renders as the note it is. A
+			// live default reads the current default record at render time — a missing or empty
+			// value renders nothing.
+			const csLiveDefault = (option as unknown as { csLiveDefault?: LiveDefaultField }).csLiveDefault;
+			const liveDefault = csLiveDefault === undefined ? undefined : readLiveDefault(csLiveDefault);
+
 			const defaultValue =
 				option.defaultValueDescription !== undefined
 					? option.defaultValueDescription
 					: option.defaultValue !== undefined
 						? JSON.stringify(option.defaultValue)
-						: undefined;
+						: liveDefault === undefined
+							? undefined
+							: JSON.stringify(liveDefault);
 
 			if (defaultValue !== undefined) {
 				parts.push(`default: ${defaultValue}`);

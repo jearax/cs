@@ -111,10 +111,15 @@ describe('cs alias', () => {
 		expect(exitCode).toBe(1);
 	});
 
-	it('shows both placeholders in its help', async () => {
+	it('shows both placeholders and the examples in its help', async () => {
 		const { stdout } = await runCli(['alias', '--help']);
+
+		const unwrapped = stdout.replace(/\n\s+/g, ' ');
 
 		expect(stdout).toContain('<name>');
 		expect(stdout).toContain('<profile>');
+		expect(unwrapped).toContain('Examples:');
+		expect(unwrapped).toContain('$ cs alias planner work');
+		expect(unwrapped).toContain('Re-point claude-planner to the other profile');
 	});
 });

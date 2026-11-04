@@ -47,7 +47,7 @@ cs current
 | `cs remove <profile>`       | Delete a profile (`default` cannot be removed)                     |
 | `cs reset`                  | Delete every profile except `default`, restore its official values |
 | `cs env`                    | Interactive editor for extra env vars (global or per-profile)      |
-| `cs alias <name> <profile>` | Point a role alias launcher at a profile                           |
+| `cs alias <name> <profile>` | Create or re-point the `claude-<name>` launcher for a profile      |
 
 Run `cs <command> --help` for full usage.
 
@@ -75,11 +75,14 @@ current `default` record: every flag you do not pass inherits that field from `d
 (function default params). Updating an existing profile never re-inherits — omitted flags keep the
 profile's own values, and later changes to `default` do not propagate.
 
+`cs config -n <name>` on a name that does not exist yet creates the profile with the `default`
+record and shows it — no flags needed. A name taken by an alias still refuses.
+
 Omit `--fable` and it mirrors `--opus`, since most providers expose no fable tier. Pass `--fable`
 to set it apart.
 
-A dotted model ID a provider prints — `claude-opus-4.7` — can be pasted as-is: cs config stores
-the dash form `claude-opus-4-7` (only `claude-` IDs; `gpt-4.1` keeps its dots). Append `[1m]` to
+A dotted model ID a provider prints — `claude-sonnet-5.5` — can be pasted as-is: cs config stores
+the dash form `claude-sonnet-5-5` (only `claude-` IDs; `gpt-4.1` keeps its dots). Append `[1m]` to
 any model ID for the 1M context window.
 
 Leave both `--url` and `--token` empty to let Claude Code use its own `/login` authentication. A
@@ -169,8 +172,9 @@ never stored, so a value you set with `cs env` always wins.
 ## `cs alias <name> <profile>`
 
 A role alias is a second launcher for a profile — `claude-planner`, `claude-cooker` — for the roles
-you launch by name. It points at the same rendered artifact, so an alias carries no secret of its
-own:
+you launch by name. Each alias is the launcher script `~/.config/cs/bin/claude-<name>`, a
+standalone `claude` command bound to that profile's rendered artifact, so an alias carries no
+secret of its own:
 
 ```bash
 cs alias planner work

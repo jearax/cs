@@ -26,6 +26,9 @@ const exists = async (path: string): Promise<boolean> => {
 
 describe('cs config', () => {
 	it('declares every paired option long-first in its help', async () => {
+		// The live defaults read the current default record, so cs.json must exist first.
+		await runCli(['config', '-n', 'seed', '-u', 'https://seed.example.com', '-t', 'sk-seed-token']);
+
 		const { stdout } = await runCli(['config', '--help']);
 
 		const help = stripVTControlCharacters(stdout);
@@ -41,10 +44,14 @@ describe('cs config', () => {
 
 		const unwrapped = help.replace(/\n\s+/g, ' ');
 
+		expect(unwrapped).toContain('Examples:');
 		expect(unwrapped).toContain('Profile name (default: "default")');
-		expect(unwrapped).toContain('Sonnet model (default: inherited from the default profile on creation)');
-		expect(unwrapped).toContain('Claude Code login token (CLAUDE_CODE_OAUTH_TOKEN)');
-		expect(unwrapped).toContain('stores claude-sonnet-4-7 (dot form converted)');
+		expect(unwrapped).toContain('Sonnet model (default: "claude-sonnet-5-5[1m]")');
+		expect(unwrapped).toContain('API base URL (default: "https://api.anthropic.com")');
+		expect(unwrapped).not.toContain('API token (default');
+		expect(unwrapped).toContain('Claude Code login token');
+		expect(unwrapped).toContain('Sonnet model; add [1m] if the model supports it and you need it');
+		expect(unwrapped).not.toContain('copied from the "default" profile on creation');
 		expect(unwrapped).not.toContain('Known models');
 	});
 
@@ -170,11 +177,41 @@ describe('cs config', () => {
 		expect(stdout).not.toContain('sk-secret-token');
 	});
 
-	it('fails when a profile that does not exist is shown', async () => {
-		const { stderr, exitCode } = await runCli(['config', '-n', 'ghost']);
+	it('creates a missing profile with the default record when shown', async () => {
+		const { stdout, exitCode } = await runCli(['config', '-n', 'claude']);
 
-		expect(stderr).toContain('Profile "ghost" not found');
+		expect(stdout).toContain('Profile "claude" created with the "default" record.');
+		expect(stdout).toContain('https://api.anthropic.com');
+		expect(exitCode).toBe(0);
+
+		const config = await readJson(csConfigPath());
+		const profiles = config['profiles'] as Record<string, Record<string, string>>;
+
+		expect(profiles['claude']).toEqual({
+			url: 'https://api.anthropic.com',
+			token: '',
+			haiku: 'claude-haiku-5-5[1m]',
+			sonnet: 'claude-sonnet-5-5[1m]',
+			opus: 'claude-opus-5-5[1m]',
+			fable: 'claude-fable-5-1[1m]'
+		});
+
+		expect(await exists(profileArtifactPath('claude'))).toBe(true);
+	});
+
+	it('refuses a show-create when the name is taken by an alias', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+		await runCli(['alias', 'planner', 'work']);
+
+		const { stderr, exitCode } = await runCli(['config', '-n', 'planner']);
+
+		expect(stderr).toContain('already used by an alias');
 		expect(exitCode).toBe(1);
+
+		const config = await readJson(csConfigPath());
+		const profiles = config['profiles'] as Record<string, Record<string, string>>;
+
+		expect(profiles['planner']).toBeUndefined();
 	});
 
 	it('writes the oauth token into the rendered env', async () => {

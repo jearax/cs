@@ -57,7 +57,7 @@ describe('the PATH service', () => {
 
 		expect(outcome?.status).toBe('added');
 		expect(outcome?.rcPath).toBe('~/.zshrc');
-		expect(await readRc(zshRc())).toBe(`${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+		expect(await readRc(zshRc())).toBe(`\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 	});
 
 	it('writes nothing on a second run', async () => {
@@ -75,7 +75,7 @@ describe('the PATH service', () => {
 		const outcome = await ensureBinPath(options);
 
 		expect(outcome?.status).toBe('marker-present');
-		expect(await readRc(zshRc())).toBe(`${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+		expect(await readRc(zshRc())).toBe(`\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 	});
 
 	it('skips the write when the bin dir is already in the PATH', async () => {
@@ -152,7 +152,7 @@ describe('the PATH service', () => {
 		expect(await readRc(zshRc())).toBe(existing);
 	});
 
-	it('keeps the content of the rc file and starts the block on its own line', async () => {
+	it('separates the block from the rc content with one blank line', async () => {
 		await seedLauncher();
 		await writeFile(zshRc(), 'export FOO=1');
 
@@ -165,7 +165,23 @@ describe('the PATH service', () => {
 
 		const content = await readRc(zshRc());
 
-		expect(content).toBe(`export FOO=1\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+		expect(content).toBe(`export FOO=1\n\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+	});
+
+	it('keeps one blank line when the rc file already ends with a newline', async () => {
+		await seedLauncher();
+		await writeFile(zshRc(), 'export FOO=1\n');
+
+		await ensureBinPath({
+			home: home(),
+			shell: '/bin/zsh',
+			path: '/usr/bin:/bin',
+			interactive: true
+		});
+
+		const content = await readRc(zshRc());
+
+		expect(content).toBe(`export FOO=1\n\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 	});
 
 	it('writes the fish block to the fish config', async () => {
@@ -181,7 +197,7 @@ describe('the PATH service', () => {
 		expect(outcome?.status).toBe('added');
 		expect(outcome?.rcPath).toBe('~/.config/fish/config.fish');
 		expect(await readRc(join(home(), '.config', 'fish', 'config.fish'))).toBe(
-			`${RC_PATH_MARKER}\nfish_add_path $HOME/.config/cs/bin\n`
+			`\n${RC_PATH_MARKER}\nfish_add_path $HOME/.config/cs/bin\n`
 		);
 	});
 });
@@ -257,7 +273,7 @@ describe('the PATH service through the CLI', () => {
 		const { stdout } = await runCli(['alias', 'planner', 'work']);
 
 		expect(stdout).toContain('PATH entry added to ~/.zshrc');
-		expect(await readRc(zshRc())).toBe(`${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
+		expect(await readRc(zshRc())).toBe(`\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 	});
 
 	it('prints the hint and touches nothing when the terminal is not interactive', async () => {
