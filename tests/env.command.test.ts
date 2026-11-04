@@ -33,6 +33,13 @@ describe('the env key', () => {
 });
 
 describe('cs env', () => {
+	it('refuses to run without an interactive terminal', async () => {
+		const { stderr, exitCode } = await runCli(['env']);
+
+		expect(stderr).toContain('needs an interactive terminal');
+		expect(exitCode).toBe(1);
+	});
+
 	it('sets a global value and rebuilds the rendered profiles', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 

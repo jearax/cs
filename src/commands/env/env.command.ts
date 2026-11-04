@@ -8,6 +8,7 @@ import {
 	listEnvProfiles,
 	setKeyOptionsGetter
 } from '@/commands/env/services/env.service';
+import { CliError } from '@/core/errors/cli.error';
 import { showBinPathNotice } from '@/core/ui/artifact.ui';
 
 import type { Command } from 'commander';
@@ -21,6 +22,11 @@ export const registerEnvCommand = (program: Command): void => {
 		.command('env')
 		.description('Configure env vars (global or per-profile)')
 		.action(async () => {
+			// The prompts read stdin: without a terminal they would hang or read EOF as a cancel.
+			if (process.stdin.isTTY !== true) {
+				throw new CliError('cs env needs an interactive terminal.');
+			}
+
 			const scope = await select({
 				message: 'Configure env for:',
 				options: [
@@ -116,12 +122,6 @@ export const registerEnvCommand = (program: Command): void => {
 						: 'Invalid. Must match [A-Z][A-Z0-9_]*';
 				}
 			});
-
-			if (!isText(key)) {
-				process.stdout.write('Aborted.\n');
-
-				return;
-			}
 
 			if (!isText(key)) {
 				process.stdout.write('Aborted.\n');

@@ -34,7 +34,6 @@ export type EnvKeyOption = {
 	hint?: string;
 };
 
-/** The SET suggestions: the curated catalog; the hint carries the description. */
 export const buildSetKeyOptions = (): EnvKeyOption[] => {
 	return ENV_CATALOG.map((entry) => {
 		return {
@@ -77,12 +76,10 @@ export const setKeyOptionsGetter = function (this: { userInput: string }): EnvKe
 	return buildSetKeyOptionsFor(this.userInput);
 };
 
-/** The docs hint printed before the SET prompt. */
 export const envDocsHintLine = (): string => {
 	return `Reference: ${ENV_DOCS_URL}`;
 };
 
-/** The UNSET suggestions: the keys actually set in the chosen scope, nothing else. */
 export const buildUnsetKeyOptions = async (scope: EnvScope, profileName?: string): Promise<EnvKeyOption[]> => {
 	const { config } = await loadCsConfig();
 

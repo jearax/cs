@@ -15,12 +15,18 @@ export const detectActiveProfile = (settings: ClaudeSettings, profiles: NamedPro
 
 	const url = env.ANTHROPIC_BASE_URL;
 
-	if (!url) {
-		return null;
-	}
-
 	for (const profile of profiles) {
 		if (profile.url !== url) {
+			continue;
+		}
+
+		// An oauth-only profile has no URL to differ by (decision 0008), so its oauth token alone
+		// identifies it — never the both-empty rule below.
+		if (isEmptyToken(profile.url)) {
+			if (profile.oauthToken !== undefined && profile.oauthToken === env.CLAUDE_CODE_OAUTH_TOKEN) {
+				return profile;
+			}
+
 			continue;
 		}
 

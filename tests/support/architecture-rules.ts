@@ -63,7 +63,7 @@ const hasRoleSuffix = (logicalPath: string): boolean => {
 };
 
 const importSpecifiers = (content: string): string[] => {
-	return [...content.matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)].map((match) => {
+	return [...content.matchAll(/(?:from|import)\s*\(?['"]([^'"]+)['"]/g)].map((match) => {
 		return match[1] ?? '';
 	});
 };

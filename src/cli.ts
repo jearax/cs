@@ -100,9 +100,8 @@ export const createProgram = ({ exitOverride = false }: ProgramOptions = {}): Co
 				);
 			}
 
-			// A default value renders as a literal; a description renders as the note it is. A
-			// live default reads the current default record at render time — a missing or empty
-			// value renders nothing.
+			// A defaultValue renders as a literal; a description renders as a note. A live default
+			// reads the current default record at render time.
 			const csLiveDefault = (option as unknown as { csLiveDefault?: LiveDefaultField }).csLiveDefault;
 			const liveDefault = csLiveDefault === undefined ? undefined : readLiveDefault(csLiveDefault);
 
@@ -166,7 +165,38 @@ export const reportFatalError = (error: unknown): void => {
 	process.exitCode = 1;
 };
 
+let processGuardsInstalled = false;
+
+/** Terminal-facing process guards: EPIPE from a hanging-up pipe reader, and the global escapes. */
+const installProcessGuards = (): void => {
+	if (processGuardsInstalled) {
+		return;
+	}
+
+	processGuardsInstalled = true;
+
+	// A pipe reader that hangs up mid-output (head, less, CI truncation) raises EPIPE on stdout.
+	// It is not a cs failure: end silently with the success code commander would have used.
+	process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+		if (error.code === 'EPIPE') {
+			process.exit(0);
+		}
+
+		throw error;
+	});
+
+	process.on('uncaughtException', (error) => {
+		reportFatalError(error);
+	});
+
+	process.on('unhandledRejection', (reason) => {
+		reportFatalError(reason);
+	});
+};
+
 export const main = async (argv: readonly string[] = process.argv, options: ProgramOptions = {}): Promise<void> => {
+	installProcessGuards();
+
 	const program = createProgram(options);
 
 	await runProgram(program, argv);

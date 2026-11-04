@@ -1,8 +1,6 @@
 import { runAlias } from '@/commands/alias/services/alias.service';
 import { showBinPathNotice } from '@/core/ui/artifact.ui';
 import { examplesText } from '@/core/ui/help-examples.ui';
-import { binHomePath } from '@/modules/profiles/constants/paths.constant';
-import { buildLauncherName } from '@/modules/profiles/services/launcher.service';
 
 import type { Command } from 'commander';
 
@@ -26,7 +24,7 @@ export const registerAliasCommand = (program: Command): void => {
 			const verb = result.replaced ? 're-pointed' : 'created';
 
 			process.stdout.write(`Alias "${result.name}" ${verb} at profile "${result.profile}".\n`);
-			process.stdout.write(`  Launcher: ${binHomePath()}/${buildLauncherName(result.name)}\n`);
+			process.stdout.write(`  Launcher: ${result.launcherPath}\n`);
 			showBinPathNotice(result.binPath);
 		});
 };
