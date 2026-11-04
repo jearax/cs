@@ -20,13 +20,18 @@ export const registerListCommand = (program: Command): void => {
 			const out = process.stdout;
 			const outStyle = { stream: out };
 
-			out.write(`${styleText('bold', 'Profiles:', outStyle)}\n\n`);
+			out.write(`${styleText(['bold', 'yellow'], 'Profiles:', outStyle)}\n\n`);
 
 			// One blank line between profile blocks, so a long list reads as records, not one wall.
-			// Fields sit one level under the profile name; labels are dim, the active name is bold.
+			// Sections are yellow, profile names cyan, labels and the rendered tag dim — the three
+			// layers stay tellable apart at a glance.
 			const blocks = result.entries.map((entry) => {
 				const marker = entry.active ? styleText('green', '*', outStyle) : ' ';
-				const name = entry.active ? styleText('bold', entry.name, outStyle) : entry.name;
+
+				const name = entry.active
+					? styleText(['bold', 'cyan'], entry.name, outStyle)
+					: styleText('cyan', entry.name, outStyle);
+
 				const tag = entry.rendered ? styleText('dim', ' [rendered]', outStyle) : '';
 
 				const fields = profileFieldLines(entry.profile).map((line) => {
@@ -48,10 +53,13 @@ export const registerListCommand = (program: Command): void => {
 			}
 
 			if (result.aliases.length > 0) {
-				out.write(`\n${styleText('bold', 'Aliases:', outStyle)}\n\n`);
+				out.write(`\n${styleText(['bold', 'yellow'], 'Aliases:', outStyle)}\n\n`);
 
 				for (const alias of result.aliases) {
-					out.write(`  ${alias.name} ${styleText('dim', '→', outStyle)} ${alias.profile}\n`);
+					const name = styleText('cyan', alias.name, outStyle);
+					const target = styleText('cyan', alias.profile, outStyle);
+
+					out.write(`  ${name} ${styleText('dim', '→', outStyle)} ${target}\n`);
 				}
 			}
 		});
