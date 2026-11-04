@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { csConfigBackupPath, csConfigPath } from '@/modules/profiles/constants/paths.constant';
+import { csConfigPath } from '@/modules/profiles/constants/paths.constant';
 import {
 	findAliasTarget,
 	findProfile,
@@ -46,22 +46,58 @@ describe('the cs config file', () => {
 		expect(info.mode & 0o777).toBe(0o600);
 	});
 
-	it('migrates a v1 config and keeps a backup of it', async () => {
+	it('is created with schema version 1', async () => {
+		const { config } = await loadCsConfig();
+
+		expect(config.schemaVersion).toBe(1);
+
+		const written = JSON.parse(await readFile(csConfigPath(), 'utf8')) as CsConfig;
+
+		expect(written.schemaVersion).toBe(1);
+	});
+
+	it('reads a file that keeps the profiles under the profiles key as it is', async () => {
+		const content = JSON.stringify({
+			schemaVersion: 3,
+			profiles: {
+				work: {
+					url: 'https://example.com',
+					token: 'sk-secret-token',
+					haiku: '',
+					sonnet: '',
+					opus: '',
+					fable: ''
+				}
+			},
+			currentProfile: 'work'
+		});
+
+		await writeRawConfig(content);
+
+		const { config, notices } = await loadCsConfig();
+
+		expect(notices).toEqual([]);
+		expect(config.profiles['work']?.url).toBe('https://example.com');
+		expect(config.profiles['work']?.token).toBe('sk-secret-token');
+		expect(config.currentProfile).toBe('work');
+
+		expect(await readFile(csConfigPath(), 'utf8')).toBe(content);
+		await expect(stat(join(dirname(csConfigPath()), 'cs.json.bak'))).rejects.toThrow();
+		await expect(stat(`${csConfigPath()}.corrupt`)).rejects.toThrow();
+	});
+
+	it('restamps a stale schema version to 1 on the next write', async () => {
 		await writeRawConfig(
 			JSON.stringify({
-				schemaVersion: 1,
-				claude: {
-					default: {
-						url: 'https://api.anthropic.com',
+				schemaVersion: 3,
+				profiles: {
+					work: {
+						url: 'https://example.com',
 						token: '',
 						haiku: '',
 						sonnet: '',
 						opus: '',
-						fable: '',
-						env: {
-							CLAUDE_CODE_DISABLE_1M_CONTEXT: '0',
-							CLAUDE_CODE_AUTO_COMPACT_WINDOW: '1000000'
-						}
+						fable: ''
 					}
 				}
 			})
@@ -69,25 +105,22 @@ describe('the cs config file', () => {
 
 		const { config } = await loadCsConfig();
 
-		expect(config.schemaVersion).toBe(3);
-		expect(config.profiles['default']?.env).toBeUndefined();
+		expect(config.schemaVersion).toBe(1);
 
-		const backup = JSON.parse(await readFile(csConfigBackupPath(), 'utf8')) as { schemaVersion?: number };
+		await saveCsConfig(config);
 
-		expect(backup.schemaVersion).toBe(1);
+		const written = JSON.parse(await readFile(csConfigPath(), 'utf8')) as CsConfig;
 
-		const info = await stat(csConfigBackupPath());
-
-		expect(info.mode & 0o777).toBe(0o600);
+		expect(written.schemaVersion).toBe(1);
 	});
 
-	it('keeps a user-set env value through the migration', async () => {
+	it('keeps the env of a profile as it is', async () => {
 		await writeRawConfig(
 			JSON.stringify({
 				schemaVersion: 1,
-				claude: {
-					default: {
-						url: '',
+				profiles: {
+					work: {
+						url: 'https://example.com',
 						token: '',
 						haiku: '',
 						sonnet: '',
@@ -104,110 +137,38 @@ describe('the cs config file', () => {
 
 		const { config } = await loadCsConfig();
 
-		expect(config.profiles['default']?.env).toEqual({ HTTP_PROXY: 'http://proxy' });
+		expect(config.profiles['work']?.env).toEqual({
+			CLAUDE_CODE_AUTO_COMPACT_WINDOW: '1000000',
+			HTTP_PROXY: 'http://proxy'
+		});
 	});
 
-	it('migrates a v2 config from the old key to the profiles key', async () => {
-		await writeRawConfig(
-			JSON.stringify({
-				schemaVersion: 2,
-				claude: {
-					default: {
-						url: 'https://api.anthropic.com',
-						token: '',
-						haiku: 'claude-haiku-5-5[1m]',
-						sonnet: 'claude-sonnet-5-5[1m]',
-						opus: 'claude-opus-5-5[1m]',
-						fable: 'claude-fable-5-1[1m]'
-					},
-					work: {
-						url: 'https://example.com',
-						token: 'sk-secret-token',
-						haiku: '',
-						sonnet: '',
-						opus: '',
-						fable: ''
-					}
-				},
-				currentProfile: 'work'
-			})
-		);
-
-		const { config } = await loadCsConfig();
-
-		expect(config.schemaVersion).toBe(3);
-		expect(config.profiles['work']?.url).toBe('https://example.com');
-		expect(config.profiles['work']?.token).toBe('sk-secret-token');
-		expect(config.currentProfile).toBe('work');
-		expect(findProfile(config, 'default')?.opus).toBe('claude-opus-5-5[1m]');
-	});
-
-	it('writes the migrated config under the new key and keeps the old file as the backup', async () => {
-		await writeRawConfig(
-			JSON.stringify({
-				schemaVersion: 2,
-				claude: {
-					work: {
-						url: 'https://example.com',
-						token: 'sk-secret-token',
-						haiku: '',
-						sonnet: '',
-						opus: '',
-						fable: ''
-					}
+	it('does not migrate a file that keeps the profiles under the old key', async () => {
+		const content = JSON.stringify({
+			schemaVersion: 2,
+			claude: {
+				work: {
+					url: 'https://example.com',
+					token: 'sk-secret-token',
+					haiku: '',
+					sonnet: '',
+					opus: '',
+					fable: ''
 				}
-			})
-		);
+			}
+		});
 
-		await loadCsConfig();
+		await writeRawConfig(content);
 
-		const written = JSON.parse(await readFile(csConfigPath(), 'utf8')) as {
-			schemaVersion?: number;
-			profiles?: Record<string, { url: string }>;
-			claude?: unknown;
-		};
+		const { config, notices } = await loadCsConfig();
 
-		expect(written.schemaVersion).toBe(3);
-		expect(written.profiles?.['work']?.url).toBe('https://example.com');
-		expect(written.claude).toBeUndefined();
+		expect(notices).toHaveLength(1);
+		expect(Object.keys(config.profiles)).toEqual(['default']);
 
-		const backup = JSON.parse(await readFile(csConfigBackupPath(), 'utf8')) as {
-			schemaVersion?: number;
-			claude?: Record<string, { url: string }>;
-		};
+		const kept = await readFile(`${csConfigPath()}.corrupt`, 'utf8');
 
-		expect(backup.schemaVersion).toBe(2);
-		expect(backup.claude?.['work']?.url).toBe('https://example.com');
-
-		const info = await stat(csConfigBackupPath());
-
-		expect(info.mode & 0o777).toBe(0o600);
-	});
-
-	it('leaves a v3 config untouched', async () => {
-		await writeRawConfig(
-			JSON.stringify({
-				schemaVersion: 3,
-				profiles: {
-					work: {
-						url: 'https://example.com',
-						token: 'sk-secret-token',
-						haiku: '',
-						sonnet: '',
-						opus: '',
-						fable: ''
-					}
-				},
-				currentProfile: 'work'
-			})
-		);
-
-		const { config } = await loadCsConfig();
-
-		expect(config.schemaVersion).toBe(3);
-		expect(config.profiles['work']?.url).toBe('https://example.com');
-
-		await expect(readFile(csConfigBackupPath(), 'utf8')).rejects.toThrow();
+		expect(JSON.parse(kept)).toEqual(JSON.parse(content));
+		await expect(stat(join(dirname(csConfigPath()), 'cs.json.bak'))).rejects.toThrow();
 	});
 
 	it('replaces an unreadable config and keeps it next to the new one', async () => {

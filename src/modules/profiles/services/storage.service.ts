@@ -1,7 +1,7 @@
-import { chmod, copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
-import { csConfigBackupPath, csConfigPath } from '@/modules/profiles/constants/paths.constant';
+import { csConfigPath } from '@/modules/profiles/constants/paths.constant';
 import { CURRENT_SCHEMA_VERSION, EMPTY_PROFILE, OFFICIAL_PROFILE } from '@/modules/profiles/constants/profile.constant';
 
 import type {
@@ -42,48 +42,16 @@ const writeJsonFile = async (path: string, data: unknown): Promise<void> => {
 	await chmod(path, CONFIG_FILE_MODE);
 };
 
-const isLegacyAutoEnvEntry = (key: string, value: string): boolean => {
-	return key === 'CLAUDE_CODE_DISABLE_1M_CONTEXT' || (key === 'CLAUDE_CODE_AUTO_COMPACT_WINDOW' && value === '1000000');
-};
-
-/** The v3 key the profiles live under; a v2 file keeps them under `claude`. */
+/** The key the profiles live under; a file without it is not a cs config. */
 const readProfiles = (raw: RawCsConfig): Record<string, Profile> | undefined => {
 	if (typeof raw.profiles === 'object' && raw.profiles !== null) {
 		return raw.profiles;
 	}
 
-	if (typeof raw.claude === 'object' && raw.claude !== null) {
-		return raw.claude;
-	}
-
 	return undefined;
 };
 
-/**
- * The v1 step: the `[1m]` auto-env that `cs config` used to persist is derived at render time.
- * A legacy auto-env left in `profile.env` would override the `[1m]` defaults of the render.
- */
-const stripLegacyAutoEnv = (profiles: Record<string, Profile>): void => {
-	for (const profile of Object.values(profiles)) {
-		if (!profile.env) {
-			continue;
-		}
-
-		const userEnv = Object.fromEntries(
-			Object.entries(profile.env).filter(([key, value]) => {
-				return !isLegacyAutoEnvEntry(key, value);
-			})
-		);
-
-		if (Object.keys(userEnv).length > 0) {
-			profile.env = userEnv;
-		} else {
-			delete profile.env;
-		}
-	}
-};
-
-/** Only the keys cs owns are carried over, so the old key never survives a migration. */
+/** Only the keys cs owns are carried over, so a key cs does not own never survives a rewrite. */
 const toCsConfig = (raw: RawCsConfig, profiles: Record<string, Profile>, schemaVersion: number): CsConfig => {
 	const config: CsConfig = {
 		schemaVersion,
@@ -109,11 +77,7 @@ const toCsConfig = (raw: RawCsConfig, profiles: Record<string, Profile>, schemaV
 	return config;
 };
 
-const backupCsConfig = async (): Promise<void> => {
-	await copyFile(csConfigPath(), csConfigBackupPath());
-	await chmod(csConfigBackupPath(), CONFIG_FILE_MODE);
-};
-
+/** A file cs cannot use is moved aside, so its content stays available for a manual conversion. */
 const keepUnreadableConfig = async (): Promise<void> => {
 	const corruptPath = `${csConfigPath()}.corrupt`;
 
@@ -149,28 +113,14 @@ export const loadCsConfig = async (): Promise<CsConfigLoad> => {
 
 		return {
 			config,
-			notices: [`cs.json could not be read; it was replaced by a default config and kept at ${csConfigPath()}.corrupt`]
+			notices: [
+				`cs.json is not a cs config: it could not be parsed, or it has no \`profiles\` key. It was replaced by a default config and kept at ${csConfigPath()}.corrupt`
+			]
 		};
 	}
 
-	const version = parsed.schemaVersion ?? 1;
-
-	if (version < 2) {
-		stripLegacyAutoEnv(profiles);
-	}
-
-	const config = toCsConfig(parsed, profiles, Math.max(version, CURRENT_SCHEMA_VERSION));
-
-	if (version >= CURRENT_SCHEMA_VERSION) {
-		return {
-			config,
-			notices: []
-		};
-	}
-
-	// The file is backed up before it is rewritten, so the old shape stays recoverable.
-	await backupCsConfig();
-	await saveCsConfig(config);
+	// The stamp is always the baseline cs writes, so a stale higher number never survives a save.
+	const config = toCsConfig(parsed, profiles, CURRENT_SCHEMA_VERSION);
 
 	return {
 		config,

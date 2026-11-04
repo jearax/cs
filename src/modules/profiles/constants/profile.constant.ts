@@ -1,12 +1,10 @@
 import type { Profile } from '@/modules/profiles/types/profile.type';
 
 /**
- * Schema history:
- * - 1 (implicit): `cs config` persisted the `[1m]` auto-env into every `profile.env`
- * - 2: the auto-env is derived at render time; `profile.env` holds only user-set values
- * - 3: the profiles live under `profiles`; a v2 file keeps them under `claude`
+ * Schema version of `cs.json`. Version 1 is the baseline: the profiles live under `profiles` and
+ * no older shape is migrated — a file in an old shape is converted by hand (decision 0012).
  */
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 1;
 
 export const CONNECTORS_SETTING_KEY = 'disableClaudeAiConnectors';
 
