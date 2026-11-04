@@ -2,7 +2,12 @@ import { readFile } from 'node:fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
-import { applyEnvChange, ENV_KEY_PATTERN } from '@/commands/env/services/env.service';
+import {
+	applyEnvChange,
+	buildSetKeyOptions,
+	buildUnsetKeyOptions,
+	ENV_KEY_PATTERN
+} from '@/commands/env/services/env.service';
 import { csConfigPath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
 
 import { runCli } from './support/cli';
@@ -74,5 +79,59 @@ describe('cs env', () => {
 		await expect(applyEnvChange('profile', 'ghost', 'set', 'HTTP_PROXY', 'http://proxy')).rejects.toThrow(
 			'Profile "ghost" not found'
 		);
+	});
+});
+
+describe('the env key suggestions', () => {
+	it('builds the SET options from the curated catalog', () => {
+		const options = buildSetKeyOptions();
+
+		expect(options.length).toBeGreaterThan(0);
+		expect(
+			options.every((option) => {
+				return option.label === option.value;
+			})
+		).toBe(true);
+
+		const managed = options.find((option) => {
+			return option.value === 'CLAUDE_CODE_DISABLE_1M_CONTEXT';
+		});
+
+		expect(managed?.hint).toContain('overrides cs');
+
+		const plain = options.find((option) => {
+			return option.value === 'CLAUDE_CODE_MAX_OUTPUT_TOKENS';
+		});
+
+		expect(plain?.hint).not.toContain('overrides cs');
+	});
+
+	it('never suggests the credential keys cs manages through profiles', () => {
+		const values = buildSetKeyOptions().map((option) => {
+			return option.value;
+		});
+
+		expect(values).not.toContain('ANTHROPIC_BASE_URL');
+		expect(values).not.toContain('ANTHROPIC_AUTH_TOKEN');
+	});
+
+	it('builds the UNSET options from the keys actually set in the scope', async () => {
+		await applyEnvChange('global', undefined, 'set', 'HTTP_PROXY', 'http://proxy');
+		await applyEnvChange('profile', 'default', 'set', 'HTTPS_PROXY', 'http://secure');
+
+		expect(
+			(await buildUnsetKeyOptions('global')).map((option) => {
+				return option.value;
+			})
+		).toEqual(['HTTP_PROXY']);
+		expect(
+			(await buildUnsetKeyOptions('profile', 'default')).map((option) => {
+				return option.value;
+			})
+		).toEqual(['HTTPS_PROXY']);
+	});
+
+	it('builds no UNSET options when the scope holds no keys', async () => {
+		expect(await buildUnsetKeyOptions('global')).toEqual([]);
 	});
 });

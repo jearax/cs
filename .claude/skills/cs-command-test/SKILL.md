@@ -56,6 +56,7 @@ metadata:
   `~/.claude` together; a path built at import time would escape the temp HOME.
 - The capture helper returns the captured text: nest the stdout capture inside the stderr one and
   assign the outer result, or stderr comes back empty while the CLI did write to it.
+- `jq keys` sorts alphabetically — verify a JSON file's real key order with `jq keys_unsorted`.
 - Output that shows on a terminal only (the banner, the `cs env` prompts) needs a fake terminal
   in-process: `Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true })`,
   the same for `columns` (80), and `delete process.env['CI']`. `isInteractive()` requires all three,

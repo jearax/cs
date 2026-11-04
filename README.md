@@ -47,6 +47,7 @@ cs current
 | `cs remove <profile>`       | Delete a profile (`default` cannot be removed)                     |
 | `cs reset`                  | Delete every profile except `default`, restore its official values |
 | `cs env`                    | Interactive editor for extra env vars (global or per-profile)      |
+| `cs models`                 | List the known model IDs                                           |
 | `cs alias <name> <profile>` | Point a role alias launcher at a profile                           |
 
 Run `cs <command> --help` for full usage.
@@ -209,6 +210,16 @@ alias claude-planner='claude --settings ~/.config/cs/profiles/work.json'
 
 `cs env` is interactive: pick the scope (global or one profile), the action (set or unset), the
 key and the value. A key must match `[A-Z][A-Z0-9_]*`. The value is never printed back.
+
+Setting a key suggests a curated catalog of well-known Claude Code env vars (each with a
+one-line description; the keys cs derives from `[1m]` carry an "overrides cs" note) — free-text
+typing stays allowed. Removing a key suggests only the keys actually set in the chosen scope.
+
+## `cs models`
+
+Lists the model IDs cs knows, with the paste note: a dotted ID such as `claude-opus-4.7` is
+normalized to the dash form `claude-opus-4-7`, and `[1m]` opts a profile into the 1M context
+window. `cs config` show prints the same list as a `Known models:` hint line.
 
 ## Where things live
 

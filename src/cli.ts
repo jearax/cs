@@ -8,6 +8,7 @@ import { registerConfigCommand } from '@/commands/config/config.command';
 import { registerCurrentCommand } from '@/commands/current/current.command';
 import { registerEnvCommand } from '@/commands/env/env.command';
 import { registerListCommand } from '@/commands/list/list.command';
+import { registerModelsCommand } from '@/commands/models/models.command';
 import { registerRemoveCommand } from '@/commands/remove/remove.command';
 import { registerResetCommand } from '@/commands/reset/reset.command';
 import { registerUseCommand } from '@/commands/use/use.command';
@@ -139,6 +140,7 @@ export const createProgram = ({ exitOverride = false }: ProgramOptions = {}): Co
 	registerResetCommand(program);
 	registerEnvCommand(program);
 	registerAliasCommand(program);
+	registerModelsCommand(program);
 
 	return program;
 };

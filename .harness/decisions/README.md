@@ -21,3 +21,4 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0014 | The profile name `claude` auto-seeds from the default record when missing, and stays removable | Superseded by 0015 | 2026-11-04 |
 | 0015 | Creating a profile fills unspecified fields from the default record (function default params)  | Accepted           | 2026-11-04 |
 | 0016 | Env keys render in alphabetical order — profile artifact and global write alike                | Accepted           | 2026-11-04 |
+| 0017 | Suggestion UX: clack autocomplete for env keys and a curated models catalog                    | Accepted           | 2026-11-04 |

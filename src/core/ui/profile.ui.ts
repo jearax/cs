@@ -1,4 +1,5 @@
 import { maskToken } from '@/core/utils/mask-token.util';
+import { KNOWN_MODELS } from '@/modules/profiles/constants/models.constant';
 
 /** The fields a profile view needs; a profile satisfies it structurally. */
 export type ProfileView = {
@@ -25,4 +26,9 @@ export const profileFieldLines = (profile: ProfileView): string[] => {
 
 export const profileHeadingLines = (label: string, name: string, profile: ProfileView): string[] => {
 	return [`${label}: ${name}`, ...profileFieldLines(profile)];
+};
+
+/** The suggestion under the profile fields: the curated model IDs and the 1M marker. */
+export const knownModelsLine = (): string => {
+	return `  Known models: ${KNOWN_MODELS.join(', ')} — append [1m] for the 1M context window`;
 };

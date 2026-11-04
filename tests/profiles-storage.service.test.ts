@@ -263,6 +263,53 @@ describe('the profile store', () => {
 		expect(config.currentProfile).toBe('default');
 	});
 
+	it('saves profile records in canonical field order', async () => {
+		const { config } = await loadCsConfig();
+
+		upsertProfile(config, 'full', {
+			url: 'https://example.com',
+			token: 'sk-token',
+			oauthToken: 'oauth-secret-token',
+			env: { HTTP_PROXY: 'http://proxy' }
+		});
+		upsertProfile(config, 'no-oauth', {
+			url: 'https://example.com',
+			token: 'sk-token',
+			env: { HTTP_PROXY: 'http://proxy' }
+		});
+		upsertProfile(config, 'bare', {
+			url: 'https://example.com',
+			token: 'sk-token'
+		});
+
+		await saveCsConfig(config);
+
+		const saved = JSON.parse(await readFile(csConfigPath(), 'utf8')) as {
+			profiles: Record<string, Record<string, unknown>>;
+		};
+
+		expect(Object.keys(saved.profiles['full'] ?? {})).toEqual([
+			'url',
+			'token',
+			'oauthToken',
+			'haiku',
+			'sonnet',
+			'opus',
+			'fable',
+			'env'
+		]);
+		expect(Object.keys(saved.profiles['no-oauth'] ?? {})).toEqual([
+			'url',
+			'token',
+			'haiku',
+			'sonnet',
+			'opus',
+			'fable',
+			'env'
+		]);
+		expect(Object.keys(saved.profiles['bare'] ?? {})).toEqual(['url', 'token', 'haiku', 'sonnet', 'opus', 'fable']);
+	});
+
 	it('writes the config back to disk', async () => {
 		const { config } = await loadCsConfig();
 

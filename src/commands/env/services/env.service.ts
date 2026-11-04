@@ -1,4 +1,5 @@
 import { CliError } from '@/core/errors/cli.error';
+import { ENV_CATALOG } from '@/modules/profiles/constants/env-catalog.constant';
 import { listArtifactProfiles } from '@/modules/profiles/services/artifact-cleanup.service';
 import { ensureBinPath } from '@/modules/profiles/services/ensure-bin-path.service';
 import { renderProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
@@ -25,6 +26,37 @@ export type EnvResult = {
 	rerendered: string[];
 	notices: string[];
 	binPath: BinPathOutcome | null;
+};
+
+export type EnvKeyOption = {
+	label: string;
+	value: string;
+	hint?: string;
+};
+
+/** The SET suggestions: the curated catalog; the hint carries the description. */
+export const buildSetKeyOptions = (): EnvKeyOption[] => {
+	return ENV_CATALOG.map((entry) => {
+		return {
+			label: entry.key,
+			value: entry.key,
+			hint: entry.managedByCs === true ? `${entry.description} (overrides cs)` : entry.description
+		};
+	});
+};
+
+/** The UNSET suggestions: the keys actually set in the chosen scope, nothing else. */
+export const buildUnsetKeyOptions = async (scope: EnvScope, profileName?: string): Promise<EnvKeyOption[]> => {
+	const { config } = await loadCsConfig();
+
+	const source = scope === 'profile' && profileName !== undefined ? findProfile(config, profileName)?.env : config.env;
+
+	return Object.keys(source ?? {}).map((key) => {
+		return {
+			label: key,
+			value: key
+		};
+	});
 };
 
 export const listEnvProfiles = async (): Promise<string[]> => {

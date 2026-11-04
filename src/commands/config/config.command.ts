@@ -1,6 +1,6 @@
 import { runConfig } from '@/commands/config/services/config.service';
 import { artifactLines, showBinPathNotice } from '@/core/ui/artifact.ui';
-import { profileFieldLines } from '@/core/ui/profile.ui';
+import { knownModelsLine, profileFieldLines } from '@/core/ui/profile.ui';
 
 import type { ConfigOptions } from '@/commands/config/services/config.service';
 import type { Command } from 'commander';
@@ -27,6 +27,7 @@ export const registerConfigCommand = (program: Command): void => {
 			if (result.kind === 'shown') {
 				process.stdout.write(`Profile: ${result.name}\n`);
 				process.stdout.write(`${profileFieldLines(result.profile).join('\n')}\n`);
+				process.stdout.write(`${knownModelsLine()}\n`);
 
 				return;
 			}

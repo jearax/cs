@@ -1,6 +1,12 @@
-import { select, text } from '@clack/prompts';
+import { autocomplete, select, text } from '@clack/prompts';
 
-import { applyEnvChange, ENV_KEY_PATTERN, listEnvProfiles } from '@/commands/env/services/env.service';
+import {
+	applyEnvChange,
+	buildSetKeyOptions,
+	buildUnsetKeyOptions,
+	ENV_KEY_PATTERN,
+	listEnvProfiles
+} from '@/commands/env/services/env.service';
 import { showBinPathNotice } from '@/core/ui/artifact.ui';
 
 import type { Command } from 'commander';
@@ -84,12 +90,33 @@ export const registerEnvCommand = (program: Command): void => {
 				return;
 			}
 
-			const key = await text({
-				message: 'Env key:',
+			const unsetOptions =
+				action === 'unset' ? await buildUnsetKeyOptions(scope === 'profile' ? 'profile' : 'global', profileName) : [];
+
+			if (action === 'unset' && unsetOptions.length === 0) {
+				const target = scope === 'profile' ? `profile "${profileName ?? ''}"` : 'the global scope';
+
+				process.stdout.write(`No env keys set in ${target}.\n`);
+
+				return;
+			}
+
+			const key = await autocomplete({
+				message: action === 'set' ? 'Env key:' : 'Env key to remove:',
+				options: action === 'set' ? buildSetKeyOptions() : unsetOptions,
+				completeOnTab: true,
 				validate: (input) => {
-					return input !== undefined && ENV_KEY_PATTERN.test(input) ? undefined : 'Invalid. Must match [A-Z][A-Z0-9_]*';
+					return typeof input === 'string' && ENV_KEY_PATTERN.test(input)
+						? undefined
+						: 'Invalid. Must match [A-Z][A-Z0-9_]*';
 				}
 			});
+
+			if (!isText(key)) {
+				process.stdout.write('Aborted.\n');
+
+				return;
+			}
 
 			if (!isText(key)) {
 				process.stdout.write('Aborted.\n');
