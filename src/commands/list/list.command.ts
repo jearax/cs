@@ -20,7 +20,7 @@ export const registerListCommand = (program: Command): void => {
 			const out = process.stdout;
 			const outStyle = { stream: out };
 
-			out.write(`${styleText(['bold', 'yellow'], 'Profiles:', outStyle)}\n\n`);
+			out.write(`${styleText(['bold', 'yellow'], 'Profiles:', outStyle)}\n`);
 
 			// One blank line between profile blocks, so a long list reads as records, not one wall.
 			// Sections are yellow, profile names cyan, labels and the rendered tag dim — the three
@@ -53,7 +53,7 @@ export const registerListCommand = (program: Command): void => {
 			}
 
 			if (result.aliases.length > 0) {
-				out.write(`\n${styleText(['bold', 'yellow'], 'Aliases:', outStyle)}\n\n`);
+				out.write(`\n${styleText(['bold', 'yellow'], 'Aliases:', outStyle)}\n`);
 
 				for (const alias of result.aliases) {
 					const name = styleText('cyan', alias.name, outStyle);
