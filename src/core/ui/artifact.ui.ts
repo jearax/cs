@@ -1,16 +1,10 @@
 export type ArtifactView = {
 	settingsHomePath: string;
-	launcherHomePath: string;
-	launcherName: string;
 	launchCommand: string;
 };
 
 export const artifactLines = (artifacts: ArtifactView): string[] => {
-	return [
-		`  Settings: ${artifacts.settingsHomePath}`,
-		`  Launcher: ${artifacts.launcherHomePath}`,
-		`  Command:  ${artifacts.launchCommand}`
-	];
+	return [`  Settings: ${artifacts.settingsHomePath}`, `  Command:  ${artifacts.launchCommand}`];
 };
 
 /** What the PATH service did with the shell rc, and what the user still has to do. */

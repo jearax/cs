@@ -1,4 +1,5 @@
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -20,7 +21,7 @@ const exists = async (path: string): Promise<boolean> => {
 };
 
 describe('cs remove', () => {
-	it('removes the profile with its artifact and its launcher', async () => {
+	it('removes the profile with its artifact, but no launcher of the profile ever exists', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 
 		const { stdout, exitCode } = await runCli(['remove', 'work']);
@@ -35,6 +36,16 @@ describe('cs remove', () => {
 		expect(config.profiles['work']).toBeUndefined();
 		expect(await exists(profileArtifactPath('work'))).toBe(false);
 		expect(await exists(launcherPath('work'))).toBe(false);
+	});
+
+	it('leaves a stray claude-<profile> launcher that cs never made', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+		await mkdir(dirname(launcherPath('work')), { recursive: true });
+		await writeFile(launcherPath('work'), '#!/bin/sh\nexec echo stray\n', { mode: 0o755 });
+
+		await runCli(['remove', 'work']);
+
+		expect(await exists(launcherPath('work'))).toBe(true);
 	});
 
 	it('clears the current profile when the active one is removed', async () => {

@@ -15,10 +15,6 @@ export const csConfigPath = (): string => {
 	return join(csDir(), 'cs.json');
 };
 
-export const csConfigBackupPath = (): string => {
-	return join(csDir(), 'cs.json.bak');
-};
-
 export const profilesDir = (): string => {
 	return join(csDir(), 'profiles');
 };

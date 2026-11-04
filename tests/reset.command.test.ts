@@ -66,12 +66,12 @@ describe('cs reset', () => {
 		expect(settings.env['ANTHROPIC_BASE_URL']).toBe('https://api.anthropic.com');
 	});
 
-	it('keeps a file it does not own in the artifact folders', async () => {
+	it('restores the default artifact and leaves no launcher behind', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 
 		await runCli(['reset']);
 
 		expect(await exists(profileArtifactPath('default'))).toBe(true);
-		expect(await exists(launcherPath('default'))).toBe(true);
+		expect(await exists(launcherPath('default'))).toBe(false);
 	});
 });

@@ -1,4 +1,4 @@
-import { readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { stripVTControlCharacters } from 'node:util';
 
 import { describe, expect, it } from 'vitest';
@@ -12,6 +12,16 @@ useTempHome();
 
 const readJson = async (path: string): Promise<Record<string, unknown>> => {
 	return JSON.parse(await readFile(path, 'utf8')) as Record<string, unknown>;
+};
+
+const exists = async (path: string): Promise<boolean> => {
+	try {
+		await readFile(path);
+
+		return true;
+	} catch {
+		return false;
+	}
 };
 
 describe('cs config', () => {
@@ -63,7 +73,7 @@ describe('cs config', () => {
 		expect(profile?.['haiku']).toBe('');
 	});
 
-	it('renders the profile artifact and the launcher', async () => {
+	it('renders the profile artifact and no launcher', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 
 		const artifact = await readJson(profileArtifactPath('work'));
@@ -73,13 +83,14 @@ describe('cs config', () => {
 		expect(env['ANTHROPIC_AUTH_TOKEN']).toBe('sk-secret-token');
 		expect(artifact['disableClaudeAiConnectors']).toBe(true);
 
-		const launcher = await readFile(launcherPath('work'), 'utf8');
+		expect(await exists(launcherPath('work'))).toBe(false);
+	});
 
-		expect(launcher).toBe('#!/bin/sh\nexec claude --settings ~/.config/cs/profiles/work.json\n');
+	it('prints no Launcher line and lists no bin entry', async () => {
+		const { stdout } = await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 
-		const info = await stat(launcherPath('work'));
-
-		expect(info.mode & 0o777).toBe(0o755);
+		expect(stdout).not.toContain('Launcher:');
+		expect(stdout).toContain('Command:  claude --settings ~/.config/cs/profiles/work.json');
 	});
 
 	it('keeps the fields that no flag touches', async () => {

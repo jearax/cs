@@ -54,7 +54,7 @@ describe('cs use', () => {
 		expect(config['currentProfile']).toBe('work');
 
 		expect(await exists(profileArtifactPath('work'))).toBe(true);
-		expect(await exists(launcherPath('work'))).toBe(true);
+		expect(await exists(launcherPath('work'))).toBe(false);
 	});
 
 	it('replaces the whole env block so a profile inherits nothing', async () => {

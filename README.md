@@ -6,8 +6,8 @@
 active one to Claude Code in two ways:
 
 - **global** — `cs use <profile>` writes `~/.claude/settings.json` and makes the profile the active one.
-- **file** — every profile also renders `~/.config/cs/profiles/<name>.json` and a launcher
-  `~/.config/cs/bin/claude-<name>`. Claude Code loads that file for one session only.
+- **file** — every profile also renders `~/.config/cs/profiles/<name>.json`, a settings-shaped
+  artifact. Claude Code loads that file for one session only.
 
 Both targets are produced by the same renderer, so a profile behaves the same either way.
 
@@ -97,7 +97,6 @@ profile as the active one:
 Switched to profile "work".
   ...
   Settings: ~/.config/cs/profiles/work.json
-  Launcher: ~/.config/cs/bin/claude-work
   Command:  claude --settings ~/.config/cs/profiles/work.json
 ```
 
@@ -105,16 +104,21 @@ Every profile that changes is re-rendered, so the files never drift from `cs.jso
 
 ### The launchers
 
-`~/.config/cs/bin/claude-<name>` is a one-line script:
+Profiles render no launcher: `cs alias` is the only thing that creates one — `~/.config/cs/bin/claude-<alias>`,
+a one-line script:
 
 ```sh
 #!/bin/sh
 exec claude --settings ~/.config/cs/profiles/work.json
 ```
 
-The launcher holds no secret — the token stays in the profile file it points at.
+The launcher holds no secret — the token stays in the profile file it points at. If an older cs
+version left `claude-<profile>` launchers in `bin/`, delete them by hand once; cs no longer makes
+or removes them.
 
-That folder is in no default PATH, so the first time cs renders a profile in a terminal it appends
+To launch a profile without an alias, run the command `cs use` prints, or add an alias.
+
+That folder is in no default PATH, so the first time cs creates a launcher in a terminal it appends
 the entry to your shell rc — `~/.zshrc`, `~/.bashrc` or `~/.config/fish/config.fish`, picked from
 `$SHELL`:
 
@@ -127,7 +131,7 @@ The marker keeps a second run from writing it again. Open a new shell and the la
 name:
 
 ```bash
-claude-work
+claude-planner
 ```
 
 A run that is not a terminal — a script, a CI job — never touches your rc file. It prints the line
@@ -209,14 +213,15 @@ key and the value. A key must match `[A-Z][A-Z0-9_]*`. The value is never printe
 | ----------------------------------- | ------------------------------------------------ |
 | `~/.config/cs/cs.json`              | The profiles, the active profile, the global env |
 | `~/.config/cs/profiles/<name>.json` | A rendered profile, settings-shaped              |
-| `~/.config/cs/bin/claude-<name>`    | The launcher for that profile                    |
 | `~/.config/cs/bin/claude-<alias>`   | The launcher of a role alias                     |
 | `~/.claude/settings.json`           | The global settings, written by `cs use`         |
 
 `cs.json` and the rendered profiles hold your token, so they are written with the mode `0600`.
 
-`cs.json` keeps the profiles under `profiles`. A file written by an older `cs` keeps them under
-`claude`; cs migrates it on the first run and leaves the old file at `~/.config/cs/cs.json.bak`.
+`cs.json` is schema version 1 and keeps the profiles under `profiles`. cs does not migrate an older
+file: a file that keeps them under `claude` is not a cs config, so cs reports it, keeps it at
+`~/.config/cs/cs.json.corrupt` and starts from the default profile. Convert such a file by hand if
+you want those profiles back.
 
 ## Development
 

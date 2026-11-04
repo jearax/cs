@@ -24,10 +24,9 @@ export type CsConfig = {
 	aliases?: Record<string, string>;
 };
 
-/** The raw file shape: a config that predates the `profiles` key still carries `claude`. */
+/** The parsed file shape: `profiles` is optional, so a file without it can be told apart. */
 export type RawCsConfig = Omit<CsConfig, 'profiles'> & {
 	profiles?: Record<string, Profile>;
-	claude?: Record<string, Profile>;
 };
 
 export type ProfileUpdate = Partial<Profile>;

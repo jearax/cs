@@ -42,9 +42,10 @@ metadata:
    fixture under `tests/fixtures/architecture/`, and prove the fixture with the architecture suite.
 6. When the stored shape of `cs.json` changes (a key, a schema version), a CLI test cannot see the
    old shape: seed the previous file version on disk in `tests/profiles-storage.service.test.ts` and
-   assert the migration, the backup it leaves and the new key. Bump
-   `CURRENT_SCHEMA_VERSION` in the same change, and state the new version in the schema history
-   comment above it.
+   assert what the loader does with it. cs migrates nothing — a file without the `profiles` key is
+   not a cs config: it is kept at `cs.json.corrupt` and cs starts from the default profile
+   (decision 0012). Bump `CURRENT_SCHEMA_VERSION` in the same change, and state the new version in
+   the comment above it.
 7. A smoke of the built bundle runs against a temp HOME as well, one command per invocation:
    `HOME=$H node dist/cli.mjs …`. The real `~/.config/cs`, the real `~/.claude` and the real
    `claude` binary stay untouched — the user tests those.

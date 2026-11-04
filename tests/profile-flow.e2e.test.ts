@@ -20,10 +20,11 @@ const exists = async (path: string): Promise<boolean> => {
 };
 
 describe('the profile flow', () => {
-	it('goes from a new profile to a rendered artifact, a launcher and a clean removal', async () => {
+	it('goes from a new profile to a rendered artifact and a clean removal', async () => {
 		const created = await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 
 		expect(created.exitCode).toBe(0);
+		expect(created.stdout).not.toContain('Launcher:');
 
 		const used = await runCli(['use', 'work']);
 
@@ -32,7 +33,7 @@ describe('the profile flow', () => {
 		expect(used.stdout).toContain('claude --settings ~/.config/cs/profiles/work.json');
 
 		expect(await exists(profileArtifactPath('work'))).toBe(true);
-		expect(await exists(launcherPath('work'))).toBe(true);
+		expect(await exists(launcherPath('work'))).toBe(false);
 		expect(await exists(claudeSettingsPath())).toBe(true);
 
 		const artifact = JSON.parse(await readFile(profileArtifactPath('work'), 'utf8')) as {
