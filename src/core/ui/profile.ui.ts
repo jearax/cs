@@ -12,15 +12,30 @@ export type ProfileView = {
 };
 
 export const profileFieldLines = (profile: ProfileView): string[] => {
-	return [
-		`  URL:    ${profile.url}`,
-		`  Token:  ${maskToken(profile.token)}`,
-		`  OAuth:  ${maskToken(profile.oauthToken ?? '')}`,
+	// Only the set credentials show, so a view carries one of the valid pairs: url+token or
+	// url+oauthToken (decision 0008) — never an empty slot for the other one.
+	const lines: string[] = [];
+
+	if (profile.url !== '') {
+		lines.push(`  URL:    ${profile.url}`);
+	}
+
+	if (profile.token !== '') {
+		lines.push(`  Token:  ${maskToken(profile.token)}`);
+	}
+
+	if (profile.oauthToken !== undefined && profile.oauthToken !== '') {
+		lines.push(`  OAuth:  ${maskToken(profile.oauthToken)}`);
+	}
+
+	lines.push(
 		`  Haiku:  ${profile.haiku}`,
 		`  Sonnet: ${profile.sonnet}`,
 		`  Opus:   ${profile.opus}`,
 		`  Fable:  ${profile.fable}`
-	];
+	);
+
+	return lines;
 };
 
 export const profileHeadingLines = (label: string, name: string, profile: ProfileView): string[] => {

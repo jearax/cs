@@ -17,17 +17,20 @@ export const registerListCommand = (program: Command): void => {
 
 			process.stdout.write('Profiles:\n\n');
 
-			for (const entry of result.entries) {
+			// One blank line between profile blocks, so a long list reads as records, not one wall.
+			const blocks = result.entries.map((entry) => {
 				const marker = entry.active ? '*' : ' ';
 				const tag = entry.rendered ? ' [rendered]' : '';
-
-				process.stdout.write(`  ${marker} ${entry.name}${tag}\n`);
 
 				const fields = profileFieldLines(entry.profile).map((line) => {
 					return `    ${line.trim()}`;
 				});
 
-				process.stdout.write(`${fields.join('\n')}\n`);
+				return [`  ${marker} ${entry.name}${tag}`, ...fields].join('\n');
+			});
+
+			if (blocks.length > 0) {
+				process.stdout.write(`${blocks.join('\n\n')}\n`);
 			}
 
 			if (result.aliases.length > 0) {

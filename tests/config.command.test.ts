@@ -61,7 +61,9 @@ describe('cs config', () => {
 
 		expect(stdout).toContain('Profile: default');
 		expect(stdout).toContain('https://api.anthropic.com');
-		expect(stdout).toContain('<not set>');
+		// The default record carries no token, so no credential slot renders at all.
+		expect(stdout).not.toContain('<not set>');
+		expect(stdout).not.toContain('Token:');
 		expect(stdout).not.toContain('Known models');
 		expect(exitCode).toBe(0);
 	});
