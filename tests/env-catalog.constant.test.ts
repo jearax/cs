@@ -1,9 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
 import { ENV_KEY_PATTERN } from '@/commands/env/services/env.service';
-import { ENV_CATALOG } from '@/modules/profiles/constants/env-catalog.constant';
+import { ENV_CATALOG, ENV_DOCS_URL } from '@/modules/profiles/constants/env-catalog.constant';
 
 describe('the env catalog', () => {
+	it('names the official env-vars docs as its source', () => {
+		expect(ENV_DOCS_URL).toBe('https://code.claude.com/docs/en/env-vars');
+	});
+
+	it('holds exactly the keys cs interacts with', () => {
+		expect(
+			ENV_CATALOG.map((entry) => {
+				return entry.key;
+			})
+		).toEqual(['CLAUDE_CODE_AUTO_COMPACT_WINDOW', 'CLAUDE_CODE_DISABLE_1M_CONTEXT']);
+	});
+
 	it('holds valid, unique, sorted keys', () => {
 		const keys = ENV_CATALOG.map((entry) => {
 			return entry.key;

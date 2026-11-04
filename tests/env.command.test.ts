@@ -5,8 +5,11 @@ import { describe, expect, it } from 'vitest';
 import {
 	applyEnvChange,
 	buildSetKeyOptions,
+	buildSetKeyOptionsFor,
 	buildUnsetKeyOptions,
-	ENV_KEY_PATTERN
+	ENV_KEY_PATTERN,
+	envDocsHintLine,
+	setKeyOptionsGetter
 } from '@/commands/env/services/env.service';
 import { csConfigPath, profileArtifactPath } from '@/modules/profiles/constants/paths.constant';
 
@@ -86,24 +89,15 @@ describe('the env key suggestions', () => {
 	it('builds the SET options from the curated catalog', () => {
 		const options = buildSetKeyOptions();
 
-		expect(options.length).toBeGreaterThan(0);
 		expect(
-			options.every((option) => {
-				return option.label === option.value;
+			options.map((option) => {
+				return option.value;
 			})
-		).toBe(true);
+		).toEqual(['CLAUDE_CODE_AUTO_COMPACT_WINDOW', 'CLAUDE_CODE_DISABLE_1M_CONTEXT']);
 
-		const managed = options.find((option) => {
-			return option.value === 'CLAUDE_CODE_DISABLE_1M_CONTEXT';
-		});
-
-		expect(managed?.hint).toContain('overrides cs');
-
-		const plain = options.find((option) => {
-			return option.value === 'CLAUDE_CODE_MAX_OUTPUT_TOKENS';
-		});
-
-		expect(plain?.hint).not.toContain('overrides cs');
+		for (const option of options) {
+			expect(option.hint).toContain('overrides cs');
+		}
 	});
 
 	it('never suggests the credential keys cs manages through profiles', () => {
@@ -133,5 +127,52 @@ describe('the env key suggestions', () => {
 
 	it('builds no UNSET options when the scope holds no keys', async () => {
 		expect(await buildUnsetKeyOptions('global')).toEqual([]);
+	});
+});
+
+describe('the SET docs hint', () => {
+	it('prints the official env-vars reference', () => {
+		expect(envDocsHintLine()).toBe('Reference: https://code.claude.com/docs/en/env-vars');
+	});
+});
+
+describe('the SET option getter', () => {
+	it('prepends a dynamic option for a valid custom key', () => {
+		const options = buildSetKeyOptionsFor('MY_KEY');
+
+		expect(options[0]).toEqual({
+			label: 'Use "MY_KEY"',
+			value: 'MY_KEY'
+		});
+		expect(options.slice(1)).toEqual(buildSetKeyOptions());
+	});
+
+	it('uppercases the search text for the custom option', () => {
+		const options = buildSetKeyOptionsFor('my_key');
+
+		expect(options[0]?.value).toBe('MY_KEY');
+		expect(options[0]?.label).toBe('Use "MY_KEY"');
+		expect(setKeyOptionsGetter.call({ userInput: 'my_key' })[0]?.value).toBe('MY_KEY');
+	});
+
+	it('adds no dynamic option when the search matches a catalog key', () => {
+		const options = buildSetKeyOptionsFor('CLAUDE_CODE_DISABLE_1M_CONTEXT');
+
+		expect(
+			options.filter((option) => {
+				return option.value === 'CLAUDE_CODE_DISABLE_1M_CONTEXT';
+			})
+		).toHaveLength(1);
+		expect(
+			options.every((option) => {
+				return option.label !== 'Use "CLAUDE_CODE_DISABLE_1M_CONTEXT"';
+			})
+		).toBe(true);
+	});
+
+	it('returns the catalog alone for empty or invalid input', () => {
+		expect(buildSetKeyOptionsFor('')).toEqual(buildSetKeyOptions());
+		expect(buildSetKeyOptionsFor('http proxy')).toEqual(buildSetKeyOptions());
+		expect(buildSetKeyOptionsFor('1KEY')).toEqual(buildSetKeyOptions());
 	});
 });

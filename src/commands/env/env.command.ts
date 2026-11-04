@@ -1,11 +1,12 @@
-import { autocomplete, select, text } from '@clack/prompts';
+import { autocomplete, log, select, text } from '@clack/prompts';
 
 import {
 	applyEnvChange,
-	buildSetKeyOptions,
 	buildUnsetKeyOptions,
+	envDocsHintLine,
 	ENV_KEY_PATTERN,
-	listEnvProfiles
+	listEnvProfiles,
+	setKeyOptionsGetter
 } from '@/commands/env/services/env.service';
 import { showBinPathNotice } from '@/core/ui/artifact.ui';
 
@@ -90,6 +91,10 @@ export const registerEnvCommand = (program: Command): void => {
 				return;
 			}
 
+			if (action === 'set') {
+				log.info(envDocsHintLine());
+			}
+
 			const unsetOptions =
 				action === 'unset' ? await buildUnsetKeyOptions(scope === 'profile' ? 'profile' : 'global', profileName) : [];
 
@@ -103,7 +108,7 @@ export const registerEnvCommand = (program: Command): void => {
 
 			const key = await autocomplete({
 				message: action === 'set' ? 'Env key:' : 'Env key to remove:',
-				options: action === 'set' ? buildSetKeyOptions() : unsetOptions,
+				options: action === 'set' ? setKeyOptionsGetter : unsetOptions,
 				completeOnTab: true,
 				validate: (input) => {
 					return typeof input === 'string' && ENV_KEY_PATTERN.test(input)

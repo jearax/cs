@@ -266,3 +266,9 @@ node dist/cli.mjs            # prints help, exits 0
 ```
 
 A failure of any of these is an unfinished change, not a note.
+
+## Porting from jss-devtools: src and dist can diverge
+
+The reference repo's TypeScript source and its shipped bundle do not always behave the same (e.g.
+its help renderer `JSON.stringify`s `defaultValueDescription` in src but renders the value unquoted
+in dist). When porting, match the dist/user-visible behaviour and flag the divergence for upstream.

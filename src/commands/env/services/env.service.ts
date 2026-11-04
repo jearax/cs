@@ -1,5 +1,5 @@
 import { CliError } from '@/core/errors/cli.error';
-import { ENV_CATALOG } from '@/modules/profiles/constants/env-catalog.constant';
+import { ENV_CATALOG, ENV_DOCS_URL } from '@/modules/profiles/constants/env-catalog.constant';
 import { listArtifactProfiles } from '@/modules/profiles/services/artifact-cleanup.service';
 import { ensureBinPath } from '@/modules/profiles/services/ensure-bin-path.service';
 import { renderProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
@@ -43,6 +43,43 @@ export const buildSetKeyOptions = (): EnvKeyOption[] => {
 			hint: entry.managedByCs === true ? `${entry.description} (overrides cs)` : entry.description
 		};
 	});
+};
+
+/**
+ * The SET list for the current search text: the catalog, plus a first option that lets Enter
+ * confirm a valid key the catalog does not carry — free-text typing stays possible.
+ */
+export const buildSetKeyOptionsFor = (search: string): EnvKeyOption[] => {
+	const catalog = buildSetKeyOptions();
+	const custom = search.trim().toUpperCase();
+
+	if (
+		custom === '' ||
+		!ENV_KEY_PATTERN.test(custom) ||
+		catalog.some((option) => {
+			return option.value === custom;
+		})
+	) {
+		return catalog;
+	}
+
+	return [
+		{
+			label: `Use "${custom}"`,
+			value: custom
+		},
+		...catalog
+	];
+};
+
+/** The getter form clack's autocomplete calls with the prompt as `this` (`userInput` is the search). */
+export const setKeyOptionsGetter = function (this: { userInput: string }): EnvKeyOption[] {
+	return buildSetKeyOptionsFor(this.userInput);
+};
+
+/** The docs hint printed before the SET prompt. */
+export const envDocsHintLine = (): string => {
+	return `Reference: ${ENV_DOCS_URL}`;
 };
 
 /** The UNSET suggestions: the keys actually set in the chosen scope, nothing else. */

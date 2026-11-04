@@ -1,22 +1,30 @@
+import { Option } from 'commander';
+
 import { runConfig } from '@/commands/config/services/config.service';
 import { artifactLines, showBinPathNotice } from '@/core/ui/artifact.ui';
-import { knownModelsLine, profileFieldLines } from '@/core/ui/profile.ui';
+import { profileFieldLines } from '@/core/ui/profile.ui';
 
 import type { ConfigOptions } from '@/commands/config/services/config.service';
 import type { Command } from 'commander';
+
+const INHERITED_NOTE = 'inherited from the default profile on creation';
 
 export const registerConfigCommand = (program: Command): void => {
 	program
 		.command('config')
 		.description('Create or update a profile')
-		.option('--name, -n <name>', 'Profile name (default: "default")')
-		.option('--url, -u <url>', 'API base URL')
-		.option('--token, -t <token>', 'API token')
-		.option('--oauth-token <token>', 'Claude Code login token (CLAUDE_CODE_OAUTH_TOKEN)')
-		.option('--haiku <model>', 'Haiku model')
-		.option('--sonnet, -s <model>', 'Sonnet model')
-		.option('--opus, -o <model>', 'Opus model')
-		.option('--fable, -f <model>', 'Fable model')
+		.addOption(new Option('--name, -n <name>', 'Profile name').default('default'))
+		.addOption(new Option('--url, -u <url>', 'API base URL').default(undefined, INHERITED_NOTE))
+		.addOption(new Option('--token, -t <token>', 'API token').default(undefined, INHERITED_NOTE))
+		.addOption(new Option('--oauth-token <token>', 'Claude Code login token (CLAUDE_CODE_OAUTH_TOKEN)'))
+		.addOption(new Option('--haiku <model>', 'Haiku model').default(undefined, INHERITED_NOTE))
+		.addOption(new Option('--sonnet, -s <model>', 'Sonnet model').default(undefined, INHERITED_NOTE))
+		.addOption(new Option('--opus, -o <model>', 'Opus model').default(undefined, INHERITED_NOTE))
+		.addOption(new Option('--fable, -f <model>', 'Fable model').default(undefined, INHERITED_NOTE))
+		.addHelpText(
+			'after',
+			'\nExample: cs config -n claude -s claude-sonnet-4.7 stores claude-sonnet-4-7 (dot form converted); append [1m] for the 1M window.\n'
+		)
 		.action(async (options: ConfigOptions) => {
 			const result = await runConfig(options);
 
@@ -27,7 +35,6 @@ export const registerConfigCommand = (program: Command): void => {
 			if (result.kind === 'shown') {
 				process.stdout.write(`Profile: ${result.name}\n`);
 				process.stdout.write(`${profileFieldLines(result.profile).join('\n')}\n`);
-				process.stdout.write(`${knownModelsLine()}\n`);
 
 				return;
 			}

@@ -57,6 +57,8 @@ metadata:
 - The capture helper returns the captured text: nest the stdout capture inside the stderr one and
   assign the outer result, or stderr comes back empty while the CLI did write to it.
 - `jq keys` sorts alphabetically — verify a JSON file's real key order with `jq keys_unsorted`.
+- Commander wraps `-h` output at the terminal width: match a help-text line against
+  `help.replace(/\n\s+/g, ' ')`, or the assertion breaks on the wrap.
 - Output that shows on a terminal only (the banner, the `cs env` prompts) needs a fake terminal
   in-process: `Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true })`,
   the same for `columns` (80), and `delete process.env['CI']`. `isInteractive()` requires all three,

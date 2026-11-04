@@ -38,6 +38,14 @@ describe('cs config', () => {
 		expect(help).toContain('--fable, -f <model>');
 		expect(help).toContain('--oauth-token <token>');
 		expect(help).toContain('--haiku <model>');
+
+		const unwrapped = help.replace(/\n\s+/g, ' ');
+
+		expect(unwrapped).toContain('Profile name (default: "default")');
+		expect(unwrapped).toContain('Sonnet model (default: inherited from the default profile on creation)');
+		expect(unwrapped).toContain('Claude Code login token (CLAUDE_CODE_OAUTH_TOKEN)');
+		expect(unwrapped).toContain('stores claude-sonnet-4-7 (dot form converted)');
+		expect(unwrapped).not.toContain('Known models');
 	});
 
 	it('shows the default profile when no flag is passed', async () => {
@@ -46,6 +54,7 @@ describe('cs config', () => {
 		expect(stdout).toContain('Profile: default');
 		expect(stdout).toContain('https://api.anthropic.com');
 		expect(stdout).toContain('<not set>');
+		expect(stdout).not.toContain('Known models');
 		expect(exitCode).toBe(0);
 	});
 

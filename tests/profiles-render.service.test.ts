@@ -36,7 +36,7 @@ describe('the settings renderer', () => {
 		});
 	});
 
-	it('returns the env keys in alphabetical order', () => {
+	it('returns the env keys in the explicit semantic order, extras after', () => {
 		const { env } = render(
 			{
 				...baseProfile,
@@ -51,17 +51,17 @@ describe('the settings renderer', () => {
 		);
 
 		expect(Object.keys(env ?? {})).toEqual([
-			'ANTHROPIC_AUTH_TOKEN',
 			'ANTHROPIC_BASE_URL',
-			'ANTHROPIC_DEFAULT_FABLE_MODEL',
-			'ANTHROPIC_DEFAULT_HAIKU_MODEL',
+			'ANTHROPIC_AUTH_TOKEN',
 			'ANTHROPIC_DEFAULT_MODEL',
-			'ANTHROPIC_DEFAULT_OPUS_MODEL',
+			'ANTHROPIC_DEFAULT_HAIKU_MODEL',
 			'ANTHROPIC_DEFAULT_SONNET_MODEL',
-			'APP_EXTRA',
-			'CLAUDE_CODE_AUTO_COMPACT_WINDOW',
-			'CLAUDE_CODE_DISABLE_1M_CONTEXT',
+			'ANTHROPIC_DEFAULT_OPUS_MODEL',
+			'ANTHROPIC_DEFAULT_FABLE_MODEL',
 			'CLAUDE_CODE_OAUTH_TOKEN',
+			'CLAUDE_CODE_DISABLE_1M_CONTEXT',
+			'CLAUDE_CODE_AUTO_COMPACT_WINDOW',
+			'APP_EXTRA',
 			'HTTP_PROXY',
 			'ZED_EXTRA'
 		]);

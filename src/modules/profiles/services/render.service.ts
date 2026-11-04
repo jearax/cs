@@ -29,11 +29,41 @@ export const deriveOneMillionContextEnv = (profile: Profile): Record<string, str
 	};
 };
 
+/** The semantic order of the env block; a key outside it follows, sorted alphabetically. */
+const ENV_KEY_ORDER = [
+	'ANTHROPIC_BASE_URL',
+	'ANTHROPIC_AUTH_TOKEN',
+	'ANTHROPIC_DEFAULT_MODEL',
+	'ANTHROPIC_DEFAULT_HAIKU_MODEL',
+	'ANTHROPIC_DEFAULT_SONNET_MODEL',
+	'ANTHROPIC_DEFAULT_OPUS_MODEL',
+	'ANTHROPIC_DEFAULT_FABLE_MODEL',
+	'CLAUDE_CODE_OAUTH_TOKEN',
+	'CLAUDE_CODE_DISABLE_1M_CONTEXT',
+	'CLAUDE_CODE_AUTO_COMPACT_WINDOW'
+];
+
+const compareEnvKeys = (left: string, right: string): number => {
+	const rank = (key: string): number => {
+		const position = ENV_KEY_ORDER.indexOf(key);
+
+		return position === -1 ? ENV_KEY_ORDER.length : position;
+	};
+
+	const byRank = rank(left) - rank(right);
+
+	if (byRank !== 0) {
+		return byRank;
+	}
+
+	return left < right ? -1 : left > right ? 1 : 0;
+};
+
 /**
  * The one renderer behind both delivery targets: the global settings.json and the profile
  * artifact. Sources, in order, last wins: the seven ANTHROPIC_* fields, the oauth token, the
  * derived `[1m]` defaults, then the global env and the profile env. The env keys are returned
- * in alphabetical order.
+ * in the explicit semantic order, user extras following alphabetically.
  */
 export const renderProfileSettings = ({ profile, globalEnv }: RenderProfileInput): RenderedSettings => {
 	const env = {
@@ -55,7 +85,7 @@ export const renderProfileSettings = ({ profile, globalEnv }: RenderProfileInput
 	return {
 		env: Object.fromEntries(
 			Object.entries(env).sort(([left], [right]) => {
-				return left < right ? -1 : left > right ? 1 : 0;
+				return compareEnvKeys(left, right);
 			})
 		),
 		disableClaudeAiConnectors: true

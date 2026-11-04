@@ -22,19 +22,14 @@ const RC_RELATIVE_PATHS: Record<RcShell, string> = {
 	fish: '.config/fish/config.fish'
 };
 
-const detectShell = (shell: string | undefined): RcShell | null => {
-	const name = (shell ?? '').split('/').pop() ?? '';
+const SHELL_BY_NAME: Record<string, RcShell> = {
+	zsh: 'zsh',
+	bash: 'bash',
+	fish: 'fish'
+};
 
-	switch (name) {
-		case 'zsh':
-			return 'zsh';
-		case 'bash':
-			return 'bash';
-		case 'fish':
-			return 'fish';
-		default:
-			return null;
-	}
+const detectShell = (shell: string | undefined): RcShell | null => {
+	return SHELL_BY_NAME[(shell ?? '').split('/').pop() ?? ''] ?? null;
 };
 
 /** The rc file the shell reads, and the block cs appends to it. */

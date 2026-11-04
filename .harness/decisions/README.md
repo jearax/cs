@@ -20,5 +20,9 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0013 | Only aliases create launchers — profiles render artifacts only                                 | Accepted           | 2026-11-04 |
 | 0014 | The profile name `claude` auto-seeds from the default record when missing, and stays removable | Superseded by 0015 | 2026-11-04 |
 | 0015 | Creating a profile fills unspecified fields from the default record (function default params)  | Accepted           | 2026-11-04 |
-| 0016 | Env keys render in alphabetical order — profile artifact and global write alike                | Accepted           | 2026-11-04 |
+| 0016 | Env keys render in alphabetical order — profile artifact and global write alike                | Superseded by 0018 | 2026-11-04 |
+| 0017 | Suggestion UX: clack autocomplete for env keys and a curated models catalog                    | Superseded by 0019 | 2026-11-04 |
+| 0018 | Env keys render in an explicit semantic order, unknown keys appended alphabetically            | Accepted           | 2026-11-04 |
+| 0019 | The models catalog is removed — model IDs are provider-specific and drift                      | Accepted           | 2026-11-04 |
+| 0018 | Env keys render in an explicit semantic order, unknown keys appended alphabetically            | Accepted           | 2026-11-04 |
 | 0017 | Suggestion UX: clack autocomplete for env keys and a curated models catalog                    | Accepted           | 2026-11-04 |
