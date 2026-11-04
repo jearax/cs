@@ -6,6 +6,12 @@ set -eu
 REPO="https://github.com/jearax/cs"
 INSTALL_DIR="${CS_INSTALL_DIR:-$HOME/.local/bin}"
 
+# A relative install dir must not land inside the temp clone the exit trap deletes.
+case "$INSTALL_DIR" in
+	/*) ;;
+	*) INSTALL_DIR="$PWD/$INSTALL_DIR" ;;
+esac
+
 say() { printf '%s\n' "$*"; }
 die() { printf 'cs install: %s\n' "$*" >&2; exit 1; }
 
@@ -23,7 +29,7 @@ SRC=$(mktemp -d)
 trap 'rm -rf "$SRC"' EXIT INT TERM
 
 say "Cloning cs..."
-git clone --depth 1 "$REPO" "$SRC/cs" >/dev/null 2>&1 || die "cloning failed"
+git clone --depth 1 "$REPO" "$SRC/cs" >/dev/null || die "cloning failed"
 
 cd "$SRC/cs"
 
@@ -34,7 +40,10 @@ say "Building..."
 pnpm build --silent || die "build failed"
 
 mkdir -p "$INSTALL_DIR"
-cp dist/cli.mjs "$INSTALL_DIR/cs"
+# The copy lands through a temp file in the same directory, so a failed copy never truncates cs.
+TMP_CS="$INSTALL_DIR/.cs.$$.tmp"
+cp dist/cli.mjs "$TMP_CS" || die "copying the binary failed"
+mv -f "$TMP_CS" "$INSTALL_DIR/cs"
 chmod 755 "$INSTALL_DIR/cs"
 
 case ":$PATH:" in
