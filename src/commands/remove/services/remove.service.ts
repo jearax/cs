@@ -55,8 +55,9 @@ export const runRemove = async (name: string): Promise<RemoveResult> => {
 		await removeAliasLauncher(aliasName);
 	}
 
-	await saveCsConfig(config);
+	// The artifact goes before cs.json commits, so a failure never leaves an orphaned artifact.
 	await removeProfileArtifacts(profileName);
+	await saveCsConfig(config);
 
 	return {
 		name: profileName,

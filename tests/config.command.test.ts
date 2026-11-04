@@ -26,8 +26,8 @@ const exists = async (path: string): Promise<boolean> => {
 
 describe('cs config', () => {
 	it('declares every paired option long-first in its help', async () => {
-		// The live defaults read the current default record, so cs.json must exist first.
-		await runCli(['config', '-n', 'seed', '-u', 'https://seed.example.com', '-t', 'sk-seed-token']);
+		// The live defaults read the current default record, so it must carry a token here.
+		await runCli(['config', '-t', 'sk-seed-token']);
 
 		const { stdout } = await runCli(['config', '--help']);
 
@@ -48,7 +48,8 @@ describe('cs config', () => {
 		expect(unwrapped).toContain('Profile name (default: "default")');
 		expect(unwrapped).toContain('Sonnet model (default: "claude-sonnet-5-5[1m]")');
 		expect(unwrapped).toContain('API base URL (default: "https://api.anthropic.com")');
-		expect(unwrapped).not.toContain('API token (default');
+		expect(unwrapped).toContain('API token (default: "sk-seed-...oken")');
+		expect(unwrapped).not.toContain('sk-seed-token');
 		expect(unwrapped).toContain('Claude Code login token');
 		expect(unwrapped).toContain('Sonnet model; add [1m] if the model supports it and you need it');
 		expect(unwrapped).not.toContain('copied from the "default" profile on creation');

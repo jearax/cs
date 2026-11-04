@@ -88,7 +88,6 @@ const buildUpdate = (options: ConfigOptions): ProfileUpdate => {
 	return update;
 };
 
-/** The alias guard, the default-record merge and the credential guards — shared by every creation. */
 const applyProfileRecord = (
 	config: CsConfig,
 	name: string,
@@ -148,11 +147,12 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 
 		if (existing === undefined) {
 			// A show on a missing name creates the profile with the same defaults a creation
-			// applies, so the name always resolves (decision 0020).
+			// applies, so the name always resolves (decision 0020). The artifact renders before
+			// cs.json commits, matching the update path.
 			const created = applyProfileRecord(config, name, undefined, {});
 
-			await saveCsConfig(config);
 			await renderProfileArtifacts(name, created, config.env ?? {}, config.aliases ?? {});
+			await saveCsConfig(config);
 
 			return {
 				kind: 'created',
@@ -178,9 +178,12 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 	const existing = findProfile(config, name);
 	const profile = applyProfileRecord(config, name, existing, update);
 
+	// The artifact renders before cs.json commits, so a render failure never leaves a stale
+	// artifact holding the old token.
+	const artifacts = await renderProfileArtifacts(name, profile, config.env ?? {}, config.aliases ?? {});
+
 	await saveCsConfig(config);
 
-	const artifacts = await renderProfileArtifacts(name, profile, config.env ?? {}, config.aliases ?? {});
 	const binPath = await ensureBinPath();
 
 	return {
