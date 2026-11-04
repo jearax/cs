@@ -70,7 +70,7 @@ describe('cs config', () => {
 
 		expect(profile?.['url']).toBe('https://example.com');
 		expect(profile?.['token']).toBe('sk-secret-token');
-		expect(profile?.['haiku']).toBe('');
+		expect(profile?.['haiku']).toBe('claude-haiku-5-5[1m]');
 	});
 
 	it('renders the profile artifact and no launcher', async () => {
@@ -134,7 +134,9 @@ describe('cs config', () => {
 		expect(profile?.['haiku']).toBe('gpt-4.1');
 	});
 
-	it('rejects a token without a url', async () => {
+	it('rejects a token without a url on the record after inheritance', async () => {
+		await runCli(['config', '-u', '']);
+
 		const { stderr, exitCode } = await runCli(['config', '-n', 'work', '-t', 'sk-secret-token']);
 
 		expect(stderr).toContain('would have a token but no URL');
@@ -237,5 +239,59 @@ describe('cs config', () => {
 
 		expect(stdout).toContain('oauth-se...oken');
 		expect(stdout).not.toContain('oauth-secret-token');
+	});
+
+	it('fills creation from the default record when only a token is passed', async () => {
+		await runCli(['config', '-n', 'claude', '-t', 'sk-user-key']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['claude'];
+
+		expect(profile?.['url']).toBe('https://api.anthropic.com');
+		expect(profile?.['token']).toBe('sk-user-key');
+		expect(profile?.['sonnet']).toBe('claude-sonnet-5-5[1m]');
+		expect(profile?.['fable']).toBe('claude-fable-5-1[1m]');
+	});
+
+	it('does not inherit on an update when the default record has moved on', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+		await runCli(['config', '-u', 'https://moved.example.com']);
+		await runCli(['config', '-n', 'work', '-s', 'claude-sonnet-5-5']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['work'];
+
+		expect(profile?.['url']).toBe('https://example.com');
+	});
+
+	it('creates from the live default record, not a snapshot', async () => {
+		await runCli(['config', '-u', 'https://live.example.com', '-t', 'sk-live-token']);
+		await runCli(['config', '-n', 'fresh', '-s', 'claude-sonnet-5-5']);
+
+		const config = await readJson(csConfigPath());
+		const profile = (config['profiles'] as Record<string, Record<string, string>>)['fresh'];
+
+		expect(profile?.['url']).toBe('https://live.example.com');
+		expect(profile?.['token']).toBe('sk-live-token');
+	});
+
+	it('fires the both-tokens guard on the inherited record', async () => {
+		const { stderr, exitCode } = await runCli([
+			'config',
+			'-n',
+			'work',
+			'-t',
+			'sk-secret-token',
+			'--oauth-token',
+			'oauth-secret-token'
+		]);
+
+		expect(stderr).toContain('cannot have both --token and --oauth-token');
+		expect(exitCode).toBe(1);
+
+		const config = await readJson(csConfigPath());
+		const profiles = config['profiles'] as Record<string, Record<string, string>>;
+
+		expect(profiles['work']).toBeUndefined();
 	});
 });

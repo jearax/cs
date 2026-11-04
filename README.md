@@ -69,8 +69,11 @@ cs config -n glm -u https://open.bigmodel.cn/api/anthropic -t <token> \
   -s glm-4.6 -o glm-4.6
 ```
 
-Flags are partial — an omitted flag keeps its current value. A new profile starts blank: only the
-flags you pass are set, and nothing is inherited from the `default` profile.
+Flags are partial — an omitted flag keeps its current value. A new profile is created from the
+current `default` record: every flag you do not pass inherits that field from `default`, so
+`cs config -n claude -t <key>` alone yields the official endpoint and model line with your key
+(function default params). Updating an existing profile never re-inherits — omitted flags keep the
+profile's own values, and later changes to `default` do not propagate.
 
 Omit `--fable` and it mirrors `--opus`, since most providers expose no fable tier. Pass `--fable`
 to set it apart.

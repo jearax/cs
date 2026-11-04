@@ -12,7 +12,7 @@ Short facts about this repository, injected at every session start. Size limits 
 
 - `cs` (`@jjuidev/cs`, "Claude code switch") is the from-scratch refactor of `cs-cli` (`/Users/tandm/Documents/jearax/npm/cs-cli`, bun + citty): behaviour reference only, never copy code. See .harness/docs/cs-cli-feature-inventory.md and cs-project-overview.md.
 - Builds with tsdown into one ESM bundle `dist/cli.mjs` (decision 0002); `tsc` only type-checks.
-- Working layout: planner (this pane) plans/reviews; `cooker-glm` (sibling Herdr pane) implements via `/ak-cook`; the first `cooker` pane retired at its limit. Dispatch without `--wait` (fire-and-forget) — brief it to ping back `herdr agent prompt planner "<status>"` when done.
+- Working layout: planner plans/reviews, `cooker-glm` (sibling Herdr pane) implements via `/ak-cook` (first `cooker` retired at its limit). Dispatch without `--wait`; brief it to ping back `herdr agent prompt planner "<status>"`, then apply /antislop-code before reporting.
 - `/clear` via `agent prompt` returns `agent_prompt_stalled` (nothing to observe) — confirm the reset in the viewport before resending; a blind retry can wipe a mid-task session.
 - Only the user tests the real environment: planner/cooker smoke with tmp `HOME=$H` per command, fake tokens — never real `~/.config/cs`, `~/.claude`, or the real `claude` binary.
 - Inline `node -e` parsing a rendered profile trips the privacy-block hook (it reads `j.env` as a file path): put the check in a script file and pass its path.
@@ -34,3 +34,4 @@ Short facts about this repository, injected at every session start. Size limits 
 - Scaffold came from the local jss-devtools bin; published `@jjuidev/jss-devtools@0.6.4` has no create mode.
 - Terminal-only paths (the banner, the rc PATH write) need a real TTY: a fake pty reports 0 columns, so `isInteractive()` stays false; macOS `script` fails here, use a Python pty (see the cs-command-test skill).
 - `CLAUDE_CODE_OAUTH_TOKEN` may be ignored via the launcher path (`claude --settings` file): docs say oauth is ignored in project/local settings; verify with `/status` before trusting it — the global-write path is unaffected.
+- Antislop-code on the pending diff before each report (comments only), then re-run the gate.

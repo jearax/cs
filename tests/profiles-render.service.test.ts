@@ -36,6 +36,37 @@ describe('the settings renderer', () => {
 		});
 	});
 
+	it('returns the env keys in alphabetical order', () => {
+		const { env } = render(
+			{
+				...baseProfile,
+				opus: 'claude-opus-5-5[1m]',
+				oauthToken: 'oauth-secret-token',
+				env: {
+					HTTP_PROXY: 'http://proxy',
+					ZED_EXTRA: '1'
+				}
+			},
+			{ APP_EXTRA: '2' }
+		);
+
+		expect(Object.keys(env ?? {})).toEqual([
+			'ANTHROPIC_AUTH_TOKEN',
+			'ANTHROPIC_BASE_URL',
+			'ANTHROPIC_DEFAULT_FABLE_MODEL',
+			'ANTHROPIC_DEFAULT_HAIKU_MODEL',
+			'ANTHROPIC_DEFAULT_MODEL',
+			'ANTHROPIC_DEFAULT_OPUS_MODEL',
+			'ANTHROPIC_DEFAULT_SONNET_MODEL',
+			'APP_EXTRA',
+			'CLAUDE_CODE_AUTO_COMPACT_WINDOW',
+			'CLAUDE_CODE_DISABLE_1M_CONTEXT',
+			'CLAUDE_CODE_OAUTH_TOKEN',
+			'HTTP_PROXY',
+			'ZED_EXTRA'
+		]);
+	});
+
 	it.each([
 		['haiku', 'claude-haiku-5-5[1m]'],
 		['sonnet', 'claude-sonnet-5-5[1m]'],

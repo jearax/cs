@@ -89,6 +89,7 @@ that peer range binding rather than advisory.
 - One concern per file. Split a file once it passes roughly 200 lines and has separable parts.
 - Prefer names that say what the thing is over names that say what it does.
 - A comment explains why a decision was made. Delete a comment that only restates the code.
+- A comment never cites a decision ID (`.harness/decisions/NNNN`); state the why directly.
 
 ## Layout
 

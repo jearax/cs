@@ -3,7 +3,7 @@ import { denormalizeModelId } from '@/core/utils/denormalize-model-id.util';
 import { hasTokenWithoutUrl, TOKEN_WITHOUT_URL_HINT } from '@/modules/profiles/checks/login-mode.check';
 import { validateProfileName } from '@/modules/profiles/checks/profile-name.check';
 import { BOTH_TOKENS_HINT, hasBothTokens } from '@/modules/profiles/checks/token-exclusivity.check';
-import { EMPTY_PROFILE } from '@/modules/profiles/constants/profile.constant';
+import { EMPTY_PROFILE, OFFICIAL_PROFILE } from '@/modules/profiles/constants/profile.constant';
 import { ensureBinPath } from '@/modules/profiles/services/ensure-bin-path.service';
 import { renderProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
 import {
@@ -132,9 +132,13 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 		});
 	}
 
+	// Creation inherits the fields the flags leave unspecified from the default record, like
+	// function default params; updates keep the profile's own values.
+	const defaults = existing ?? findProfile(config, 'default') ?? OFFICIAL_PROFILE;
+
 	const effective: Profile = {
 		...EMPTY_PROFILE,
-		...existing,
+		...defaults,
 		...update
 	};
 
@@ -152,7 +156,7 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 		});
 	}
 
-	const profile = upsertProfile(config, name, update);
+	const profile = upsertProfile(config, name, existing === undefined ? effective : update);
 
 	await saveCsConfig(config);
 

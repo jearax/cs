@@ -32,25 +32,32 @@ export const deriveOneMillionContextEnv = (profile: Profile): Record<string, str
 /**
  * The one renderer behind both delivery targets: the global settings.json and the profile
  * artifact. Sources, in order, last wins: the seven ANTHROPIC_* fields, the oauth token, the
- * derived `[1m]` defaults, then the global env and the profile env.
+ * derived `[1m]` defaults, then the global env and the profile env. The env keys are returned
+ * in alphabetical order.
  */
 export const renderProfileSettings = ({ profile, globalEnv }: RenderProfileInput): RenderedSettings => {
+	const env = {
+		ANTHROPIC_BASE_URL: profile.url,
+		ANTHROPIC_AUTH_TOKEN: profile.token,
+		...(profile.oauthToken === undefined || profile.oauthToken === ''
+			? {}
+			: { CLAUDE_CODE_OAUTH_TOKEN: profile.oauthToken }),
+		ANTHROPIC_DEFAULT_MODEL: profile.sonnet,
+		ANTHROPIC_DEFAULT_HAIKU_MODEL: profile.haiku,
+		ANTHROPIC_DEFAULT_SONNET_MODEL: profile.sonnet,
+		ANTHROPIC_DEFAULT_OPUS_MODEL: profile.opus,
+		ANTHROPIC_DEFAULT_FABLE_MODEL: profile.fable,
+		...deriveOneMillionContextEnv(profile),
+		...globalEnv,
+		...(profile.env ?? {})
+	};
+
 	return {
-		env: {
-			ANTHROPIC_BASE_URL: profile.url,
-			ANTHROPIC_AUTH_TOKEN: profile.token,
-			...(profile.oauthToken === undefined || profile.oauthToken === ''
-				? {}
-				: { CLAUDE_CODE_OAUTH_TOKEN: profile.oauthToken }),
-			ANTHROPIC_DEFAULT_MODEL: profile.sonnet,
-			ANTHROPIC_DEFAULT_HAIKU_MODEL: profile.haiku,
-			ANTHROPIC_DEFAULT_SONNET_MODEL: profile.sonnet,
-			ANTHROPIC_DEFAULT_OPUS_MODEL: profile.opus,
-			ANTHROPIC_DEFAULT_FABLE_MODEL: profile.fable,
-			...deriveOneMillionContextEnv(profile),
-			...globalEnv,
-			...(profile.env ?? {})
-		},
+		env: Object.fromEntries(
+			Object.entries(env).sort(([left], [right]) => {
+				return left < right ? -1 : left > right ? 1 : 0;
+			})
+		),
 		disableClaudeAiConnectors: true
 	};
 };
