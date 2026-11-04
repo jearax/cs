@@ -187,7 +187,7 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 	const binPath = await ensureBinPath();
 
 	return {
-		kind: 'updated',
+		kind: existing === undefined ? 'created' : 'updated',
 		name,
 		profile,
 		artifacts,

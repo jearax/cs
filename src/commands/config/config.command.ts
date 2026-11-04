@@ -56,6 +56,12 @@ export const registerConfigCommand = (program: Command): void => {
 				process.stdout.write(`Profile: ${result.name}\n`);
 				process.stdout.write(`${profileFieldLines(result.profile).join('\n')}\n`);
 
+				if (result.artifacts !== null) {
+					process.stdout.write(`${artifactLines(result.artifacts).join('\n')}\n`);
+				}
+
+				showBinPathNotice(result.binPath);
+
 				return;
 			}
 

@@ -81,7 +81,7 @@ describe('cs config', () => {
 			'claude-sonnet-5-5'
 		]);
 
-		expect(stdout).toContain('Profile "work" updated.');
+		expect(stdout).toContain('Profile "work" created with the "default" record.');
 		expect(exitCode).toBe(0);
 
 		const config = await readJson(csConfigPath());
