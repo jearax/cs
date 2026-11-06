@@ -1,7 +1,7 @@
 ---
 id: 0017
 title: 'Suggestion UX: clack autocomplete for env keys and a curated models catalog'
-status: Accepted
+status: Superseded by 0019
 date: 2026-11-04
 supersedes: none
 ---

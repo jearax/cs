@@ -13,7 +13,7 @@
 - File: `src/cli.ts:105-119` (renderer) + `src/commands/config/config.command.ts:33` (gắn `csLiveDefault: 'token'`); nguồn giá trị: `src/modules/profiles/services/storage.service.ts:29-39` (`readLiveDefault` trả về giá trị thô, không che).
 - Lỗi: `optionDescription` ghép `default: "<giá trị thô>"` vào mô tả option `--token` mà không qua `maskToken`.
 - Kịch bản: sau khi user chạy `cs config -t <key>` (profile default có token), bất kỳ lần `cs config --help` nào cũng in `API token (default: "sk-...")` nguyên văn ra stdout. Help thường được dán vào issue/CI log → lộ credential (bí mật).
-- Vì CI vẫn xanh: `tests/config.command.test.ts:51` chỉ assert `not.toContain('API token (default')` trên trạng thái token rỗng (`OFFICIAL_PROFILE.token = ''`, `src/modules/profiles/constants/profile.constant.ts:16`). Trạng thái "default profile có token" không được test.
+- Vì CI vẫn xanh: `tests/config.command.test.ts:51` chỉ assert `not.toContain('API token (default')` trên trạng thái token rỗng (`OFFICIAL_PROFILE.token` là chuỗi rỗng, `src/modules/profiles/constants/profile.constant.ts:16`). Trạng thái "default profile có token" không được test.
 - Sửa đề xuất: trong `optionDescription` của `cli.ts`, che các field nhạy cảm (`token`, `oauthToken`) qua `maskToken` trước khi render; hoặc không gắn live default cho `--token`.
 
 ## Medium

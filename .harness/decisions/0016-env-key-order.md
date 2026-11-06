@@ -1,7 +1,7 @@
 ---
 id: 0016
 title: Env keys render in alphabetical order — profile artifact and global write alike
-status: Accepted
+status: Superseded by 0018
 date: 2026-11-04
 supersedes: none
 ---

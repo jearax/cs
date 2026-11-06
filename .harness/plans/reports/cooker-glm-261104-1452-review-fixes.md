@@ -9,7 +9,7 @@ Date: 2026-11-04 · Branch: main · No commit (planner owns commits)
   tests at 1/2/8/9/10/11/12/13/long, plus "never returns the full token" for lengths 1–40 and a
   9–12 no-tail-exposure loop.
 - `storage.service.ts` `readLiveDefault`: the `token` field is masked via `maskToken` before it
-  can reach a help line. `config -h` test: with a default record carrying `sk-seed-token`, the
+  can reach a help line. `config -h` test: with a default record carrying `<fake-token>`, the
   help contains `API token (default: "sk-seed-...oken")` and the raw token appears nowhere.
 
 ## Phase 2 — write integrity (F2, F4, F6)
