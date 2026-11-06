@@ -9,3 +9,4 @@ Knowledge longer than one line of [`../MEMORY.md`](../MEMORY.md). Pick the templ
 | [cs-cli-feature-inventory.md](./cs-cli-feature-inventory.md) | reference | Behaviour map of the old `cs-cli` (read-only reference)                                   |
 | [code-standards.md](./code-standards.md)                     | standards | Layout, import, exit-code, testing and tooling conventions the architecture test enforces |
 | [auth-modes.md](./auth-modes.md)                             | reference | The url/token/oauthToken constraint matrix per profile (decision 0008)                    |
+| [harness-writing-traps.md](./harness-writing-traps.md)       | topic     | Decision status/index traps and the doctor secret check                                   |
