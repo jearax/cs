@@ -80,8 +80,15 @@ metadata:
   match the term. The captured text carries no ANSI codes while stdout is not a terminal, so the
   assertion passes without stripping; stripping keeps it true in a terminal run too, where the codes
   sit between the words and a contiguous match would fail.
+- A command can keep its own `<args>` + action and host subcommands (`cs alias <name> <profile>` +
+  `remove|rm`): commander dispatches only when the first operand names a subcommand, and adds no
+  implicit `help` subcommand there.
 - A missing positional argument never reaches a `CliError`: commander prints
   `missing required argument '<name>'` on stderr and exits 1. Assert that wording and the code.
+- A verb a subcommand reserves (`alias remove|rm`) never reaches the parent action: commander
+  dispatches it to the subcommand, so the service guard is tested by importing the service
+  directly (`runAlias` in `tests/alias.command.test.ts`); the CLI-level proof is that the verb
+  routes to removal, never to creation.
 - ESLint's `autofix/object-curly-newline` and Prettier disagree on a one-line object literal with
   two or more properties: ESLint expands it, Prettier collapses it back. Run `pnpm lint:fix` and keep
   its shape — Prettier keeps an object multi-line when the source already breaks after `{`.

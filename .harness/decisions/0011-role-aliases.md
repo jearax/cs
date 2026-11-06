@@ -1,7 +1,7 @@
 ---
 id: 0011
 title: Role aliases — cs alias <name> <profile> re-points a launcher with one command
-status: Accepted
+status: Superseded by 0024
 date: 2026-11-04
 supersedes: none
 ---

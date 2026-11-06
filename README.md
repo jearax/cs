@@ -45,16 +45,17 @@ cs current
 
 ## Commands
 
-| Command                     | Description                                                        |
-| --------------------------- | ------------------------------------------------------------------ |
-| `cs config`                 | Create or update a profile (no flags = show it)                    |
-| `cs use <profile>`          | Activate a profile; writes the global settings, renders the files  |
-| `cs current`                | Show the active profile and the profiles that have a rendered file |
-| `cs list` (`ls`)            | List all profiles                                                  |
-| `cs remove <profile>`       | Delete a profile (`default` cannot be removed)                     |
-| `cs reset`                  | Delete every profile except `default`, restore its official values |
-| `cs env`                    | Interactive editor for extra env vars (global or per-profile)      |
-| `cs alias <name> <profile>` | Create or re-point the `claude-<name>` launcher for a profile      |
+| Command                      | Description                                                        |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `cs config`                  | Create or update a profile (no flags = show it)                    |
+| `cs use <profile>`           | Activate a profile; writes the global settings, renders the files  |
+| `cs current`                 | Show the active profile and the profiles that have a rendered file |
+| `cs list` (`ls`)             | List all profiles                                                  |
+| `cs remove <profile>`        | Delete a profile (`default` cannot be removed)                     |
+| `cs reset`                   | Delete every profile except `default`, restore its official values |
+| `cs env`                     | Interactive editor for extra env vars (global or per-profile)      |
+| `cs alias <name> <profile>`  | Create or re-point the `claude-<name>` launcher for a profile      |
+| `cs alias remove <alias...>` | Delete an alias and its `claude-<name>` launcher                   |
 
 Run `cs <command> --help` for full usage.
 
@@ -203,10 +204,26 @@ cs alias planner other
 There is no `unalias`: re-pointing is the whole lifecycle. `cs alias planner default` is an
 ordinary re-point at the pre-seeded profile, and no `claude-default` launcher is created for it.
 
+Dropping a role alias keeps the profile, its rendered artifact and the sibling aliases untouched:
+
+```bash
+cs alias remove planner
+```
+
+```
+Alias "planner" removed (was → work).
+  Launcher: ~/.config/cs/bin/claude-planner
+```
+
+`cs alias remove` accepts several names (`cs alias rm planner cooker`), but help shows the
+single-alias form. Every name is checked first, so one unknown name removes nothing. The names
+`remove` and `rm` are reserved and cannot be alias names.
+
 Rules:
 
 - An alias name may not be a profile name, and a profile name may not be an alias name — one name,
-  one launcher. An alias name stays taken until the profile it points at is removed.
+  one launcher. An alias name stays taken until the profile it points at is removed or the alias
+  itself is removed.
 - The target profile must exist.
 - `cs remove <profile>` drops the aliases that pointed at it and reports them.
 - `cs reset` clears every alias and its launcher.

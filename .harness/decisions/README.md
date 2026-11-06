@@ -15,7 +15,7 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0008 | One token per profile — token and oauthToken are mutually exclusive                            | Accepted           | 2026-11-03 |
 | 0009 | cs appends a marked PATH export to the user's shell rc automatically                           | Superseded by 0010 | 2026-11-04 |
 | 0010 | cs appends a marked PATH export to the user's shell rc; the marker names the tool only         | Accepted           | 2026-11-04 |
-| 0011 | Role aliases — cs alias <name> <profile> re-points a launcher with one command                 | Accepted           | 2026-11-04 |
+| 0011 | Role aliases — cs alias <name> <profile> re-points a launcher with one command                 | Superseded by 0024 | 2026-11-04 |
 | 0012 | Schema re-baselined to 1 — the migration chain is removed from the code                        | Accepted           | 2026-11-04 |
 | 0013 | Only aliases create launchers — profiles render artifacts only                                 | Accepted           | 2026-11-04 |
 | 0014 | The profile name `claude` auto-seeds from the default record when missing, and stays removable | Superseded by 0015 | 2026-11-04 |
@@ -28,3 +28,4 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0021 | A corrupt settings.json is refused with an error, never overwritten                            | Accepted           | 2026-11-04 |
 | 0022 | GitHub Actions CI runs lint, typecheck and test on push and pull requests                      | Accepted           | 2026-11-04 |
 | 0023 | cs list shows default first, then profiles A→Z; aliases A→Z                                    | Accepted           | 2026-11-06 |
+| 0024 | cs alias remove\|rm <alias...> deletes one alias; the rest of role aliases stands              | Accepted           | 2026-11-06 |

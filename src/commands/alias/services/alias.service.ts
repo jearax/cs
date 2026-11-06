@@ -32,6 +32,13 @@ export const runAlias = async (name: string, profileName: string): Promise<Alias
 		throw new CliError(aliasError);
 	}
 
+	// The removal subcommand owns these spellings, so no alias may take them.
+	if (aliasName === 'remove' || aliasName === 'rm') {
+		throw new CliError(`Alias "${aliasName}" is reserved for removing aliases.`, {
+			hint: 'Pick another alias name.'
+		});
+	}
+
 	const targetError = validateProfileName(targetName, 'Profile');
 
 	if (targetError !== null) {
