@@ -51,7 +51,7 @@ cs current
 | `cs use <profile>`           | Activate a profile; writes the global settings, renders the files  |
 | `cs current`                 | Show the active profile and the profiles that have a rendered file |
 | `cs list` (`ls`)             | List all profiles                                                  |
-| `cs remove <profile>`        | Delete a profile (`default` cannot be removed)                     |
+| `cs remove <profile>` (`rm`) | Delete a profile (`default` cannot be removed)                     |
 | `cs reset`                   | Delete every profile except `default`, restore its official values |
 | `cs env`                     | Interactive editor for extra env vars (global or per-profile)      |
 | `cs alias <name> <profile>`  | Create or re-point the `claude-<name>` launcher for a profile      |

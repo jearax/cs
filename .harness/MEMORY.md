@@ -13,6 +13,7 @@ Short facts about this repository, injected at every session start. Size limits 
 - The Herdr cooker (name varies: `cooker-glm`, `cooker-2`; check `herdr agent list`) implements via /ak-cook: dispatch without `--wait`; it pings back `herdr agent prompt <planner-name> "<status>"`.
 - `/clear` via `agent prompt` returns `agent_prompt_stalled` — confirm the reset in the viewport before resending; a retry can wipe a session.
 - Only the user tests the real environment: planner/cooker smoke with tmp `HOME=$H`, fake tokens — never real `~/.config/cs`, `~/.claude`, or the real `claude` binary.
+- Smoke chains: every bundle invocation carries `HOME=$H` (or one subshell exports it); never claim real-env state you did not re-read. See .harness/docs/smoke-temp-home.md.
 - Inline `node -e` with profile fields trips the privacy-block hook (it reads `j.env` as a path): use a script file with paths as args.
 - `cs use` renders the profile files and writes the global settings; no `--file` flag, no `cs help` command (`helpCommand(false)` in `src/cli.ts`).
 - One token per profile: `cs config` rejects both tokens together, and `token` without `url` (decision 0008). See .harness/docs/auth-modes.md.

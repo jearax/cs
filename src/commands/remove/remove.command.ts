@@ -10,6 +10,7 @@ const EXAMPLE_ROWS: ReadonlyArray<readonly [string, string]> = [
 export const registerRemoveCommand = (program: Command): void => {
 	program
 		.command('remove <profile>')
+		.alias('rm')
 		.description('Remove a profile')
 		.addHelpText('after', examplesText(EXAMPLE_ROWS))
 		.action(async (name: string) => {

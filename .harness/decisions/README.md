@@ -29,3 +29,4 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0022 | GitHub Actions CI runs lint, typecheck and test on push and pull requests                      | Accepted           | 2026-11-04 |
 | 0023 | cs list shows default first, then profiles A→Z; aliases A→Z                                    | Accepted           | 2026-11-06 |
 | 0024 | cs alias remove\|rm <alias...> deletes one alias; the rest of role aliases stands              | Accepted           | 2026-11-06 |
+| 0025 | cs remove answers to rm, full name primary                                                     | Accepted           | 2026-11-06 |

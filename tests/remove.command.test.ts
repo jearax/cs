@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 
 import { describe, expect, it } from 'vitest';
 
@@ -77,6 +78,34 @@ describe('cs remove', () => {
 
 		expect(stderr).toContain('Cannot remove the "default" profile');
 		expect(exitCode).toBe(1);
+	});
+
+	it('removes via the rm shorthand like the full name', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const { stdout, exitCode } = await runCli(['rm', 'work']);
+
+		expect(stdout).toContain('Profile "work" removed.');
+		expect(exitCode).toBe(0);
+
+		const { stdout: list } = await runCli(['list']);
+
+		expect(list).not.toContain('work');
+	});
+
+	it('refuses to remove the default profile via the rm shorthand', async () => {
+		const { stderr, exitCode } = await runCli(['rm', 'default']);
+
+		expect(stderr).toContain('Cannot remove the "default" profile');
+		expect(exitCode).toBe(1);
+	});
+
+	it('lists the command as remove|rm in the root help', async () => {
+		const { stdout } = await runCli(['-h']);
+
+		const help = stripVTControlCharacters(stdout).replace(/\n\s+/g, ' ');
+
+		expect(help).toContain('remove|rm');
 	});
 
 	it('fails when the profile does not exist', async () => {
