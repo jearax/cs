@@ -85,6 +85,12 @@ metadata:
 - ESLint's `autofix/object-curly-newline` and Prettier disagree on a one-line object literal with
   two or more properties: ESLint expands it, Prettier collapses it back. Run `pnpm lint:fix` and keep
   its shape — Prettier keeps an object multi-line when the source already breaks after `{`.
+- `arrow-body-style` + `prefer-arrow-functions` reject concise-return arrows (`(x) => x + 1`) — write
+  block bodies with `return`, or let `pnpm lint:fix` rewrite them; either way re-run the gate.
+- An order assertion via `indexOf` is vacuous: a missing name gives -1, and -1s still "sort".
+  Collect the names from the section's header lines with `matchAll` and `toEqual` the whole array.
+- `match[1]` is `string | undefined` under `noUncheckedIndexedAccess` — use `match[1]!`; the
+  non-null assertion is allowed here (`src/core/ui/banner.ui.ts` does it).
 
 ## Verification
 
