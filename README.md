@@ -16,15 +16,20 @@ Both targets are produced by the same renderer, so a profile behaves the same ei
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jearax/cs/main/scripts/install.sh | sh
+curl -fsSL https://cs.jjuidev.com/install.sh | sh
 ```
 
-The script checks git, Node.js >= 24.11 and pnpm, clones the repo, builds and copies `cs` to
-`~/.local/bin` (override with `CS_INSTALL_DIR`). Make sure that directory is on your PATH.
+The installer needs Node.js >= 24.11, `curl` or `wget`, and `sha256sum` or `shasum`. It downloads
+the release bundle, checks it against the checksum published next to it, writes the CLI to
+`~/.cs/<version>/cli.mjs` and the `cs` command to `~/.local/bin/cs`, and prints a `PATH` hint when
+that directory is not on your PATH. `CS_BASE_URL`, `CS_HOME` and `CS_BIN_DIR` move those locations;
+the old `CS_INSTALL_DIR` is gone.
 
 Or from source:
 
 ```bash
+git clone https://github.com/jearax/cs.git
+cd cs
 pnpm install
 pnpm build
 pnpm link
