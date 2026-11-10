@@ -27,6 +27,6 @@ describe('highlightCommand', () => {
 	});
 
 	it('marks only the first word of a single command', () => {
-		expect(programs('cs config -n work -u https://api.anthropic.com')).toEqual(['cs']);
+		expect(programs('cs config [options]')).toEqual(['cs']);
 	});
 });

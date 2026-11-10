@@ -61,7 +61,7 @@ const GettingStarted = () => {
 							/>
 							<p>Create a profile. A new one fills its unspecified fields from the default record.</p>
 							<CodeBlock
-								code="cs config -n work -u https://api.anthropic.com -t sk-ant-..."
+								code="cs config [options]"
 								language="sh"
 								prompt={{
 									dir: '~',
@@ -69,11 +69,7 @@ const GettingStarted = () => {
 								}}
 								title="config"
 								headerAction={
-									<CopyButton
-										feedback="icon"
-										label="Copy the config command"
-										value="cs config -n work -u https://api.anthropic.com -t sk-ant-..."
-									/>
+									<CopyButton feedback="icon" label="Copy the config command" value="cs config [options]" />
 								}
 							/>
 							<p>Switch to it, and see what is active.</p>

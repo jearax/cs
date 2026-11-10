@@ -16,7 +16,7 @@ export const COMMANDS: readonly CommandInfo[] = [
 	{
 		name: 'config',
 		slug: 'reference',
-		command: 'cs config -n work -u https://api.anthropic.com -t sk-ant-...',
+		command: 'cs config [options]',
 		summary: 'Create or update a profile.',
 		details:
 			'No flags = show the profile. A new profile fills its unspecified fields from the default record, so a one-line create carries the model IDs. One token per profile: `token` and `oauthToken` are mutually exclusive, and `token` without `url` is rejected.'
