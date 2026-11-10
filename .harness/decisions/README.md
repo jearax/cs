@@ -30,3 +30,5 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0023 | cs list shows default first, then profiles A→Z; aliases A→Z                                    | Accepted           | 2026-11-06 |
 | 0024 | cs alias remove\|rm <alias...> deletes one alias; the rest of role aliases stands              | Accepted           | 2026-11-06 |
 | 0025 | cs remove answers to rm, full name primary                                                     | Accepted           | 2026-11-06 |
+| 0026 | cs ships a landing site ported from jss-devtools, deployed at cs.jjuidev.com                   | Accepted           | 2026-11-10 |
+| 0027 | The installer downloads the verified release bundle from the site, replacing clone-and-build   | Accepted           | 2026-11-10 |
