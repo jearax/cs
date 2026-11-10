@@ -76,3 +76,25 @@
 .details code {
 	@apply rounded bg-surface px-1.5 py-0.5 font-mono text-body-sm text-default;
 }
+
+/* The band's way out. The design system's Button renders a <button> only, so the link carries
+   the outline recipe's own utilities instead of a restyled one-off. */
+.foot {
+	@apply flex justify-center;
+}
+
+.allLink {
+	@apply focus-ring inline-flex h-10 items-center gap-2 rounded-md border border-default px-4 text-label-base text-default transition-colors duration-150;
+
+	@apply not-hover:text-default;
+
+	@apply hover:bg-hover active:bg-active;
+}
+
+.allLink .arrow {
+	@apply transition-transform duration-150;
+}
+
+.allLink:hover .arrow {
+	@apply translate-x-0.5 motion-reduce:translate-x-0;
+}

@@ -45,3 +45,9 @@ export const FEATURES: readonly Feature[] = COMMANDS.map((command) => {
 		icon: ICON_BY_COMMAND[command.name as keyof typeof ICON_BY_COMMAND]
 	};
 });
+
+/**
+ * The three commands the home band shows. The band holds one row of three columns like the
+ * source site; the rest answer in the Reference docs, which the band links to.
+ */
+export const BAND_COMMANDS: readonly Feature['name'][] = ['config', 'use', 'alias'];

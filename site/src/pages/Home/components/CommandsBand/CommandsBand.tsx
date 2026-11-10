@@ -3,7 +3,7 @@ import { ComponentProps } from 'react';
 import { Link } from 'react-router';
 
 import RichText from '@/pages/Docs/components/RichText/RichText';
-import { FEATURES } from '@/pages/Home/constants/feature.constant';
+import { BAND_COMMANDS, FEATURES } from '@/pages/Home/constants/feature.constant';
 
 import styles from './styles.module.css';
 
@@ -20,7 +20,15 @@ const CommandsBand = ({ className, ...props }: CommandsBandProps) => {
 			</div>
 
 			<div className={styles.row}>
-				{FEATURES.map((feature) => {
+				{BAND_COMMANDS.map((name) => {
+					const feature = FEATURES.find((entry) => {
+						return entry.name === name;
+					});
+
+					if (feature === undefined) {
+						return null;
+					}
+
 					return (
 						/*
 						 * The column is the link: the whole surface answers, the hairlines do the
@@ -49,6 +57,15 @@ const CommandsBand = ({ className, ...props }: CommandsBandProps) => {
 					);
 				})}
 			</div>
+
+			<p className={styles.foot}>
+				<Link className={styles.allLink} to="/docs/reference">
+					All nine commands
+					<span className={styles.arrow} aria-hidden="true">
+						→
+					</span>
+				</Link>
+			</p>
 		</section>
 	);
 };
