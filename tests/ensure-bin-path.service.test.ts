@@ -256,8 +256,8 @@ describe('the PATH service through the CLI', () => {
 
 		const { stdout } = await runCli(['config', '-n', 'work', '-u', 'https://example.com']);
 
-		expect(stdout).not.toContain('PATH entry added');
-		expect(stdout).not.toContain('Add ~/.config/cs/bin to your PATH');
+		expect(stdout).not.toContain('PATH: added');
+		expect(stdout).not.toContain('PATH: not written');
 		expect(
 			await readRc(zshRc()).catch(() => {
 				return '';
@@ -272,7 +272,7 @@ describe('the PATH service through the CLI', () => {
 
 		const { stdout } = await runCli(['alias', 'planner', 'work']);
 
-		expect(stdout).toContain('PATH entry added to ~/.zshrc');
+		expect(stdout).toContain('PATH: added to ~/.zshrc');
 		expect(await readRc(zshRc())).toBe(`\n${RC_PATH_MARKER}\n${POSIX_EXPORT_LINE}\n`);
 	});
 
@@ -283,7 +283,7 @@ describe('the PATH service through the CLI', () => {
 
 		const { stdout } = await runCli(['alias', 'planner', 'work']);
 
-		expect(stdout).toContain('Add ~/.config/cs/bin to your PATH');
+		expect(stdout).toContain('PATH: not written — add it to ~/.zshrc');
 		expect(stdout).toContain(POSIX_EXPORT_LINE);
 		expect(
 			await readRc(zshRc()).catch(() => {

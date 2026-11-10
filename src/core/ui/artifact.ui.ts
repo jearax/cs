@@ -15,15 +15,23 @@ export type BinPathOutcome = {
 };
 
 export const binPathNoticeLines = (outcome: BinPathOutcome): string[] => {
+	/*
+	 * One line, one voice, whatever the PATH service did: every line reads `  PATH: <what>` in the
+	 * same two-space indent as `Launcher:`, so the command's tail block is uniform across runs.
+	 * The statuses with nothing to do stay silent.
+	 */
 	if (outcome.status === 'added') {
-		return [`PATH entry added to ${outcome.rcPath} — open a new shell to pick it up`];
+		return [`  PATH: added to ${outcome.rcPath} — open a new shell to pick it up`];
+	}
+
+	if (outcome.status === 'marker-present') {
+		return [`  PATH: entry is in ${outcome.rcPath} — open a new shell to pick it up`];
 	}
 
 	if (outcome.status === 'not-interactive' || outcome.status === 'unsupported-shell') {
-		const hint =
-			outcome.rcPath === null ? `  ${outcome.exportLine}` : `  ${outcome.exportLine}   (add it to ${outcome.rcPath})`;
+		const target = outcome.rcPath === null ? 'your shell rc' : outcome.rcPath;
 
-		return ['Add ~/.config/cs/bin to your PATH to run the launchers:', hint];
+		return [`  PATH: not written — add it to ${target}: ${outcome.exportLine}`];
 	}
 
 	return [];
