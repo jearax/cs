@@ -16,6 +16,7 @@ Short facts about this repository, injected at every session start. Size limits 
 - `cs use` renders profile files and writes global settings; no `--file` flag, no `cs help`.
 - One token per profile: `cs config` rejects both tokens together and `token` without `url` (decision 0008) — .harness/docs/auth-modes.md
 - `-h` is help everywhere (decision 0005); unknown args exit 1 "unknown command" (tests/cli.test.ts).
+- Site command displays use the help Usage form (`cs config [options]`), not long flag examples — band cards, docs code blocks and hero typed lines alike.
 - Tests live in `tests/`; vitest global setup builds the bundle, so green `pnpm test` proves the build. Rules: tests/support/architecture-rules.ts; .harness/docs/code-standards.md
 - `scripts/package-info.d.mts` is required (allowJs off, else TS7016). Port jss-devtools code, not its docs prose.
 - Profiles live in `~/.config/cs/cs.json` (0600); a profile renders only `profiles/<name>.json` (0013); only `cs alias` creates launchers (0024).
