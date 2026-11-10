@@ -1,0 +1,49 @@
+/*
+ * The sentinel sits at the very top of the page and has no height. The header watches it with an
+ * observer: while it is on screen the page is at the top, and when it leaves, the page has
+ * scrolled and the bar raises its surface.
+ */
+.sentinel {
+	@apply absolute top-0 left-0 h-px w-px;
+}
+
+.root {
+	@apply sticky top-0 z-header border-b border-default bg-surface transition-colors duration-150;
+}
+
+/*
+ * Once the page has scrolled, the bar sits over the content, so it takes a raised surface and a
+ * blur: the content behind it is out of focus instead of competing with the navigation.
+ */
+.root[data-scrolled='true'] {
+	@apply bg-raised/90 backdrop-blur-md;
+}
+
+.inner {
+	@apply wrapper flex items-center justify-between gap-6 py-3;
+}
+
+.brand {
+	@apply focus-ring shrink-0 rounded-md transition-opacity duration-150 hover:opacity-80;
+}
+
+.actions {
+	@apply flex shrink-0 items-center gap-2;
+}
+
+/*
+ * The search trigger serves every width now: on a desktop it is the wide field, on a phone the
+ * same button shrinks to its icon through its own stylesheet.
+ */
+.search {
+	@apply min-w-0;
+}
+
+/* The mark sits at the toggle's rhythm: same ghost surface, same hover, the same quiet row. */
+.github {
+	@apply focus-ring flex size-11 items-center justify-center rounded-md text-muted transition-colors duration-150 hover:bg-hover hover:text-default active:bg-active;
+}
+
+.githubIcon {
+	@apply size-5;
+}

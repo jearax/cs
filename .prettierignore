@@ -9,3 +9,6 @@ bun.lock
 .harness/core/
 .harness/plans/
 .agentkit/
+
+site/dist/
+site/pnpm-lock.yaml

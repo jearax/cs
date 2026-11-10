@@ -1,0 +1,63 @@
+/*
+ * SKIN "cs" (Signal Orange & Warm Ink).
+ *
+ * Scale values only: `:root[data-skin='<name>']` replaces the `--color-<scale>-<step>` values of the
+ * design system's theme, so the semantic mapping stays the package's and the page inherits its light and
+ * dark step contracts. Unlayered, so it wins over the theme's `@layer theme` declarations.
+ *
+ * Three scales change, and only three:
+ *
+ *   primary    Signal Orange, mean hue 45. The brand colour: buttons, links, the focus ring, the logo mark.
+ *              The package's default is plum (mean hue 339); the site needs a palette of its own.
+ *   secondary  Warm grey, mean hue 60, chroma at most 0.008. The package's default is olive (mean hue 112),
+ *              a second brand voice; the site paints one accent, so the secondary is a quiet companion
+ *              to the neutrals instead of a second hue beside the orange.
+ *   neutral    Warm ink, mean hue 70, chroma at most 0.010. Text, borders, the dark surfaces.
+ *              The package's default is warm parchment, which reads editorial; this site reads like a terminal.
+ *
+ * The four status scales are inherited from the package. They carry meaning rather than brand: a status
+ * scale that changed with the site's palette would stop meaning "this is a failure".
+ *
+ * The values are the package's own scale values, converted to OKLCH, rotated to the target hue and
+ * converted back under a fixed WCAG relative luminance. Holding the luminance holds every contrast ratio
+ * in the package's contract exactly, so the rotation cannot break the contract; it only changes the hue.
+ * The primary's hue is held near 45 along the scale rather than drifting, and the secondary is a companion
+ * warm grey rather than a second accent.
+ *
+ * Steps run 50 (lightest) to 950 (darkest), as in the package's theme.
+ */
+:root[data-skin='cs'] {
+	--color-primary-50: #fff1e9;
+	--color-primary-100: #ffdecf;
+	--color-primary-200: #f7c4ae;
+	--color-primary-300: #e7a689;
+	--color-primary-400: #cf8766;
+	--color-primary-500: #a86546;
+	--color-primary-600: #895138;
+	--color-primary-700: #70422c;
+	--color-primary-800: #553020;
+	--color-primary-900: #3e2215;
+	--color-primary-950: #27140b;
+	--color-secondary-50: #f8f6f4;
+	--color-secondary-100: #ede9e6;
+	--color-secondary-200: #dad6d2;
+	--color-secondary-300: #c3beba;
+	--color-secondary-400: #a8a3a0;
+	--color-secondary-500: #85807d;
+	--color-secondary-600: #6e6965;
+	--color-secondary-700: #5a5652;
+	--color-secondary-800: #433f3c;
+	--color-secondary-900: #312e2b;
+	--color-secondary-950: #1d1b1a;
+	--color-neutral-50: #f9f6f3;
+	--color-neutral-100: #f0ece7;
+	--color-neutral-200: #e4ded9;
+	--color-neutral-300: #cfc9c3;
+	--color-neutral-400: #b4aea9;
+	--color-neutral-500: #97928d;
+	--color-neutral-600: #7f7a74;
+	--color-neutral-700: #66625d;
+	--color-neutral-800: #4f4b46;
+	--color-neutral-900: #393530;
+	--color-neutral-950: #1a1613;
+}

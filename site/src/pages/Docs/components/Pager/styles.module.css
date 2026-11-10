@@ -1,0 +1,36 @@
+/*
+ * Two equal cards on one row, the Docusaurus and VitePress pattern: the previous page on the left,
+ * the next on the right. The direction label is the quiet half; the title carries the link.
+ */
+.root {
+	@apply mt-4 grid grid-cols-2 gap-4 border-t border-default pt-8;
+
+	@apply max-sm:grid-cols-1 max-sm:gap-3;
+}
+
+.link {
+	@apply focus-ring flex min-w-0 flex-col gap-1 rounded-lg border border-default px-5 py-4 text-default no-underline transition-colors duration-150 hover:border-primary hover:bg-hover active:bg-active;
+}
+
+/* Next keeps the right column and edge even on the first page, where there is no previous card. */
+.next {
+	@apply col-start-2 items-end text-right;
+
+	@apply max-sm:col-start-1;
+}
+
+.direction {
+	@apply inline-flex items-center gap-1.5 text-label-xs uppercase tracking-widest text-muted transition-colors duration-150;
+}
+
+.title {
+	@apply text-heading-lg text-default transition-colors duration-150;
+}
+
+.link:hover .title {
+	@apply text-primary;
+}
+
+.link:hover .direction {
+	@apply text-default;
+}

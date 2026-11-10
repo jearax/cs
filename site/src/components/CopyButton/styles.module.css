@@ -1,0 +1,17 @@
+/*
+ * The button sits beside the command it copies, so it keeps its own width and never pushes the
+ * command out of the layout.
+ */
+.root {
+	@apply shrink-0;
+}
+
+/* The copied moment is a success: the check mark and the text say so in the status colour. */
+.root[data-copied='true'] {
+	@apply text-success;
+}
+
+/* The icon-only feedback keeps its status line for screen readers, out of sight. */
+.status {
+	@apply sr-only;
+}

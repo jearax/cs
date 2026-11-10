@@ -12,6 +12,7 @@
 	],
 	"scripts": {
 		"build": "tsdown",
+		"build:site": "pnpm --dir site build",
 		"dev": "tsdown --watch",
 		"format": "pnpm lint:fix && prettier --write .",
 		"lint": "eslint \"{src,lib{,s},bin{,s},script{,s},tool{,s},config{,s},type{,s},test{,s},__test{s,}__,spec{,s},e2e}/**/*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\" \"*.{cjs,mjs,js,jsx,cts,mts,ts,tsx}\"",

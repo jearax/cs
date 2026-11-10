@@ -1,0 +1,25 @@
+networks:
+  dokploy-network:
+    external: true
+
+services:
+  cs-web:
+    image: ghcr.io/jearax/cs:latest
+    # Always pull, or the redeploy webhook keeps the old image.
+    pull_policy: always
+    container_name: cs-web
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=dokploy-network'
+      - 'traefik.http.routers.cs-web.rule=Host(`cs.jjuidev.com`)'
+      - 'traefik.http.routers.cs-web.entryPoints=websecure'
+      - 'traefik.http.routers.cs-web.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.cs-web.loadbalancer.server.port=80'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:80/']
+      interval: 30s
+      timeout: 10s
+      retries: 3

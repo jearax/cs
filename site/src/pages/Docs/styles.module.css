@@ -1,0 +1,11 @@
+/* No surface here: the layout's frame and background own the page. */
+
+.layout {
+	@apply wrapper mx-auto grid grid-cols-[14rem_minmax(0,1fr)] gap-12 py-14;
+
+	@apply max-lg:grid-cols-1 max-lg:gap-10 max-lg:py-10;
+}
+
+.content {
+	@apply min-w-0;
+}

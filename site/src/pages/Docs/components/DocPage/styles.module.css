@@ -1,0 +1,126 @@
+.root {
+	@apply flex flex-col gap-4;
+}
+
+.title {
+	@apply text-heading-4xl text-default;
+}
+
+.summary {
+	@apply max-w-2xl text-body-lg text-muted;
+}
+
+.body {
+	@apply grid grid-cols-[minmax(0,1fr)_12.5rem] gap-14;
+
+	@apply max-lg:grid-cols-1 max-lg:gap-10;
+}
+
+.prose {
+	@apply flex min-w-0 flex-col gap-8;
+}
+
+.section {
+	@apply flex scroll-mt-24 flex-col gap-3;
+}
+
+.heading {
+	@apply text-heading-2xl text-default;
+}
+
+.aside {
+	@apply sticky top-24 block self-start;
+
+	@apply max-lg:hidden;
+}
+
+.asideLabel {
+	@apply mb-3 text-label-sm uppercase tracking-widest text-muted;
+}
+
+.toc {
+	@apply flex flex-col gap-2 border-l border-default pl-4;
+}
+
+.tocLink {
+	@apply focus-ring relative block rounded text-body-sm text-muted transition-colors duration-150 hover:text-default;
+}
+
+/*
+ * The heading the reader is at is the one that is spoken and the one that is lit, in the brand
+ * colour, with an accent segment on the TOC's left border aligned to the link — the sidebar
+ * pattern the reader already knows from the docs sites they use. The border is 1px at the ul's
+ * edge and the links start 16px in, so the marker sits at -17px, over the border line.
+ */
+.tocLink[data-active='true'] {
+	@apply text-primary;
+}
+
+.tocLink[data-active='true']::before {
+	@apply absolute top-0.5 bottom-0.5 -left-4 w-0.5 rounded bg-primary content-[''];
+}
+
+/*
+ * The prose styles. A docs page writes plain semantic HTML and the template styles it, so the six
+ * pages share one set of rules instead of six copies.
+ */
+.prose p {
+	@apply text-body-base text-muted;
+}
+
+.prose ul {
+	@apply flex list-disc flex-col gap-2 pl-5 text-body-base text-muted;
+}
+
+.prose ol {
+	@apply flex list-decimal flex-col gap-2 pl-5 text-body-base text-muted;
+}
+
+.prose strong {
+	@apply font-medium text-default;
+}
+
+/*
+ * The inline code is the design system's chip: a full surface, not padding alone, so a literal
+ * never reads as stray spaces around itself.
+ */
+.prose code {
+	@apply rounded-sm bg-hover px-1.5 font-mono text-body-sm text-default;
+}
+
+/* A command must not break across lines: a column that wraps mid-word is unreadable. */
+.prose td code {
+	@apply whitespace-nowrap;
+}
+
+.prose a {
+	@apply focus-ring rounded text-primary underline underline-offset-4 hover:no-underline;
+}
+
+.prose h3 {
+	@apply mt-2 text-heading-sm text-default;
+}
+
+.prose table {
+	@apply w-full border-collapse text-body-sm;
+
+	/* Commands keep one line, so on a phone the table scrolls inside itself instead of the page. */
+	@apply max-sm:block max-sm:overflow-x-auto;
+}
+
+.prose th {
+	@apply border-b border-default bg-hover px-2 pb-2 pt-1 text-left font-medium text-default;
+}
+
+.prose td {
+	@apply border-b border-default py-2 pl-2 align-top text-muted;
+}
+
+/* A row answers the pointer so the eye can walk the table without losing its place. */
+.prose tbody tr {
+	@apply transition-colors duration-150 hover:bg-hover;
+}
+
+.prose :is(th, td) {
+	@apply pr-4 last:pr-0;
+}
