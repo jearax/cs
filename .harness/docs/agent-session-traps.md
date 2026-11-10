@@ -45,3 +45,9 @@ While any dev server the session started is still listening, the ghost-proc-guar
 Bash calls that touch those processes — even a plain `kill` of leaked fixture servers. Route the
 cleanup to the cooker that started them (its `/procs` command owns the list) instead of killing
 from the planner pane.
+
+## A busy dev-server port is a stop, not a prompt
+
+Starting a dev server on a taken port is blocked by the ghost-proc-guard. Reuse the running
+server — vite HMR picks up source edits, so the existing process serves the new code — or stop
+it only if this session started it; a foreign session's server needs the user's say-so.

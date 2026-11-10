@@ -12,3 +12,4 @@
 - The installer's checksum entry is a contract with `scripts/stage-release.mjs` (the site cooker's
   file). Both sides were checked against a real staged release.
 - The site mirrors the installer: `site/src/constants/cli.constant.ts` REQUIREMENTS and the Install page (paths, envs, uninstall) restate `scripts/install.sh` facts. When the installer changes, update the site copy in the same change.
+- The vendored `@jjuidev/react` exports `Button` only as a `<button>` (no href prop), and its variants module is not in the package exports. A link that needs a button's look carries the recipe's token utilities itself — no restyled one-off components.

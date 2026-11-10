@@ -18,6 +18,16 @@ PATH) and the Install page (download+verify description, `~/.cs/<version>/cli.mj
 `~/.local/bin/cs` shim, `CS_BASE_URL`/`CS_HOME`/`CS_BIN_DIR` env table, uninstall, from-source).
 Site lint/typecheck/tests green (109/109).
 
+## Follow-up: commands band UI (2026-11-10, planner request)
+
+CommandsBand shows exactly three cards (config, use, alias) via a new `BAND_COMMANDS` constant in
+`feature.constant.ts` (FEATURES keeps all eight). Added a centered "All nine commands" outline-style
+link to `/docs/reference` under the row. `@jjuidev/react` exports `Button` only as a `<button>`
+(variants module not exported), so the link carries the outline recipe's own token utilities in the
+CSS module instead of a restyled one-off. Heading unchanged. Verified on the dev server: light,
+dark and 390px mobile (no horizontal scroll); screenshots in the plan dir `screens/`. Site tests
+112/112 (new CommandsBand.test.tsx), lint + typecheck green.
+
 ## What changed
 
 - `site/` — full port of jss-devtools `site/` (configs, vendor tarballs 0.0.1, public, vite plugin) with:
