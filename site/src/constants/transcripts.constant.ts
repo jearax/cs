@@ -2,9 +2,8 @@
 //
 // Every line is real CLI output, captured from `dist/cli.mjs` in a temp HOME with the plan's dummy
 // tokens, `FORCE_COLOR=1`, through a pty. The alias launcher paths carried the temp HOME; the
-// prefix is trimmed to `~`. The output is real, with one edit: the trailing `Settings:` and
-// `Command:` hint lines are dropped from the config blocks to keep the hero short — every other
-// character is verbatim.
+// prefix is trimmed to `~`. The config transcript is the verbatim run: all four blocks carry the
+// created banner and the launcher hint lines exactly as the CLI printed them.
 
 export const CONFIG_TRANSCRIPT: readonly string[] = [
 	'Profile "claude" created with the "default" record.',
@@ -23,7 +22,10 @@ export const CONFIG_TRANSCRIPT: readonly string[] = [
 	'  Sonnet: claude-sonnet-5-5[1m]',
 	'  Opus:   claude-opus-5-5[1m]',
 	'  Fable:  claude-fable-5-1[1m]',
+	'  Settings: ~/.config/cs/profiles/claude-company.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/claude-company.json',
 	'',
+	'Profile "glm" created with the "default" record.',
 	'Profile: glm',
 	'  URL:    https://api.z.ai/api/anthropic',
 	'  Token:  your-glm...oken',
@@ -31,7 +33,10 @@ export const CONFIG_TRANSCRIPT: readonly string[] = [
 	'  Sonnet: glm-5.3-flash[1m]',
 	'  Opus:   glm-5.3-flash[1m]',
 	'  Fable:  glm-5.3-flash[1m]',
+	'  Settings: ~/.config/cs/profiles/glm.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/glm.json',
 	'',
+	'Profile "minimax" created with the "default" record.',
 	'Profile: minimax',
 	'  URL:    https://api.minimax.io/anthropic',
 	'  Token:  sk-cp-yo...oken',
@@ -39,7 +44,8 @@ export const CONFIG_TRANSCRIPT: readonly string[] = [
 	'  Sonnet: MiniMax-M3.1-Flash[1m]',
 	'  Opus:   MiniMax-M3.1-Flash[1m]',
 	'  Fable:  MiniMax-M3.1-Flash[1m]',
-	''
+	'  Settings: ~/.config/cs/profiles/minimax.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/minimax.json'
 ];
 
 export const ALIAS_TRANSCRIPT: readonly string[] = [
@@ -100,7 +106,7 @@ export const LIST_TRANSCRIPT: readonly string[] = [
 /**
  * The config and alias outputs split per command, one block per profile: the hero's interleaved
  * config tab shows each command above its own output. The typed lines are the help's Usage form;
- * these outputs are the real run, minus the hero's dropped hint lines.
+ * these outputs are the verbatim run, hint lines and all.
  */
 type TranscriptBlock = {
 	command: string;
