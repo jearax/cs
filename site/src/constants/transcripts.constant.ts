@@ -127,9 +127,9 @@ const splitBlocks = (lines: readonly string[], commands: readonly string[]): rea
 // tokens, long form only where no short exists.
 export const CONFIG_BLOCKS: readonly TranscriptBlock[] = splitBlocks(CONFIG_TRANSCRIPT, [
 	'cs config -n claude',
-	'cs config -n claude-company --oauth-token <login-token>',
-	'cs config -n glm -u https://api.z.ai/api/anthropic \\\n-t <key> -s glm-5.3-flash[1m]',
-	'cs config -n minimax -u https://api.minimax.io/anthropic \\\n-t sk-cp-... -s MiniMax-M3.1-Flash[1m]'
+	'cs config -n claude-company \\\n--oauth-token <login-token>',
+	'cs config -n glm \\\n-u https://api.z.ai/api/anthropic \\\n-t <key> --haiku glm-5.3-flash[1m] \\\n-s glm-5.3-flash[1m] -o glm-5.3-flash[1m]',
+	'cs config -n minimax \\\n-u https://api.minimax.io/anthropic \\\n-t sk-cp-... --haiku MiniMax-M3.1-Flash[1m] \\\n-s MiniMax-M3.1-Flash[1m] \\\n-o MiniMax-M3.1-Flash[1m]'
 ]);
 
 export const ALIAS_BLOCKS: readonly TranscriptBlock[] = splitBlocks(ALIAS_TRANSCRIPT, [
