@@ -51,3 +51,17 @@ from the planner pane.
 Starting a dev server on a taken port is blocked by the ghost-proc-guard. Reuse the running
 server — vite HMR picks up source edits, so the existing process serves the new code — or stop
 it only if this session started it; a foreign session's server needs the user's say-so.
+
+## chrome-mcp resize has a floor
+
+`resize_page` can drive the viewport to phone width only while the OS window allows it; at some
+point `innerWidth` sticks near 150px and re-resizes stop applying, which fakes a horizontal-scroll
+failure. Re-measure (`scrollWidth` vs `innerWidth`) before believing a layout break, and fall back
+to `emulate` or to the previous clean run when the window refuses.
+
+## Typecheck green is not data wired
+
+A scripted rewrite that silently misses one call site leaves the tree type-correct but stale —
+the hero's config tab kept command-only history entries through two green typechecks until the
+DOM was inspected. When a rewrite moves data into new shapes, grep the old field names in the
+consumers, and read the rendered output (or a test that asserts it), not just the compiler.
