@@ -128,8 +128,8 @@ const splitBlocks = (lines: readonly string[], commands: readonly string[]): rea
 export const CONFIG_BLOCKS: readonly TranscriptBlock[] = splitBlocks(CONFIG_TRANSCRIPT, [
 	'cs config -n claude',
 	'cs config -n claude-company \\\n--oauth-token <login-token>',
-	'cs config -n glm \\\n-u https://api.z.ai/api/anthropic \\\n-t <key> --haiku glm-5.3-flash[1m] \\\n-s glm-5.3-flash[1m] -o glm-5.3-flash[1m]',
-	'cs config -n minimax \\\n-u https://api.minimax.io/anthropic \\\n-t sk-cp-... --haiku MiniMax-M3.1-Flash[1m] \\\n-s MiniMax-M3.1-Flash[1m] \\\n-o MiniMax-M3.1-Flash[1m]'
+	'cs config --name glm \\\n--url https://api.z.ai/api/anthropic \\\n--token <key> --haiku glm-5.3-flash[1m] \\\n--sonnet glm-5.3-flash[1m] \\\n--opus glm-5.3-flash[1m]',
+	'cs config --name minimax \\\n--url https://api.minimax.io/anthropic \\\n--token sk-cp-... \\\n--haiku MiniMax-M3.1-Flash[1m] \\\n--sonnet MiniMax-M3.1-Flash[1m] \\\n--opus MiniMax-M3.1-Flash[1m]'
 ]);
 
 export const ALIAS_BLOCKS: readonly TranscriptBlock[] = splitBlocks(ALIAS_TRANSCRIPT, [

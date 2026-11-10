@@ -65,7 +65,7 @@ export const HERO_TERMINAL_TABS: readonly TerminalTab[] = [
 	{
 		label: 'ls',
 		comment: 'Everything cs keeps',
-		command: 'cs list',
+		command: 'cs ls',
 		prompt: {
 			dir: '~',
 			git: false
