@@ -1,83 +1,137 @@
-/**
- * The CLI's real output, captured from the built CLI in a temp HOME with fake tokens, `FORCE_COLOR=1`,
- * so every line keeps the ANSI colour codes the CLI printed; the terminal renders them through the
- * design system's tokens.
- */
+// Constants for the hero terminal, so the home page and the tests share one list.
+//
+// Every line is real CLI output, captured from `dist/cli.mjs` in a temp HOME with the plan's dummy
+// tokens, `FORCE_COLOR=1`, through a pty. The alias launcher paths carried the temp HOME; the
+// prefix is trimmed to `~`. Nothing here is invented.
 
 export const CONFIG_TRANSCRIPT: readonly string[] = [
-	'Profile "work" created with the "default" record.',
-	'Profile: work',
+	'Profile "claude" created with the "default" record.',
+	'Profile: claude',
 	'  URL:    https://api.anthropic.com',
-	'  Token:  sk-ant-f...-000',
 	'  Haiku:  claude-haiku-5-5[1m]',
 	'  Sonnet: claude-sonnet-5-5[1m]',
 	'  Opus:   claude-opus-5-5[1m]',
 	'  Fable:  claude-fable-5-1[1m]',
-	'  Settings: ~/.config/cs/profiles/work.json',
-	'  Command:  claude --settings ~/.config/cs/profiles/work.json'
-];
-
-export const USE_TRANSCRIPT: readonly string[] = [
-	'Switched to profile "work".',
+	'',
+	'Profile "claude-company" created with the "default" record.',
+	'Profile: claude-company',
 	'  URL:    https://api.anthropic.com',
-	'  Token:  sk-ant-f...-000',
+	'  OAuth:  your-cla...oken',
 	'  Haiku:  claude-haiku-5-5[1m]',
 	'  Sonnet: claude-sonnet-5-5[1m]',
 	'  Opus:   claude-opus-5-5[1m]',
 	'  Fable:  claude-fable-5-1[1m]',
-	'  Settings: ~/.config/cs/profiles/work.json',
-	'  Command:  claude --settings ~/.config/cs/profiles/work.json'
-];
-
-export const CURRENT_TRANSCRIPT: readonly string[] = [
-	'Active: work',
-	'  URL:    https://api.anthropic.com',
-	'  Token:  sk-ant-f...-000',
-	'  Haiku:  claude-haiku-5-5[1m]',
-	'  Sonnet: claude-sonnet-5-5[1m]',
-	'  Opus:   claude-opus-5-5[1m]',
-	'  Fable:  claude-fable-5-1[1m]',
-	'Rendered profiles: personal, work'
-];
-
-export const LIST_TRANSCRIPT: readonly string[] = [
-	'\u001b[1m\u001b[33mProfiles:\u001b[39m\u001b[22m',
-	'    \u001b[36mdefault\u001b[39m',
-	'      \u001b[2mURL:\u001b[22m    https://api.anthropic.com',
-	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
-	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
-	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
-	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
+	'  Settings: ~/.config/cs/profiles/claude-company.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/claude-company.json',
 	'',
-	'    \u001b[36mpersonal\u001b[39m\u001b[2m [rendered]\u001b[22m',
-	'      \u001b[2mURL:\u001b[22m    https://api.custom.dev',
-	'      \u001b[2mOAuth:\u001b[22m  sk-ot-fa...-000',
-	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
-	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
-	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
-	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
+	'Profile "glm" created with the "default" record.',
+	'Profile: glm',
+	'  URL:    https://api.z.ai/api/anthropic',
+	'  Token:  your-glm...oken',
+	'  Haiku:  glm-5.3-flash[1m]',
+	'  Sonnet: glm-5.3-flash[1m]',
+	'  Opus:   glm-5.3-flash[1m]',
+	'  Fable:  glm-5.3-flash[1m]',
+	'  Settings: ~/.config/cs/profiles/glm.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/glm.json',
 	'',
-	'  \u001b[32m*\u001b[39m \u001b[1m\u001b[36mwork\u001b[39m\u001b[22m\u001b[2m [rendered]\u001b[22m',
-	'      \u001b[2mURL:\u001b[22m    https://api.anthropic.com',
-	'      \u001b[2mToken:\u001b[22m  sk-ant-f...-000',
-	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
-	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
-	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
-	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
-	'',
-	'\u001b[1m\u001b[33mAliases:\u001b[39m\u001b[22m',
-	'  \u001b[36mclaude-work\u001b[39m \u001b[2m→\u001b[22m \u001b[36mwork\u001b[39m'
+	'Profile "minimax" created with the "default" record.',
+	'Profile: minimax',
+	'  URL:    https://api.minimax.io/anthropic',
+	'  Token:  sk-cp-yo...oken',
+	'  Haiku:  MiniMax-M3.1-Flash[1m]',
+	'  Sonnet: MiniMax-M3.1-Flash[1m]',
+	'  Opus:   MiniMax-M3.1-Flash[1m]',
+	'  Fable:  MiniMax-M3.1-Flash[1m]',
+	'  Settings: ~/.config/cs/profiles/minimax.json',
+	'  Command:  claude --settings ~/.config/cs/profiles/minimax.json',
+	''
 ];
 
 export const ALIAS_TRANSCRIPT: readonly string[] = [
-	'Alias "claude-work" created at profile "work".',
-	'  Launcher: ~/.config/cs/bin/claude-claude-work',
+	'Alias "planner" created at profile "claude".',
+	'  Launcher: ~/.config/cs/bin/claude-planner',
+	'Add ~/.config/cs/bin to your PATH to run the launchers:',
+	'  export PATH="$HOME/.config/cs/bin:$PATH"   (add it to ~/.zshrc)',
+	'',
+	'Alias "cooker" created at profile "glm".',
+	'  Launcher: ~/.config/cs/bin/claude-cooker',
 	'Add ~/.config/cs/bin to your PATH to run the launchers:',
 	'  export PATH="$HOME/.config/cs/bin:$PATH"   (add it to ~/.zshrc)'
 ];
 
+export const LIST_TRANSCRIPT: readonly string[] = [
+	'\u001b[1m\u001b[33mProfiles:\u001b[39m\u001b[22m',
+	'  \u001b[32m*\u001b[39m \u001b[1m\u001b[36mdefault\u001b[39m\u001b[22m',
+	'      \u001b[2mURL:\u001b[22m    https://api.anthropic.com',
+	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
+	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
+	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
+	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
+	'',
+	'    \u001b[36mclaude\u001b[39m\u001b[2m [rendered]\u001b[22m',
+	'      \u001b[2mURL:\u001b[22m    https://api.anthropic.com',
+	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
+	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
+	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
+	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
+	'',
+	'    \u001b[36mclaude-company\u001b[39m\u001b[2m [rendered]\u001b[22m',
+	'      \u001b[2mURL:\u001b[22m    https://api.anthropic.com',
+	'      \u001b[2mOAuth:\u001b[22m  your-cla...oken',
+	'      \u001b[2mHaiku:\u001b[22m  claude-haiku-5-5[1m]',
+	'      \u001b[2mSonnet:\u001b[22m claude-sonnet-5-5[1m]',
+	'      \u001b[2mOpus:\u001b[22m   claude-opus-5-5[1m]',
+	'      \u001b[2mFable:\u001b[22m  claude-fable-5-1[1m]',
+	'',
+	'    \u001b[36mglm\u001b[39m\u001b[2m [rendered]\u001b[22m',
+	'      \u001b[2mURL:\u001b[22m    https://api.z.ai/api/anthropic',
+	'      \u001b[2mToken:\u001b[22m  your-glm...oken',
+	'      \u001b[2mHaiku:\u001b[22m  glm-5.3-flash[1m]',
+	'      \u001b[2mSonnet:\u001b[22m glm-5.3-flash[1m]',
+	'      \u001b[2mOpus:\u001b[22m   glm-5.3-flash[1m]',
+	'      \u001b[2mFable:\u001b[22m  glm-5.3-flash[1m]',
+	'',
+	'    \u001b[36mminimax\u001b[39m\u001b[2m [rendered]\u001b[22m',
+	'      \u001b[2mURL:\u001b[22m    https://api.minimax.io/anthropic',
+	'      \u001b[2mToken:\u001b[22m  sk-cp-yo...oken',
+	'      \u001b[2mHaiku:\u001b[22m  MiniMax-M3.1-Flash[1m]',
+	'      \u001b[2mSonnet:\u001b[22m MiniMax-M3.1-Flash[1m]',
+	'      \u001b[2mOpus:\u001b[22m   MiniMax-M3.1-Flash[1m]',
+	'      \u001b[2mFable:\u001b[22m  MiniMax-M3.1-Flash[1m]',
+	'',
+	'\u001b[1m\u001b[33mAliases:\u001b[39m\u001b[22m',
+	'  \u001b[36mcooker\u001b[39m \u001b[2m\u2192\u001b[22m \u001b[36mglm\u001b[39m',
+	'  \u001b[36mplanner\u001b[39m \u001b[2m\u2192\u001b[22m \u001b[36mclaude\u001b[39m'
+];
+
 /**
- * The terminal's own label. The transcripts are real runs, but the versions and the paths in them are
- * the ones this machine had, so the frame says so rather than presenting them as fixed output.
+ * The config and alias outputs split per command, one block per profile: the hero's interleaved
+ * config tab shows each command above its own output. The typed lines are the help's Usage form;
+ * these outputs are verbatim.
  */
-export const TERMINAL_LABEL = 'Example output';
+type TranscriptBlock = {
+	command: string;
+	lines: readonly string[];
+};
+
+const splitBlocks = (lines: readonly string[], commands: readonly string[]): readonly TranscriptBlock[] => {
+	return lines
+		.join('\n')
+		.split('\n\n')
+		.map((chunk, index) => {
+			return {
+				command: commands[index] ?? '',
+				lines: chunk.split('\n')
+			};
+		});
+};
+
+const USAGE = 'cs config [options]';
+
+export const CONFIG_BLOCKS: readonly TranscriptBlock[] = splitBlocks(CONFIG_TRANSCRIPT, [USAGE, USAGE, USAGE, USAGE]);
+
+export const ALIAS_BLOCKS: readonly TranscriptBlock[] = splitBlocks(ALIAS_TRANSCRIPT, [
+	'cs alias planner claude',
+	'cs alias cooker glm'
+]);

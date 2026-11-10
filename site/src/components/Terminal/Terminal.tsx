@@ -2,6 +2,7 @@ import { cn } from '@jjuidev/styles/variants';
 import { RotateCcw } from 'lucide-react';
 import {
 	AnimationEvent,
+	Fragment,
 	ComponentProps,
 	CSSProperties,
 	KeyboardEvent,
@@ -20,6 +21,14 @@ import WindowChrome from '@/components/WindowChrome/WindowChrome';
 
 import styles from './styles.module.css';
 
+export type TerminalHistoryEntry = {
+	/** Where the command runs, when it is not inside the project. */
+	prompt?: Pick<ShellPromptProps, 'dir' | 'git'>;
+	command: string;
+	/** The command's own output, shown before the next command starts. */
+	lines?: readonly string[];
+};
+
 export type TerminalTab = {
 	label: string;
 	/** The shell comment the transcript opens with: the tab's purpose, in the terminal's own voice. */
@@ -27,8 +36,8 @@ export type TerminalTab = {
 	command?: string;
 	/** Where the command runs, when it is not inside the project. */
 	prompt?: Pick<ShellPromptProps, 'dir' | 'git'>;
-	/** Commands already run in this window, shown finished above the one being typed. */
-	history?: readonly { prompt?: Pick<ShellPromptProps, 'dir' | 'git'>; command: string }[];
+	/** Commands already run in this window; an entry's `lines` are its own output, shown before the next command starts. */
+	history?: readonly TerminalHistoryEntry[];
 	lines?: readonly string[];
 	/** A full-screen program's view, shown after the command instead of output lines. */
 	screen?: ReactNode;
@@ -46,6 +55,8 @@ export type TerminalProps = ComponentProps<'div'> & {
 	comment?: string;
 	/** The CLI's output, one string per line, with its real glyphs. */
 	lines?: readonly string[];
+	/** Commands already run in this window, for a single-transcript window. */
+	history?: readonly TerminalHistoryEntry[];
 	tabs?: readonly TerminalTab[];
 	tabListLabel?: string;
 	/** `animated` types the command and reveals the output; `static` shows the final state. */
@@ -69,6 +80,7 @@ const Terminal = ({
 	command,
 	comment,
 	lines,
+	history,
 	tabs,
 	tabListLabel = 'Replay transcripts',
 	variant = 'static',
@@ -85,18 +97,69 @@ const Terminal = ({
 	const shownComment = tab?.comment ?? comment;
 	const shownLines = tab?.lines ?? lines ?? [];
 
-	// Commands type one after another; the output follows the last of them.
-	const commandRows = [
-		...(tab?.history ?? []),
-		...(shownCommand
+	/*
+	 * The transcript is one interleaved document: each command is followed by its own output, then
+	 * a blank line, then the next command. The final command (the tab's `command` + `lines`) is
+	 * the last block.
+	 */
+	const blocks: {
+		prompt: Pick<ShellPromptProps, 'dir' | 'git'> | undefined;
+		command: string;
+		lines: readonly string[];
+	}[] = [
+		...(tab?.history ?? history ?? []).map((entry) => {
+			return {
+				prompt: entry.prompt,
+				command: entry.command,
+				lines: entry.lines ?? []
+			};
+		}),
+		...(shownCommand || (!tab?.history?.length && shownLines.length)
 			? [
 					{
 						prompt: tab?.prompt,
-						command: shownCommand
+						command: shownCommand ?? '',
+						lines: shownLines
 					}
 				]
 			: [])
 	];
+
+	/*
+	 * One cumulative timeline, in milliseconds. A block types its command (700ms), waits a beat,
+	 * reveals its lines (70ms a line), then pauses before the next block. The values land on the
+	 * elements as `--at`; the CSS animation-delay does the pacing, so there is no JS timer in the
+	 * reveal and the single-timeline behaviour is unchanged.
+	 */
+	const TYPE_MS = 700;
+	const LINE_MS = 70;
+	const FIRST_LINE_LAG_MS = 150;
+	const GAP_MS = 1300;
+
+	let cursor = 0;
+
+	const timeline = blocks.map((block) => {
+		const at = cursor;
+
+		const linesAt = block.lines.map((_, index) => {
+			return at + TYPE_MS + FIRST_LINE_LAG_MS + index * LINE_MS;
+		});
+
+		cursor = at + TYPE_MS + FIRST_LINE_LAG_MS + block.lines.length * LINE_MS + GAP_MS;
+
+		return {
+			block,
+			at,
+			linesAt
+		};
+	});
+
+	const endAt = timeline.length
+		? timeline[timeline.length - 1]!.at +
+			TYPE_MS +
+			FIRST_LINE_LAG_MS +
+			timeline[timeline.length - 1]!.block.lines.length * LINE_MS
+		: 0;
 
 	const body = useRef<HTMLDivElement>(null);
 
@@ -265,7 +328,7 @@ const Terminal = ({
 			<div
 				ref={body}
 				className={styles.body}
-				style={{ '--steps': Math.max(commandRows.length - 1, 0) } as CSSProperties}
+				style={{ '--end-at': endAt } as CSSProperties}
 				onAnimationStart={onLineAppear}
 				onAnimationEnd={onRevealEnd}
 				{...panelProps}
@@ -275,67 +338,75 @@ const Terminal = ({
 						{`# ${shownComment}`}
 					</p>
 				)}
-				{commandRows.map((entry, step) => {
-					const last = step === commandRows.length - 1;
+				{timeline.map(({ block, at, linesAt }, blockIndex) => {
+					const last = blockIndex === timeline.length - 1;
 
 					return (
-						<div
-							key={`${run}-${active}-${step}`}
-							className={styles.commandRow}
-							style={{ '--step': step } as CSSProperties}
-						>
-							<ShellPrompt className={styles.prompt} {...entry.prompt} />
-							<p
-								className={styles.command}
-								data-last={last}
-								style={{ '--chars': entry.command.length } as CSSProperties}
-							>
-								<ShellCommand command={entry.command} />
-							</p>
-							{commandCopy && last && (
-								<CopyButton
-									className={styles.commandCopy}
-									feedback="icon"
-									label="Copy the command"
-									value={entry.command}
-								/>
+						<Fragment key={`${run}-${active}-${blockIndex}`}>
+							{block.command && (
+								<div className={styles.commandRow} style={{ '--at': at } as CSSProperties}>
+									<ShellPrompt className={styles.prompt} {...block.prompt} />
+									<p
+										className={styles.command}
+										data-last={last}
+										style={{ '--chars': block.command.length } as CSSProperties}
+									>
+										<ShellCommand command={block.command} />
+									</p>
+									{commandCopy && last && (
+										<CopyButton
+											className={styles.commandCopy}
+											feedback="icon"
+											label="Copy the command"
+											value={block.command}
+										/>
+									)}
+								</div>
 							)}
-						</div>
+							{block.lines.map((line, index) => {
+								return (
+									<p
+										key={`${run}-${active}-${blockIndex}-${index}-${line}`}
+										className={styles.line}
+										style={{ '--at': linesAt[index] } as CSSProperties}
+									>
+										{parseAnsi(line).map((segment, segmentIndex) => {
+											return (
+												<span
+													key={segmentIndex}
+													className={styles.segment}
+													data-color={segment.color ?? undefined}
+													data-dim={segment.dim || undefined}
+													data-bold={segment.bold || undefined}
+													data-inverse={segment.inverse || undefined}
+												>
+													{segment.text}
+												</span>
+											);
+										})}
+									</p>
+								);
+							})}
+							{!last && (
+								<p
+									className={styles.line}
+									style={{ '--at': linesAt[linesAt.length - 1] ?? at + TYPE_MS } as CSSProperties}
+								>
+									{' '}
+								</p>
+							)}
+						</Fragment>
 					);
 				})}
 				{tab?.screen && (
 					<div
 						key={`${run}-${active}-screen`}
 						className={cn(styles.line, styles.screen)}
-						style={{ '--i': 0 } as CSSProperties}
+						style={{ '--at': endAt } as CSSProperties}
 					>
 						{tab.screen}
 					</div>
 				)}
-				{shownLines.map((line, index) => {
-					return (
-						<p
-							key={`${run}-${active}-${index}-${line}`}
-							className={styles.line}
-							style={{ '--i': index } as CSSProperties}
-						>
-							{parseAnsi(line).map((segment, segmentIndex) => {
-								return (
-									<span
-										key={segmentIndex}
-										className={styles.segment}
-										data-color={segment.color ?? undefined}
-										data-dim={segment.dim || undefined}
-										data-bold={segment.bold || undefined}
-										data-inverse={segment.inverse || undefined}
-									>
-										{segment.text}
-									</span>
-								);
-							})}
-						</p>
-					);
-				})}
 			</div>
 		</div>
 	);

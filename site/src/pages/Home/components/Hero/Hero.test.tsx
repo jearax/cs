@@ -106,20 +106,20 @@ describe('Hero', () => {
 			return tab.textContent;
 		});
 
-		expect(labels).toEqual(['config', 'use', 'current', 'Claude Code']);
+		expect(labels).toEqual(['config', 'alias', 'ls', 'use']);
 
-		await screen.getByRole('tab', { name: 'Claude Code' }).click();
+		await screen.getByRole('tab', { name: 'use' }).click();
 
-		await expect.element(screen.getByText('cs use work')).toBeInTheDocument();
-		await expect.element(screen.getByText('Fable 5.2 · profile: work')).toBeInTheDocument();
-		await expect.element(screen.getByText('Move this session to the personal profile?')).toBeInTheDocument();
+		await expect.element(screen.getByText('cs use claude')).toBeInTheDocument();
+		await expect.element(screen.getByText(/profile: claude \(global\)/)).toBeInTheDocument();
+		await expect.element(screen.getByText('Sign in with /login to use the official API?')).toBeInTheDocument();
 	});
 
 	it('replays the transcript when the reader switches tabs', async () => {
 		const screen = await render(<Hero />, { wrapper });
 
-		await screen.getByRole('tab', { name: 'current' }).click();
+		await screen.getByRole('tab', { name: 'ls' }).click();
 
-		await expect.element(screen.getByText(/Rendered profiles/)).toBeInTheDocument();
+		await expect.element(screen.getByText(/Aliases:/)).toBeInTheDocument();
 	});
 });

@@ -140,18 +140,18 @@
 /* The width stays automatic unless the animation runs, so a broken animation never hides the command. */
 .root[data-variant='animated'] .commandRow {
 	/* Each command appears when its turn comes: one step is the typing plus a short pause. */
-	@apply animate-[terminal-reveal_1ms_linear_both] [animation-delay:calc(var(--step,0)*1000ms)];
+	@apply animate-[terminal-reveal_1ms_linear_both] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none];
 }
 
 .root[data-variant='animated'] .command {
 	/* The typing reads the command as one line, so it does not wrap while it is typed. */
-	@apply overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_both] [animation-delay:calc(var(--step,0)*1000ms)];
+	@apply overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_both] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none] motion-reduce:overflow-visible;
 
-	@apply max-sm:animate-[terminal-fade_300ms_ease-out_both] max-sm:[animation-delay:calc(var(--step,0)*1000ms)];
+	@apply max-sm:animate-[terminal-fade_300ms_ease-out_both] max-sm:[animation-delay:calc(var(--at,0)*1ms)];
 }
 
 /* Only the command typed last keeps the caret; the ones before it are finished. */
@@ -162,7 +162,7 @@
 }
 
 .root[data-variant='animated'] .line {
-	@apply animate-[terminal-reveal_260ms_cubic-bezier(0.16,1,0.3,1)_both] [animation-delay:calc(var(--steps,0)*1000ms+700ms+var(--i)*70ms)];
+	@apply animate-[terminal-reveal_260ms_cubic-bezier(0.16,1,0.3,1)_both] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none];
 }
@@ -171,7 +171,7 @@
 
 /* `--screen-at` is when the screen appears; the program's own animations count from it. */
 .root[data-variant='animated'] .screen {
-	@apply [--screen-at:calc(var(--steps,0)*1000ms+1600ms)] [animation-delay:var(--screen-at)];
+	@apply [--screen-at:calc(var(--at,0)*1ms)] [animation-delay:var(--screen-at)];
 }
 
 /* The comment is revealed, never typed: the purpose is there before the command starts. */

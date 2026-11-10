@@ -11,3 +11,10 @@ Traps for driving cookers and planners through Herdr.
   exit); diff `git status` vs plan ownership first — an untouched boundary means a clean restart.
 - Inline `node -e` with profile fields trips the privacy-block hook (it reads `j.env` as a
   path): use a script file with paths as args.
+- `herdr agent prompt "<text>"` in double quotes: zsh command-substitutes every backtick in the
+  text, and the prompt arrives with those fragments silently removed (the send itself still
+  reports `agent_prompted`). Single-quote the whole prompt argument; if the degraded one may
+  matter, resend the full text rather than patching words.
+- After a pause or a long idle, a cooker's context may be compacted (status bar near 0 bytes).
+  Resume with a self-contained brief — plan path, its own report path, the settled design
+  decisions, current working-tree state — never a bare "continue".

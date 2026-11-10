@@ -1,77 +1,136 @@
 import { cn } from '@jjuidev/styles/variants';
-import { ComponentProps, CSSProperties } from 'react';
+import { ComponentProps, CSSProperties, useEffect, useState } from 'react';
 
 import styles from './styles.module.css';
 
-export interface ClaudeCodeScreenProps extends ComponentProps<'div'> {}
+export interface ClaudeCodeScreenProps extends ComponentProps<'div'> {
+	/** Which surface the screen demos: the global `claude`, or a launcher pinned to one profile. */
+	session?: Session;
+}
 
-// Typed into the input after the screen appears; the CSS times the typing by its length.
-const PROMPT = 'Hi! What should I do first here?';
+export type Session = 'global' | 'planner' | 'cooker';
+
+const HEAD: readonly { product: string; model: string; cwd: string }[] = [
+	{
+		product: 'Claude Code v2.1.321',
+		model: 'claude-sonnet-5-5[1m] · profile: claude (global)',
+		cwd: '~'
+	},
+	{
+		product: 'claude-planner',
+		model: 'claude-sonnet-5-5[1m] · claude --settings ~/.config/cs/profiles/claude.json',
+		cwd: '~'
+	},
+	{
+		product: 'claude-cooker',
+		model: 'glm-5.3-flash[1m] · claude --settings ~/.config/cs/profiles/glm.json',
+		cwd: '~/jearax/npm/cs'
+	}
+];
+
+const PROFILE_LINE: readonly { line: string }[] = [
+	{
+		line: 'Reading ~/.claude/settings.json — official https://api.anthropic.com, no token in the store: this session signs in with /login.'
+	},
+	{
+		line: 'Loaded ~/.config/cs/profiles/claude.json — official https://api.anthropic.com, this launcher pins the claude profile for one session.'
+	},
+	{
+		line: 'Loaded ~/.config/cs/profiles/glm.json — base URL https://api.z.ai/api/anthropic, every model pinned to glm-5.3-flash[1m].'
+	}
+];
+
+const ASK_LINE: readonly { ask: string; option: string; hint: string; alt: string }[] = [
+	{
+		ask: 'Sign in with /login to use the official API?',
+		option: '❯ 1. /login',
+		hint: 'cs use claude wrote the official endpoint; the store keeps no token for it.',
+		alt: '2. Set ANTHROPIC_AUTH_TOKEN'
+	},
+	{
+		ask: 'Keep planner work on the claude profile?',
+		option: '❯ 1. Yes, this session stays on claude',
+		hint: 'The launcher passes the rendered file; cs use elsewhere cannot move this session.',
+		alt: '2. Switch the global profile'
+	},
+	{
+		ask: 'Cook on glm through the z.ai endpoint?',
+		option: '❯ 1. Yes, this session stays on glm',
+		hint: 'Same rendered file as the cooker launcher wrote; the global profile is untouched.',
+		alt: '2. Switch the global profile'
+	}
+];
 
 // Seconds after the screen appears; the CSS turns them into delays.
 const at = (seconds: number) => {
 	return { '--t': `${seconds}s` } as CSSProperties;
 };
 
-// Claude Code's start screen on a profile cs switched in, drawn in text; no Anthropic artwork.
-// The session runs as far as the model answering, which is all a fresh session does.
-const ClaudeCodeScreen = ({ className, ...props }: ClaudeCodeScreenProps) => {
+const SessionScreen = ({ session, ...props }: ClaudeCodeScreenProps) => {
+	const index = session === 'global' ? 0 : session === 'planner' ? 1 : 2;
+	const head = HEAD[index]!;
+	const profileLine = PROFILE_LINE[index]!.line;
+	const ask = ASK_LINE[index]!;
+	const prompt = session === 'global' ? 'Hi! What should I do first here?' : 'Start on this profile.';
+
 	return (
-		<div className={cn(styles.root, className)} style={{ '--chars': PROMPT.length } as CSSProperties} {...props}>
+		<div className={cn(styles.root, props.className)} style={{ '--chars': prompt.length } as CSSProperties} {...props}>
 			<div className={styles.log}>
 				<div className={styles.head}>
 					<p>
-						<span className={styles.product}>Claude Code</span> <span className={styles.muted}>v2.1.321</span>
+						<span className={styles.product}>{head.product}</span> <span className={styles.muted}>{head.model}</span>
 					</p>
-					<p className={styles.muted}>Fable 5.2 · profile: work</p>
-					<p className={styles.muted}>~</p>
+					<p className={styles.muted}>{head.cwd}</p>
 				</div>
 
-				<div className={styles.turn} style={at(2.8)}>
-					<p className={styles.prompt}>❯ {PROMPT}</p>
+				<div className={styles.turn} style={at(2.4)}>
+					<p className={styles.prompt}>❯ {prompt}</p>
 				</div>
 
-				<div className={styles.turn} style={at(3.6)}>
+				<div className={styles.turn} style={at(3.2)}>
 					<div>
 						<p>
-							<span className={styles.bullet}>●</span> This session runs on the{' '}
-							<span className={styles.path}>work</span> profile: base URL https://api.anthropic.com, token from the
-							keychain, models pinned in cs.json.
+							<span className={styles.bullet}>●</span> {profileLine}
 						</p>
 					</div>
 				</div>
 
-				<div className={styles.turn} style={at(5.2)}>
+				<div className={styles.turn} style={at(4.6)}>
 					<div>
 						<p>
 							<span className={styles.done}>●</span> <span className={styles.product}>Bash</span>(cs current)
 						</p>
-						<p className={cn(styles.indent, styles.muted)}>⎿ Active: work</p>
+						<p className={cn(styles.indent, styles.muted)}>
+							⎿{' '}
+							{session === 'global'
+								? 'Active: claude'
+								: session === 'planner'
+									? 'Active: default · launcher: claude-planner'
+									: 'Active: default · launcher: claude-cooker'}
+						</p>
 					</div>
 				</div>
 
-				<div className={styles.turn} style={at(6.1)}>
+				<div className={styles.turn} style={at(5.8)}>
 					<div className={styles.question}>
 						<p>
-							<span className={styles.chip}>☐ Switch</span>
+							<span className={styles.chip}>☐ Profile</span>
 						</p>
-						<p className={styles.product}>Move this session to the personal profile?</p>
+						<p className={styles.product}>{ask.ask}</p>
 						<p>
-							<span className={styles.option}>❯ 1. Keep work for this session</span>
+							<span className={styles.option}>{ask.option}</span>
 						</p>
 						<p className={styles.indent}>
-							<span className={styles.muted}>
-								cs use personal rewrites the global settings; launchers pin their own.
-							</span>
+							<span className={styles.muted}>{ask.hint}</span>
 						</p>
-						<p className={styles.indent}>2. Switch</p>
+						<p className={styles.indent}>{ask.alt}</p>
 					</div>
 				</div>
 			</div>
 
 			<div className={styles.foot}>
 				<p className={styles.input}>
-					<span className={styles.chevron}>❯</span> <span className={styles.typed}>{PROMPT}</span>
+					<span className={styles.chevron}>❯</span> <span className={styles.typed}>{prompt}</span>
 					<span className={styles.choice} data-reveal-end>
 						1
 					</span>
@@ -83,11 +142,11 @@ const ClaudeCodeScreen = ({ className, ...props }: ClaudeCodeScreenProps) => {
 
 				<div className={styles.status}>
 					<p>
-						<span className={styles.cwd}>cwd: ~</span> <span className={styles.branch}>⎇ main</span>
+						<span className={styles.cwd}>cwd: {head.cwd}</span> <span className={styles.branch}>⎇ main</span>
 					</p>
 					<p>
-						<span className={styles.model}>Model: Fable 5.2</span>{' '}
-						<span className={styles.thinking}>Thinking: max</span>{' '}
+						<span className={styles.model}>Model: {index === 2 ? 'glm-5.3-flash[1m]' : 'claude-sonnet-5-5[1m]'}</span>{' '}
+						<span className={styles.thinking}>Thinking: on</span>{' '}
 						<span className={styles.context}>Context: 0/1.0M (0%)</span>
 					</p>
 					<p className={styles.usage}>
@@ -95,13 +154,46 @@ const ClaudeCodeScreen = ({ className, ...props }: ClaudeCodeScreenProps) => {
 						<span className={styles.usageValue}>0.0% (6d 23h)</span>
 					</p>
 					<p>
-						<span className={styles.mode}>⏵⏵ bypass permissions on</span>{' '}
+						<span className={styles.mode}>
+							{index === 0 ? '⏵⏵ /login pending' : index === 1 ? '⏵⏵ planner launcher' : '⏵⏵ cooker launcher'}
+						</span>{' '}
 						<span className={styles.muted}>(shift+tab to cycle)</span>
 					</p>
 				</div>
 			</div>
 		</div>
 	);
+};
+
+// How long one surface stays up before the next takes over, and the cycle's total.
+const SESSION_MS = 8000;
+const CYCLE: readonly Session[] = ['global', 'planner', 'cooker'];
+
+/**
+ * The three real usage surfaces, in the order the hero tells the story: the global `claude`
+ * after `cs use claude`, then the two launchers the aliases created. One surface at a time.
+ */
+const ClaudeCodeScreen = ({ session, ...props }: ClaudeCodeScreenProps) => {
+	const [active, setActive] = useState<Session>(session ?? 'global');
+
+	useEffect(() => {
+		if (session !== undefined) {
+			return;
+		}
+
+		const timer = window.setInterval(() => {
+			setActive((current) => {
+				return CYCLE[(CYCLE.indexOf(current) + 1) % CYCLE.length] ?? 'global';
+			});
+		}, SESSION_MS);
+
+		return () => {
+			window.clearInterval(timer);
+		};
+	}, [session]);
+
+	// The key restarts the screen's own timeline, so each surface plays from its first turn.
+	return <SessionScreen key={active} session={active} {...props} />;
 };
 
 export default ClaudeCodeScreen;

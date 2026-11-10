@@ -78,17 +78,15 @@
 }
 
 /* The band's way out. The design system's Button renders a <button> only, so the link carries
-   the outline recipe's own utilities instead of a restyled one-off. */
+   the solid recipe's own utilities at the lg size, plus the focus ring the recipe ships. */
 .foot {
 	@apply flex justify-center;
 }
 
 .allLink {
-	@apply focus-ring inline-flex h-10 items-center gap-2 rounded-md border border-default px-4 text-label-base text-default transition-colors duration-150;
+	@apply focus-ring inline-flex h-12 items-center gap-2 rounded-md bg-primary px-6 text-label-lg text-primary-foreground transition-colors duration-150;
 
-	@apply not-hover:text-default;
-
-	@apply hover:bg-hover active:bg-active;
+	@apply hover:bg-primary-hover active:bg-primary-active;
 }
 
 .allLink .arrow {
