@@ -26,10 +26,11 @@ Short facts about this repository, injected at every session start. Size limits 
 - Node floor declared 3x (script, engines, site NODE_FLOOR); `--version` must be bare when piped; tsconfig excludes `site/`; no local shellcheck — .harness/docs/build-notes.md
 - The installer and the site's Install docs state one contract — change either, update the other (site REQUIREMENTS/Install.tsx track scripts/install.sh).
 - Porting into cs: diff against the file it replaces, not only the source repo — .claude/skills/cross-repo-port/SKILL.md
-- Banner and rc PATH write need a real TTY: smoke them with a Python pty (cs-command-test skill).
+- Banner and rc PATH write need a real TTY: smoke them with a Python pty (cs-command-test skill), and set a winsize (TIOCSWINSZ) — `isInteractive` also demands `stdout.columns > 0`.
 - `CLAUDE_CODE_OAUTH_TOKEN` may be ignored via the `claude --settings` launcher path; verify with `/status` — global-write path unaffected.
 - Antislop-code on the pending diff (comments only) before each report, then re-run the gate.
 - Reviewing a port: grep the source product name over every ported surface — misses hide in yaml tags and fixtures; verify "clean" claims yourself.
 - Decision status, index pipes and doctor secret check have traps — .harness/docs/harness-writing-traps.md
 - Agent edit traps: corrupted long writes, `cd` persists, post-move name sweep — .harness/docs/agent-session-traps.md
 - Release flow proven end-to-end: push main → CI (checks/image/deploy) → ghcr image → Dokploy webhook → cs.jjuidev.com; verify with tmp-HOME install + `--version` — .harness/docs/build-notes.md
+- Site hero transcripts are verbatim CLI captures (tmp HOME, dummy tokens); a line is dropped only after the user names it — planner-preemptive trimming was rejected twice.
