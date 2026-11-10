@@ -47,13 +47,11 @@ export const CONFIG_TRANSCRIPT: readonly string[] = [
 export const ALIAS_TRANSCRIPT: readonly string[] = [
 	'Alias "planner" created at profile "claude".',
 	'  Launcher: ~/.config/cs/bin/claude-planner',
-	'Add ~/.config/cs/bin to your PATH to run the launchers:',
-	'  export PATH="$HOME/.config/cs/bin:$PATH"   (add it to ~/.zshrc)',
+	'  PATH: added to ~/.zshrc — open a new shell to pick it up',
 	'',
 	'Alias "cooker" created at profile "glm".',
 	'  Launcher: ~/.config/cs/bin/claude-cooker',
-	'Add ~/.config/cs/bin to your PATH to run the launchers:',
-	'  export PATH="$HOME/.config/cs/bin:$PATH"   (add it to ~/.zshrc)'
+	'  PATH: entry is in ~/.zshrc — open a new shell to pick it up'
 ];
 
 export const LIST_TRANSCRIPT: readonly string[] = [

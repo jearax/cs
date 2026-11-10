@@ -39,7 +39,7 @@ export const HERO_TERMINAL_TABS: readonly TerminalTab[] = [
 			};
 		}),
 		lines: CONFIG_BLOCKS[3]!.lines,
-		advance: 5200
+		advance: 2000
 	},
 	{
 		label: 'alias',
@@ -60,7 +60,7 @@ export const HERO_TERMINAL_TABS: readonly TerminalTab[] = [
 			}
 		],
 		lines: ALIAS_BLOCKS[1]!.lines,
-		advance: 4200
+		advance: 2000
 	},
 	{
 		label: 'ls',
@@ -71,7 +71,7 @@ export const HERO_TERMINAL_TABS: readonly TerminalTab[] = [
 			git: false
 		},
 		lines: LIST_TRANSCRIPT,
-		advance: 6200
+		advance: 2000
 	},
 	{
 		label: 'use',
@@ -87,7 +87,7 @@ export const HERO_TERMINAL_TABS: readonly TerminalTab[] = [
 		],
 		command: 'claude',
 		screen: createElement(ClaudeCodeScreen),
-		// Long enough to see the global surface hand over to the two launchers.
-		advance: 12000
+		// The screen cycles the three surfaces at 7s each; one full story, then the loop restarts.
+		advance: 22000
 	}
 ];

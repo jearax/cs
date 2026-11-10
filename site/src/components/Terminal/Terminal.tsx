@@ -428,6 +428,9 @@ const Terminal = ({
 						key={`${run}-${active}-screen`}
 						className={cn(styles.line, styles.screen)}
 						style={{ '--at': endAt } as CSSProperties}
+						/* The wrapper is stable across the screen's own remounts, so the advance gate
+						   fires here and not on a node the screen may have swapped out. */
+						data-reveal-end
 					>
 						{tab.screen}
 					</div>

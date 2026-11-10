@@ -131,9 +131,7 @@ const SessionScreen = ({ session, ...props }: ClaudeCodeScreenProps) => {
 			<div className={styles.foot}>
 				<p className={styles.input}>
 					<span className={styles.chevron}>❯</span> <span className={styles.typed}>{prompt}</span>
-					<span className={styles.choice} data-reveal-end>
-						1
-					</span>
+					<span className={styles.choice}>1</span>
 					<span className={styles.caret} aria-hidden="true" />
 					<span className={styles.placeholder}>
 						<span className={styles.caretOn}>T</span>ry &quot;fix lint errors&quot;
@@ -166,7 +164,7 @@ const SessionScreen = ({ session, ...props }: ClaudeCodeScreenProps) => {
 };
 
 // How long one surface stays up before the next takes over, and the cycle's total.
-const SESSION_MS = 8000;
+const SESSION_MS = 7000;
 const CYCLE: readonly Session[] = ['global', 'planner', 'cooker'];
 
 /**
