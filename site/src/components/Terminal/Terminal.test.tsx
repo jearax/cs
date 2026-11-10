@@ -265,3 +265,78 @@ describe('the interleaved transcript', () => {
 			.toBe('two');
 	});
 });
+describe('a typed shell continuation', () => {
+	const TWO_LINE = 'cs config -n glm -u https://api.z.ai/api/anthropic \\\n-t <key> -s glm-5.3-flash[1m]';
+
+	it('types one element per physical line, prompt on the first', async () => {
+		const screen = await render(
+			<Terminal variant="animated" command={TWO_LINE} lines={['Profile "glm" created with the "default" record.']} />,
+			{ wrapper: ThemeProvider }
+		);
+
+		await expect.element(screen.getByText('-t <key> -s glm-5.3-flash[1m]')).toBeInTheDocument();
+
+		const lines = [...screen.container.querySelectorAll('[class*="commandLine"]')];
+
+		expect(lines.length).toBe(2);
+
+		// The first physical line sits in the prompt's row; the second is its continuation.
+		const rows = [...screen.container.querySelectorAll('[class*="commandRow"]')];
+
+		expect(rows.length).toBe(1);
+		expect(rows[0]!.textContent).toContain('cs config -n glm');
+		expect(lines[0]!.textContent).toContain('cs config -n glm');
+		expect(lines[1]!.textContent).toContain('-t <key>');
+	});
+
+	it('puts the caret on the last physical line only', async () => {
+		const screen = await render(<Terminal variant="animated" command={TWO_LINE} lines={[]} />, {
+			wrapper: ThemeProvider
+		});
+
+		const lines = [...screen.container.querySelectorAll('[class*="commandLine"]')];
+
+		expect(lines[0]!.getAttribute('data-last-line')).toBe('false');
+		expect(lines[1]!.getAttribute('data-last-line')).toBe('true');
+	});
+
+	it('copies the one logical command, continuation joined with a space', async () => {
+		const screen = await render(<Terminal variant="animated" command={TWO_LINE} lines={[]} commandCopy />, {
+			wrapper: ThemeProvider
+		});
+
+		await screen.getByRole('button', { name: 'Copy the command' }).click();
+
+		await expect
+			.poll(() => {
+				return navigator.clipboard.readText();
+			})
+			.toBe('cs config -n glm -u https://api.z.ai/api/anthropic -t <key> -s glm-5.3-flash[1m]');
+	});
+
+	it('shows the output block after the full command has typed', async () => {
+		const screen = await render(
+			<Terminal variant="animated" command={TWO_LINE} lines={['Profile "glm" created with the "default" record.']} />,
+			{ wrapper: ThemeProvider }
+		);
+
+		// The single-transcript window has no tabpanel; the body carries the rows and the output.
+		const body = screen.container.querySelector('[class*="Terminal_body"]') ?? screen.container;
+
+		const children = [...body.children].map((el) => {
+			return el.className;
+		});
+
+		// The command row comes before the output line in the document.
+		const row = children.findIndex((cls) => {
+			return cls.includes('commandRow');
+		});
+
+		const output = children.findIndex((cls) => {
+			return cls.includes('line');
+		});
+
+		expect(row).toBeGreaterThan(-1);
+		expect(output).toBeGreaterThan(row);
+	});
+});

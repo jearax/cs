@@ -141,15 +141,22 @@ const Terminal = ({
 	const timeline = blocks.map((block) => {
 		const at = cursor;
 
+		// A typed command may be several physical lines (a shell continuation); each line takes a
+		// typing step of its own.
+		const physicalLines = block.command.split('\n');
+		const lineEnd = at + physicalLines.length * TYPE_MS;
+
 		const linesAt = block.lines.map((_, index) => {
-			return at + TYPE_MS + FIRST_LINE_LAG_MS + index * LINE_MS;
+			return lineEnd + FIRST_LINE_LAG_MS + index * LINE_MS;
 		});
 
-		cursor = at + TYPE_MS + FIRST_LINE_LAG_MS + block.lines.length * LINE_MS + GAP_MS;
+		cursor = lineEnd + FIRST_LINE_LAG_MS + block.lines.length * LINE_MS + GAP_MS;
 
 		return {
 			block,
 			at,
+			physicalLines,
+			lineEnd,
 			linesAt
 		};
 	});
@@ -338,7 +345,7 @@ const Terminal = ({
 						{`# ${shownComment}`}
 					</p>
 				)}
-				{timeline.map(({ block, at, linesAt }, blockIndex) => {
+				{timeline.map(({ block, at, physicalLines, linesAt }, blockIndex) => {
 					const last = blockIndex === timeline.length - 1;
 
 					return (
@@ -346,19 +353,37 @@ const Terminal = ({
 							{block.command && (
 								<div className={styles.commandRow} style={{ '--at': at } as CSSProperties}>
 									<ShellPrompt className={styles.prompt} {...block.prompt} />
-									<p
-										className={styles.command}
-										data-last={last}
-										style={{ '--chars': block.command.length } as CSSProperties}
-									>
-										<ShellCommand command={block.command} />
+									{/*
+									 * One element per physical line, so a shell continuation types line by
+									 * line; the copy value stays the one logical command.
+									 */}
+									<p className={styles.command} data-last={last}>
+										{physicalLines.map((line, index) => {
+											const lastLine = index === physicalLines.length - 1;
+
+											return (
+												<span
+													key={`${run}-${active}-${blockIndex}-${index}`}
+													className={styles.commandLine}
+													data-last-line={lastLine}
+													style={
+														{
+															'--chars': line.length,
+															'--at': at + index * TYPE_MS
+														} as CSSProperties
+													}
+												>
+													<ShellCommand command={line} />
+												</span>
+											);
+										})}
 									</p>
 									{commandCopy && last && (
 										<CopyButton
 											className={styles.commandCopy}
 											feedback="icon"
 											label="Copy the command"
-											value={block.command}
+											value={block.command.replace(/\\\n/g, '')}
 										/>
 									)}
 								</div>

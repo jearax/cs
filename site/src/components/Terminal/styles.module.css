@@ -146,8 +146,14 @@
 }
 
 .root[data-variant='animated'] .command {
-	/* The typing reads the command as one line, so it does not wrap while it is typed. */
-	@apply overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_both] [animation-delay:calc(var(--at,0)*1ms)];
+	@apply block;
+}
+
+/* Each physical line of a typed command types on its own step; a shell continuation sits on the
+   line under its prompt, aligned with the command's first character. */
+.root[data-variant='animated'] .commandLine {
+	/* The typing reads the line as one row, so it does not wrap while it is typed. */
+	@apply block overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_both] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none] motion-reduce:overflow-visible;
 
@@ -155,7 +161,7 @@
 }
 
 /* Only the command typed last keeps the caret; the ones before it are finished. */
-.root[data-variant='animated'] .command[data-last='true']::after {
+.root[data-variant='animated'] .commandLine[data-last-line='true']::after {
 	@apply inline-block animate-[terminal-caret_1s_steps(2,jump-none)_infinite] bg-primary content-[''] ml-px align-text-bottom [height:1.05em] [width:0.5em];
 
 	@apply motion-reduce:[animation:none] motion-reduce:content-none;
