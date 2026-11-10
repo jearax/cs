@@ -127,9 +127,14 @@ const splitBlocks = (lines: readonly string[], commands: readonly string[]): rea
 		});
 };
 
-const USAGE = 'cs config [options]';
-
-export const CONFIG_BLOCKS: readonly TranscriptBlock[] = splitBlocks(CONFIG_TRANSCRIPT, [USAGE, USAGE, USAGE, USAGE]);
+// The typed commands follow the examples idiom of `cs config --help`: short flags, placeholder
+// tokens, long form only where no short exists.
+export const CONFIG_BLOCKS: readonly TranscriptBlock[] = splitBlocks(CONFIG_TRANSCRIPT, [
+	'cs config -n claude',
+	'cs config -n claude-company --oauth-token <login-token>',
+	'cs config -n glm -u https://api.z.ai/api/anthropic -t <key> -s glm-5.3-flash[1m]',
+	'cs config -n minimax -u https://api.minimax.io/anthropic -t sk-cp-... -s MiniMax-M3.1-Flash[1m]'
+]);
 
 export const ALIAS_BLOCKS: readonly TranscriptBlock[] = splitBlocks(ALIAS_TRANSCRIPT, [
 	'cs alias planner claude',
