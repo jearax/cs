@@ -32,3 +32,4 @@ Short facts about this repository, injected at every session start. Size limits 
 - Reviewing a port: grep the source product name over every ported surface — misses hide in yaml tags and fixtures; verify "clean" claims yourself.
 - Decision status, index pipes and doctor secret check have traps — .harness/docs/harness-writing-traps.md
 - Agent edit traps: corrupted long writes, `cd` persists, post-move name sweep — .harness/docs/agent-session-traps.md
+- Release flow proven end-to-end: push main → CI (checks/image/deploy) → ghcr image → Dokploy webhook → cs.jjuidev.com; verify with tmp-HOME install + `--version` — .harness/docs/build-notes.md
