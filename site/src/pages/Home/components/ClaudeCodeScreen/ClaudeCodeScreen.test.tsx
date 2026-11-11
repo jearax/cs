@@ -4,18 +4,21 @@ import { render } from 'vitest-browser-react';
 
 import ClaudeCodeScreen, { Session } from './ClaudeCodeScreen';
 
-const SESSIONS: Record<Session, { model: string; head: string }> = {
+const SESSIONS: Record<Session, { model: string; head: string; reply: string }> = {
 	claude: {
 		model: 'claude-sonnet-5-5[1m]',
-		head: 'claude-sonnet-5-5[1m] with high effort · Claude Pro'
+		head: 'claude-sonnet-5-5[1m] with high effort · Claude Pro',
+		reply: "I'm running on claude-sonnet-5.5"
 	},
 	planner: {
 		model: 'claude-sonnet-5-5[1m]',
-		head: 'claude-sonnet-5-5[1m] with high effort · Claude Pro'
+		head: 'claude-sonnet-5-5[1m] with high effort · Claude Pro',
+		reply: "I'm running on claude-sonnet-5.5"
 	},
 	cooker: {
 		model: 'glm-5.3-flash[1m]',
-		head: 'glm-5.3-flash[1m] with medium effort · API Usage Billing'
+		head: 'glm-5.3-flash[1m] with medium effort · API Usage Billing',
+		reply: "I'm running on glm-5.3-flash"
 	}
 };
 
@@ -36,10 +39,14 @@ describe('ClaudeCodeScreen', () => {
 				'⎇ main',
 				PROMPT_TEXT,
 				`Model: ${SESSIONS[session].model}`,
-				'⏵⏵ bypass permissions on'
+				'⏵⏵ bypass permissions on',
+				SESSIONS[session].reply
 			]) {
 				expect(text).toContain(expected);
 			}
+
+			// The model names itself bare: no context-window suffix, no closing period.
+			expect(text).not.toContain(`${SESSIONS[session].reply}.`);
 
 			for (const banned of ['--settings', 'global', '/login', 'pending', 'launcher', 'ghost-proc-guard']) {
 				expect(text).not.toContain(banned);

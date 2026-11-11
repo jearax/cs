@@ -12,6 +12,8 @@ export interface ClaudeCodeScreenProps extends ComponentProps<'div'> {
 
 type SessionInfo = {
 	model: string;
+	// How the model names itself in a reply: no context-window suffix.
+	name: string;
 	effort: 'high' | 'medium';
 	plan: string;
 	context: string;
@@ -23,6 +25,7 @@ type SessionInfo = {
 const SESSIONS: Record<Session, SessionInfo> = {
 	claude: {
 		model: 'claude-sonnet-5-5[1m]',
+		name: 'claude-sonnet-5.5',
 		effort: 'high',
 		plan: 'Claude Pro',
 		context: '18k/1.0M (2%)',
@@ -40,6 +43,7 @@ const SESSIONS: Record<Session, SessionInfo> = {
 	},
 	planner: {
 		model: 'claude-sonnet-5-5[1m]',
+		name: 'claude-sonnet-5.5',
 		effort: 'high',
 		plan: 'Claude Pro',
 		context: '19k/1.0M (2%)',
@@ -57,6 +61,7 @@ const SESSIONS: Record<Session, SessionInfo> = {
 	},
 	cooker: {
 		model: 'glm-5.3-flash[1m]',
+		name: 'glm-5.3-flash',
 		effort: 'medium',
 		plan: 'API Usage Billing',
 		context: '17k/1.0M (2%)',
@@ -99,7 +104,7 @@ const SessionScreen = ({ info }: { info: SessionInfo }) => {
 				<div className={styles.turn} style={at(4.4)}>
 					<p>
 						<span className={styles.done}>●</span> {"I'm doing well, thanks! I'm running on "}
-						{info.model}.
+						{info.name}
 					</p>
 				</div>
 			</div>
