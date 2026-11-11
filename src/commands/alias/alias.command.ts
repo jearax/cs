@@ -30,8 +30,8 @@ export const registerAliasCommand = (program: Command): void => {
 			const verb = result.replaced ? 're-pointed' : 'created';
 
 			process.stdout.write(`Alias "${result.name}" ${verb} at profile "${result.profile}".\n`);
-			process.stdout.write(`  Launcher: ${result.launcherPath}\n`);
-			showBinPathNotice(result.binPath);
+			process.stdout.write(`Launcher: ${result.launcherPath}\n`);
+			showBinPathNotice(result.binPath, '');
 		});
 
 	aliasCommand
@@ -48,7 +48,7 @@ export const registerAliasCommand = (program: Command): void => {
 
 			for (const entry of result.removed) {
 				process.stdout.write(`Alias "${entry.name}" removed (was → ${entry.profile}).\n`);
-				process.stdout.write(`  Launcher: ${entry.launcherPath}\n`);
+				process.stdout.write(`Launcher: ${entry.launcherPath}\n`);
 			}
 		});
 };

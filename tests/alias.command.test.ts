@@ -139,7 +139,7 @@ describe('cs alias remove', () => {
 		const { stdout, exitCode } = await runCli(['alias', 'remove', 'planner']);
 
 		expect(stdout).toContain('Alias "planner" removed (was → work).');
-		expect(stdout).toContain(`  Launcher: ${launcherPath('planner')}`);
+		expect(stdout).toContain(`\nLauncher: ${launcherPath('planner')}`);
 		expect(exitCode).toBe(0);
 
 		expect(await exists(launcherPath('planner'))).toBe(false);

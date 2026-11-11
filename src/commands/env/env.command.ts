@@ -161,6 +161,6 @@ export const registerEnvCommand = (program: Command): void => {
 				process.stdout.write(`Removed ${result.key} from ${result.target}.\n`);
 			}
 
-			showBinPathNotice(result.binPath);
+			showBinPathNotice(result.binPath, '');
 		});
 };

@@ -92,6 +92,39 @@ describe('cs config', () => {
 		expect(profile?.['haiku']).toBe('claude-haiku-5-5[1m]');
 	});
 
+	it('prints an update flush-left: no header, so no indent', async () => {
+		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
+
+		const { stdout, exitCode } = await runCli(['config', '-n', 'work', '-f', 'claude-fable-5-2']);
+
+		expect(stdout).toContain('Profile "work" updated.\nSettings: ');
+		expect(stdout).toContain('\nCommand:  claude --settings ');
+		expect(stdout).not.toMatch(/^ +\S/m);
+		expect(exitCode).toBe(0);
+	});
+
+	it('names no default record when every field comes from a flag', async () => {
+		const { stdout, exitCode } = await runCli([
+			'config',
+			'-n',
+			'glm',
+			'-u',
+			'https://api.z.ai/api/anthropic',
+			'-t',
+			'sk-secret-token',
+			'--haiku',
+			'glm-5.3-flash',
+			'-s',
+			'glm-5.3-flash',
+			'-o',
+			'glm-5.3-flash'
+		]);
+
+		expect(stdout).toContain('Profile "glm" created.\n');
+		expect(stdout).not.toContain('"default" record');
+		expect(exitCode).toBe(0);
+	});
+
 	it('renders the profile artifact and no launcher', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 

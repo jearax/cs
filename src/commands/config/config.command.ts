@@ -52,7 +52,9 @@ export const registerConfigCommand = (program: Command): void => {
 			}
 
 			if (result.kind === 'created') {
-				process.stdout.write(`Profile "${result.name}" created with the "default" record.\n`);
+				const source = result.inherited ? ' with the "default" record' : '';
+
+				process.stdout.write(`Profile "${result.name}" created${source}.\n`);
 				process.stdout.write(`Profile: ${result.name}\n`);
 				process.stdout.write(`${profileFieldLines(result.profile).join('\n')}\n`);
 
@@ -68,9 +70,9 @@ export const registerConfigCommand = (program: Command): void => {
 			process.stdout.write(`Profile "${result.name}" updated.\n`);
 
 			if (result.artifacts !== null) {
-				process.stdout.write(`${artifactLines(result.artifacts).join('\n')}\n`);
+				process.stdout.write(`${artifactLines(result.artifacts, '').join('\n')}\n`);
 			}
 
-			showBinPathNotice(result.binPath);
+			showBinPathNotice(result.binPath, '');
 		});
 };

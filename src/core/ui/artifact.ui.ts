@@ -3,8 +3,8 @@ export type ArtifactView = {
 	launchCommand: string;
 };
 
-export const artifactLines = (artifacts: ArtifactView): string[] => {
-	return [`  Settings: ${artifacts.settingsHomePath}`, `  Command:  ${artifacts.launchCommand}`];
+export const artifactLines = (artifacts: ArtifactView, indent = '  '): string[] => {
+	return [`${indent}Settings: ${artifacts.settingsHomePath}`, `${indent}Command:  ${artifacts.launchCommand}`];
 };
 
 /** What the PATH service did with the shell rc, and what the user still has to do. */
@@ -14,35 +14,35 @@ export type BinPathOutcome = {
 	exportLine: string;
 };
 
-export const binPathNoticeLines = (outcome: BinPathOutcome): string[] => {
+export const binPathNoticeLines = (outcome: BinPathOutcome, indent = '  '): string[] => {
 	/*
-	 * One line, one voice, whatever the PATH service did: every line reads `  PATH: <what>` in the
-	 * same two-space indent as `Launcher:`, so the command's tail block is uniform across runs.
-	 * The statuses with nothing to do stay silent.
+	 * One line, one voice: `PATH:     <what>` pads the label to the same 10-wide column as
+	 * `Launcher:`, so the tail block lines up; the no-op statuses stay silent. The indent follows
+	 * the block the notice closes: under a `Profile:` header it is indented, after a banner it is not.
 	 */
 	if (outcome.status === 'added') {
-		return [`  PATH: added to ${outcome.rcPath} — open a new shell to pick it up`];
+		return [`${indent}PATH:     added to ${outcome.rcPath} — open a new shell to pick it up`];
 	}
 
 	if (outcome.status === 'marker-present') {
-		return [`  PATH: entry is in ${outcome.rcPath} — open a new shell to pick it up`];
+		return [`${indent}PATH:     entry is in ${outcome.rcPath} — open a new shell to pick it up`];
 	}
 
 	if (outcome.status === 'not-interactive' || outcome.status === 'unsupported-shell') {
 		const target = outcome.rcPath === null ? 'your shell rc' : outcome.rcPath;
 
-		return [`  PATH: not written — add it to ${target}: ${outcome.exportLine}`];
+		return [`${indent}PATH:     not written — add it to ${target}: ${outcome.exportLine}`];
 	}
 
 	return [];
 };
 
-export const showBinPathNotice = (outcome: BinPathOutcome | null): void => {
+export const showBinPathNotice = (outcome: BinPathOutcome | null, indent?: string): void => {
 	if (outcome === null) {
 		return;
 	}
 
-	const lines = binPathNoticeLines(outcome);
+	const lines = binPathNoticeLines(outcome, indent);
 
 	if (lines.length === 0) {
 		return;

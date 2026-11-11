@@ -22,8 +22,8 @@ export const registerUseCommand = (program: Command): void => {
 			}
 
 			process.stdout.write(`Switched to profile "${result.name}".\n`);
-			process.stdout.write(`${profileFieldLines(result.profile).join('\n')}\n`);
-			process.stdout.write(`${artifactLines(result.artifacts).join('\n')}\n`);
-			showBinPathNotice(result.binPath);
+			process.stdout.write(`${profileFieldLines(result.profile, '').join('\n')}\n`);
+			process.stdout.write(`${artifactLines(result.artifacts, '').join('\n')}\n`);
+			showBinPathNotice(result.binPath, '');
 		});
 };

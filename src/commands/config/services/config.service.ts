@@ -34,10 +34,14 @@ export type ConfigResult = {
 	kind: 'shown' | 'created' | 'updated';
 	name: string;
 	profile: Profile;
+	/** A creation took at least one field from the default record rather than from a flag. */
+	inherited: boolean;
 	artifacts: ProfileArtifacts | null;
 	notices: string[];
 	binPath: BinPathOutcome | null;
 };
+
+const PROFILE_FIELDS = ['url', 'token', 'oauthToken', 'haiku', 'sonnet', 'opus', 'fable', 'env'] as const;
 
 const hasUpdates = (options: ConfigOptions): boolean => {
 	return (
@@ -93,7 +97,7 @@ const applyProfileRecord = (
 	name: string,
 	existing: Profile | undefined,
 	update: ProfileUpdate
-): Profile => {
+): { profile: Profile; inherited: boolean } => {
 	// One name, one launcher: an alias may not shadow a profile of the same name, and the other
 	// way round. The alias name stays taken until its target profile is removed.
 	const aliasTarget = findAliasTarget(config, name);
@@ -129,7 +133,21 @@ const applyProfileRecord = (
 		});
 	}
 
-	return upsertProfile(config, name, existing === undefined ? effective : update);
+	const bare: Profile = {
+		...EMPTY_PROFILE,
+		...update
+	};
+
+	const inherited =
+		existing === undefined &&
+		PROFILE_FIELDS.some((field) => {
+			return effective[field] !== bare[field];
+		});
+
+	return {
+		profile: upsertProfile(config, name, existing === undefined ? effective : update),
+		inherited
+	};
 };
 
 export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> => {
@@ -151,13 +169,14 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 			// cs.json commits, matching the update path.
 			const created = applyProfileRecord(config, name, undefined, {});
 
-			await renderProfileArtifacts(name, created, config.env ?? {}, config.aliases ?? {});
+			await renderProfileArtifacts(name, created.profile, config.env ?? {}, config.aliases ?? {});
 			await saveCsConfig(config);
 
 			return {
 				kind: 'created',
 				name,
-				profile: created,
+				profile: created.profile,
+				inherited: created.inherited,
 				artifacts: null,
 				notices,
 				binPath: null
@@ -168,6 +187,7 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 			kind: 'shown',
 			name,
 			profile: existing,
+			inherited: false,
 			artifacts: null,
 			notices,
 			binPath: null
@@ -176,7 +196,7 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 
 	const update = buildUpdate(options);
 	const existing = findProfile(config, name);
-	const profile = applyProfileRecord(config, name, existing, update);
+	const { profile, inherited } = applyProfileRecord(config, name, existing, update);
 
 	// The artifact renders before cs.json commits, so a render failure never leaves a stale
 	// artifact holding the old token.
@@ -190,6 +210,7 @@ export const runConfig = async (options: ConfigOptions): Promise<ConfigResult> =
 		kind: existing === undefined ? 'created' : 'updated',
 		name,
 		profile,
+		inherited,
 		artifacts,
 		notices,
 		binPath

@@ -56,7 +56,7 @@ cs current
 | `cs use <profile>`           | Activate a profile; writes the global settings, renders the files  |
 | `cs current`                 | Show the active profile and the profiles that have a rendered file |
 | `cs list` (`ls`)             | List all profiles                                                  |
-| `cs remove <profile>` (`rm`) | Delete a profile (`default` cannot be removed)                     |
+| `cs remove <profile>` (`rm`) | Delete one or more profiles (`default` cannot be removed)          |
 | `cs reset`                   | Delete every profile except `default`, restore its official values |
 | `cs env`                     | Interactive editor for extra env vars (global or per-profile)      |
 | `cs alias <name> <profile>`  | Create or re-point the `claude-<name>` launcher for a profile      |
@@ -118,9 +118,9 @@ profile as the active one:
 
 ```
 Switched to profile "work".
-  ...
-  Settings: ~/.config/cs/profiles/work.json
-  Command:  claude --settings ~/.config/cs/profiles/work.json
+...
+Settings: ~/.config/cs/profiles/work.json
+Command:  claude --settings ~/.config/cs/profiles/work.json
 ```
 
 Every profile that changes is re-rendered, so the files never drift from `cs.json`.
@@ -196,7 +196,7 @@ cs alias cooker work
 
 ```
 Alias "planner" created at profile "work".
-  Launcher: ~/.config/cs/bin/claude-planner
+Launcher: ~/.config/cs/bin/claude-planner
 ```
 
 Switching a role to another profile is one command — the alias is re-pointed and the launcher is
@@ -217,7 +217,7 @@ cs alias remove planner
 
 ```
 Alias "planner" removed (was → work).
-  Launcher: ~/.config/cs/bin/claude-planner
+Launcher: ~/.config/cs/bin/claude-planner
 ```
 
 `cs alias remove` accepts several names (`cs alias rm planner cooker`), but help shows the
@@ -230,7 +230,8 @@ Rules:
   one launcher. An alias name stays taken until the profile it points at is removed or the alias
   itself is removed.
 - The target profile must exist.
-- `cs remove <profile>` drops the aliases that pointed at it and reports them.
+- `cs remove <profile>` drops the aliases that pointed at it and reports them. It accepts several
+  names (`cs rm a b`); every name is checked first, so one unknown name or `default` removes nothing.
 - `cs reset` clears every alias and its launcher.
 - `cs list` shows the aliases as `name → profile`.
 

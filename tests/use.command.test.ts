@@ -34,6 +34,17 @@ const seedProfile = async (): Promise<void> => {
 };
 
 describe('cs use', () => {
+	it('prints the profile lines flush-left under its banner', async () => {
+		await seedProfile();
+
+		const { stdout } = await runCli(['use', 'work']);
+
+		expect(stdout).toContain('Switched to profile "work".\nURL:    https://example.com\n');
+		expect(stdout).toContain('\nSettings: ');
+		expect(stdout).toContain('\nCommand:  claude --settings ');
+		expect(stdout).not.toMatch(/^ +\S/m);
+	});
+
 	it('writes the global settings and renders the artifacts', async () => {
 		await seedProfile();
 

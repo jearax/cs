@@ -11,28 +11,28 @@ export type ProfileView = {
 	oauthToken?: string;
 };
 
-export const profileFieldLines = (profile: ProfileView): string[] => {
+export const profileFieldLines = (profile: ProfileView, indent = '  '): string[] => {
 	// Only the set credentials show, so a view carries one of the valid pairs: url+token or
 	// url+oauthToken (decision 0008) — never an empty slot for the other one.
 	const lines: string[] = [];
 
 	if (profile.url !== '') {
-		lines.push(`  URL:    ${profile.url}`);
+		lines.push(`${indent}URL:    ${profile.url}`);
 	}
 
 	if (profile.token !== '') {
-		lines.push(`  Token:  ${maskToken(profile.token)}`);
+		lines.push(`${indent}Token:  ${maskToken(profile.token)}`);
 	}
 
 	if (profile.oauthToken !== undefined && profile.oauthToken !== '') {
-		lines.push(`  OAuth:  ${maskToken(profile.oauthToken)}`);
+		lines.push(`${indent}OAuth:  ${maskToken(profile.oauthToken)}`);
 	}
 
 	lines.push(
-		`  Haiku:  ${profile.haiku}`,
-		`  Sonnet: ${profile.sonnet}`,
-		`  Opus:   ${profile.opus}`,
-		`  Fable:  ${profile.fable}`
+		`${indent}Haiku:  ${profile.haiku}`,
+		`${indent}Sonnet: ${profile.sonnet}`,
+		`${indent}Opus:   ${profile.opus}`,
+		`${indent}Fable:  ${profile.fable}`
 	);
 
 	return lines;
