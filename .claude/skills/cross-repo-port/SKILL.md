@@ -1,6 +1,6 @@
 ---
 name: cross-repo-port
-description: Port a file, script or test from another repository into cs, or review such a port. Use when work copies from ../jss-devtools, ../cs-cli or any sibling repo, when a ported shell script needs a test, or when reviewing a diff that was ported rather than written from scratch.
+description: Port a file, script or test from another repository into cs, or review such a port. Use when work copies from ../jss-devtools or any sibling repo, when a ported shell script needs a test, or when reviewing a diff that was ported rather than written from scratch.
 metadata:
   harness-origin: learned
   harness-pinned: 'false'
@@ -10,7 +10,7 @@ metadata:
 
 ## When to use
 
-- A file is copied from another repository into this one (`../jss-devtools`, `../cs-cli`).
+- A file is copied from another repository into this one (`../jss-devtools`).
 - A ported shell script needs a test in `tests/`.
 - Reviewing a diff that was ported rather than written from scratch.
 
@@ -18,7 +18,7 @@ metadata:
 
 1. Read the source file in full before writing anything. The source repo's own documentation
    contradicts its code in places — port the code, not the prose. `.harness/docs/cs-cli-feature-inventory.md`
-   is the read-only behaviour map of the old `cs-cli`.
+   is the read-only behaviour map of the old `cs-cli`, which is no longer checked out beside cs.
 2. **Diff the port against the file it replaces, not only against the source.** `git show HEAD:<path>`
    is the old version; the source repo is a different codebase with different guards. The port of
    `scripts/install.sh` dropped the old installer's "a relative install dir must be made absolute"
