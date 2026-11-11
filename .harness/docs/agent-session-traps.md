@@ -65,3 +65,15 @@ A scripted rewrite that silently misses one call site leaves the tree type-corre
 the hero's config tab kept command-only history entries through two green typechecks until the
 DOM was inspected. When a rewrite moves data into new shapes, grep the old field names in the
 consumers, and read the rendered output (or a test that asserts it), not just the compiler.
+
+## Measuring the hero loop in a browser
+
+A tab click replays that tab and the loop carries on (decision 0034). Measure the advance on a
+fresh load anyway: an earlier tab click or replay restarts the timeline, so timings read from a
+mid-session page are offset.
+
+## Stashing to compare versions
+
+Never `git stash` a file to test against its old version while the tree holds uncommitted work
+from several agents: a failed pop loses it. Read the old version with `git show HEAD:<path>` into a
+scratch file instead.

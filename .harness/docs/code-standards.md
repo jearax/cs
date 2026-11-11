@@ -173,8 +173,13 @@ later `--verbose` cannot use it.
 An option declares the long form first (`--name, -n`), and an option with no short form declares the
 long form alone. The help table prints the declaration verbatim, so the order is what a user reads.
 
-A positional takes the domain noun it names (`use <profile>`, `remove <profile>`); the exception is
-`cs alias <name> <profile>`, whose two positionals are the launcher and its target.
+A positional takes the domain noun it names (`use <profile>`, `remove <profile...>`); the exception
+is `cs alias <name> <profile>`, whose two positionals are the launcher and its target.
+
+Output indents a line only under a `Label: name` header (`Profile: work`); after a sentence banner
+(`… updated.`, `Switched to profile …`) the lines start at column 0, labels still padded to one
+column (decision 0032). `profileFieldLines`, `artifactLines` and `showBinPathNotice` take the indent
+from the caller and default to the header case.
 
 Only `src/cli.ts` builds the root command and only it owns the process: `process.exitCode`, the
 global handlers and the fatal error path. A command attaches to the program, it does not replace it.
@@ -275,3 +280,10 @@ A failure of any of these is an unfinished change, not a note.
 The reference repo's TypeScript source and its shipped bundle do not always behave the same (e.g.
 its help renderer `JSON.stringify`s `defaultValueDescription` in src but renders the value unquoted
 in dist). When porting, match the dist/user-visible behaviour and flag the divergence for upstream.
+
+## Rewording CLI output: negative assertions go vacuous
+
+`expect(stdout).not.toContain('PATH: added')` keeps passing once the line is reworded or
+re-padded, even if the line still prints. When a CLI string changes, grep the old literal across
+`tests/` and `site/src`, and rewrite each negative check to a stem that cannot drift (for
+example `not.toContain('PATH:')`).

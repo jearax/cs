@@ -15,3 +15,4 @@ Knowledge longer than one line of [`../MEMORY.md`](../MEMORY.md). Pick the templ
 - [agent-session-traps.md](agent-session-traps.md) — corrupted long writes; `cd` persists across Bash calls.
 - [herdr-agent-ops.md](herdr-agent-ops.md) — cooker dispatch, /clear stall, respawn, privacy hook.
 - [build-notes.md](build-notes.md) — Node floor copies, --version parsing, tsconfig excludes site/, shellcheck.
+- [site-terminal.md](site-terminal.md) — hero transcripts are verbatim captures; Terminal animation end-value, paging-state and test traps.
