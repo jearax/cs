@@ -70,7 +70,7 @@ describe('cs remove', () => {
 	it('shows the profile placeholder in its help', async () => {
 		const { stdout } = await runCli(['remove', '--help']);
 
-		expect(stdout).toContain('<profile>');
+		expect(stdout).toContain('<profile...>');
 	});
 
 	it('refuses to remove the default profile', async () => {
@@ -113,5 +113,68 @@ describe('cs remove', () => {
 
 		expect(stderr).toContain('Profile "ghost" not found');
 		expect(exitCode).toBe(1);
+	});
+
+	describe('several profiles at once', () => {
+		const readProfiles = async (): Promise<Record<string, unknown>> => {
+			const config = JSON.parse(await readFile(csConfigPath(), 'utf8')) as { profiles: Record<string, unknown> };
+
+			return config.profiles;
+		};
+
+		const seed = async (...names: string[]): Promise<void> => {
+			for (const name of names) {
+				await runCli(['config', '-n', name, '-u', 'https://example.com', '-t', 'sk-secret-token']);
+			}
+		};
+
+		it('removes every named profile with its artifact and aliases', async () => {
+			await seed('a', 'b', 'c');
+			await runCli(['alias', 'pa', 'a']);
+			await runCli(['alias', 'pb', 'b']);
+
+			const { stdout, exitCode } = await runCli(['rm', 'a', 'b']);
+
+			expect(stdout).toBe('Profile "a" removed.\nRemoved aliases: pa\nProfile "b" removed.\nRemoved aliases: pb\n');
+			expect(exitCode).toBe(0);
+
+			const profiles = await readProfiles();
+
+			expect(Object.keys(profiles).sort()).toEqual(['c', 'default']);
+			expect(await exists(profileArtifactPath('a'))).toBe(false);
+			expect(await exists(profileArtifactPath('b'))).toBe(false);
+			expect(await exists(launcherPath('pa'))).toBe(false);
+			expect(await exists(launcherPath('pb'))).toBe(false);
+		});
+
+		it('removes nothing when one name is unknown', async () => {
+			await seed('a', 'b');
+
+			const { stderr, exitCode } = await runCli(['rm', 'a', 'ghost', 'b']);
+
+			expect(stderr).toContain('Profile "ghost" not found');
+			expect(exitCode).toBe(1);
+			expect(Object.keys(await readProfiles()).sort()).toEqual(['a', 'b', 'default']);
+			expect(await exists(profileArtifactPath('a'))).toBe(true);
+		});
+
+		it('removes nothing when default is among the names', async () => {
+			await seed('a');
+
+			const { stderr, exitCode } = await runCli(['rm', 'a', 'default']);
+
+			expect(stderr).toContain('Cannot remove the "default" profile');
+			expect(exitCode).toBe(1);
+			expect(Object.keys(await readProfiles()).sort()).toEqual(['a', 'default']);
+		});
+
+		it('removes a name given twice once', async () => {
+			await seed('a');
+
+			const { stdout, exitCode } = await runCli(['rm', 'a', 'a']);
+
+			expect(stdout).toBe('Profile "a" removed.\n');
+			expect(exitCode).toBe(0);
+		});
 	});
 });

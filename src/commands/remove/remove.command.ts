@@ -9,21 +9,23 @@ const EXAMPLE_ROWS: ReadonlyArray<readonly [string, string]> = [
 
 export const registerRemoveCommand = (program: Command): void => {
 	program
-		.command('remove <profile>')
+		.command('remove <profile...>')
 		.alias('rm')
 		.description('Remove a profile')
 		.addHelpText('after', examplesText(EXAMPLE_ROWS))
-		.action(async (name: string) => {
-			const result = await runRemove(name);
+		.action(async (names: string[]) => {
+			const result = await runRemove(names);
 
 			for (const notice of result.notices) {
 				process.stderr.write(`   ! ${notice}\n`);
 			}
 
-			process.stdout.write(`Profile "${result.name}" removed.\n`);
+			for (const entry of result.removed) {
+				process.stdout.write(`Profile "${entry.name}" removed.\n`);
 
-			if (result.cleanedAliases.length > 0) {
-				process.stdout.write(`Removed aliases: ${result.cleanedAliases.join(', ')}\n`);
+				if (entry.cleanedAliases.length > 0) {
+					process.stdout.write(`Removed aliases: ${entry.cleanedAliases.join(', ')}\n`);
+				}
 			}
 		});
 };
