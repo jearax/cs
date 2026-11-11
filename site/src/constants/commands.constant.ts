@@ -50,7 +50,8 @@ export const COMMANDS: readonly CommandInfo[] = [
 		slug: 'reference',
 		command: 'cs remove work',
 		summary: 'Delete a profile.',
-		details: 'Answers to `rm`. `default` cannot be removed. Aliases that point at the profile are removed with it.'
+		details:
+			'Answers to `rm` and takes several names. `default` cannot be removed; one unknown name removes nothing. Aliases that point at a removed profile go with it.'
 	},
 	{
 		name: 'reset',

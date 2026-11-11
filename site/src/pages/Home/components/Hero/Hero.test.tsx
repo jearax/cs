@@ -99,27 +99,37 @@ describe('Hero', () => {
 		}
 	});
 
-	it('opens the new project in Claude Code on the second tab', async () => {
+	it('plays the three Claude Code sessions on the use tab', async () => {
 		const screen = await render(<Hero />, { wrapper });
 
 		const labels = [...screen.container.querySelectorAll('button[role="tab"]')].map((tab) => {
 			return tab.textContent;
 		});
 
-		expect(labels).toEqual(['config', 'alias', 'ls', 'use']);
+		expect(labels).toEqual(['config', 'alias', 'use']);
 
 		await screen.getByRole('tab', { name: 'use' }).click();
 
 		await expect.element(screen.getByText('cs use claude')).toBeInTheDocument();
-		await expect.element(screen.getByText(/profile: claude \(global\)/)).toBeInTheDocument();
-		await expect.element(screen.getByText('Sign in with /login to use the official API?')).toBeInTheDocument();
+		await expect.element(screen.getByText('Switched to profile "claude".')).toBeInTheDocument();
+		await expect.element(screen.getByText('claude').first()).toBeInTheDocument();
+		await expect.element(screen.getByText('claude-planner').first()).toBeInTheDocument();
+		await expect.element(screen.getByText('claude-cooker').first()).toBeInTheDocument();
+
+		// The suite's reduced motion keeps the whole transcript, with no typed clear row.
+		const clearRow = [...screen.container.querySelectorAll('p')].some((p) => {
+			return p.textContent === 'clear';
+		});
+
+		expect(clearRow).toBe(false);
 	});
 
 	it('replays the transcript when the reader switches tabs', async () => {
 		const screen = await render(<Hero />, { wrapper });
 
-		await screen.getByRole('tab', { name: 'ls' }).click();
+		await screen.getByRole('tab', { name: 'alias' }).click();
 
 		await expect.element(screen.getByText(/Aliases:/)).toBeInTheDocument();
+		await expect.element(screen.getByText('cs alias planner claude')).toBeInTheDocument();
 	});
 });

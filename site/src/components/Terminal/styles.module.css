@@ -25,13 +25,29 @@
 	@apply relative border-default border-b-0 bg-selected text-default;
 }
 
-.replay {
-	/* The strip's top padding belongs to the tabs; the negative margin centres the button on the whole strip. */
+/* The strip's top padding belongs to the tabs; the negative margin centres the button on the whole strip. */
+.pause {
+	/* The pause button carries the strip's right-edge margin, so the pair hugs the far end together. */
 	@apply pointer-coarse:size-11 ml-auto -mt-3 focus-ring inline-flex size-8 shrink-0 items-center justify-center self-center rounded-md text-muted transition-colors duration-150 hover:bg-hover hover:text-default active:bg-active;
+}
+
+.replay {
+	@apply pointer-coarse:size-11 -mt-3 focus-ring inline-flex size-8 shrink-0 items-center justify-center self-center rounded-md text-muted transition-colors duration-150 hover:bg-hover hover:text-default active:bg-active;
 }
 
 .replayIcon {
 	@apply size-4;
+}
+
+/*
+ * Paused freezes every descendant animation and its pseudo-elements where they stand; a frozen
+ * animation's delay stops counting down with it. The flag is important because each animation
+ * shorthand below resets the play state implicitly.
+ */
+.root[data-paused='true'] *,
+.root[data-paused='true'] *::before,
+.root[data-paused='true'] *::after {
+	animation-play-state: paused !important;
 }
 
 .label {
@@ -93,7 +109,7 @@
 }
 
 .segment[data-color='muted'],
-.segment[data-dim] {
+.segment[data-dim='true'] {
 	@apply text-muted;
 }
 
@@ -117,12 +133,12 @@
 	@apply text-primary;
 }
 
-.segment[data-bold] {
+.segment[data-bold='true'] {
 	@apply font-bold;
 }
 
 /* The CLI prints its title inverted; the design system's selection pair is the inverted text colour. */
-.segment[data-inverse] {
+.segment[data-inverse='true'] {
 	@apply bg-selection text-selection-foreground;
 }
 
@@ -152,19 +168,29 @@
 /* Each physical line of a typed command types on its own step; a shell continuation sits on the
    line under its prompt, aligned with the command's first character. */
 .root[data-variant='animated'] .commandLine {
-	/* The typing reads the line as one row, so it does not wrap while it is typed. */
-	@apply block overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_both] [animation-delay:calc(var(--at,0)*1ms)];
+	/* The typing reads the line as one row, so it does not wrap while it is typed. The fill is
+	   backwards only: the last step of steps() can round down and clip the final character, so a
+	   finished line takes its natural width instead. */
+	@apply block overflow-hidden whitespace-nowrap animate-[terminal-type_700ms_steps(var(--chars),end)_backwards] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none] motion-reduce:overflow-visible;
 
 	@apply max-sm:animate-[terminal-fade_300ms_ease-out_both] max-sm:[animation-delay:calc(var(--at,0)*1ms)];
 }
 
-/* Only the command typed last keeps the caret; the ones before it are finished. */
+/* The caret sits after a command's last typed line; only the newest command keeps it. */
 .root[data-variant='animated'] .commandLine[data-last-line='true']::after {
 	@apply inline-block animate-[terminal-caret_1s_steps(2,jump-none)_infinite] bg-primary content-[''] ml-px align-text-bottom [height:1.05em] [width:0.5em];
 
 	@apply motion-reduce:[animation:none] motion-reduce:content-none;
+}
+
+/* A finished command hands the caret on: it goes out when the next command row or a program
+   screen appears — every command whose last line carries a hand-off target. */
+.root[data-variant='animated'] .commandLine[data-last-line='true'][data-caret-off]::after {
+	@apply [animation:terminal-caret_1s_steps(2,jump-none)_infinite,terminal-caret-off_1ms_linear_calc(var(--caret-until,0)*1ms)_forwards];
+
+	@apply motion-reduce:[animation:none];
 }
 
 .root[data-variant='animated'] .line {
@@ -182,7 +208,7 @@
 
 /* The comment is revealed, never typed: the purpose is there before the command starts. */
 .root[data-variant='animated'] .comment {
-	@apply animate-[terminal-reveal_260ms_cubic-bezier(0.16,1,0.3,1)_both];
+	@apply animate-[terminal-reveal_260ms_cubic-bezier(0.16,1,0.3,1)_both] [animation-delay:calc(var(--at,0)*1ms)];
 
 	@apply motion-reduce:[animation:none];
 }
@@ -212,6 +238,14 @@
 @keyframes terminal-caret {
 	50% {
 		opacity: 0;
+	}
+}
+
+/* Hidden at both ends: a discrete visible→hidden step can settle on visible once it finishes. */
+@keyframes terminal-caret-off {
+	from,
+	to {
+		visibility: hidden;
 	}
 }
 
