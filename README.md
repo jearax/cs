@@ -50,17 +50,17 @@ cs current
 
 ## Commands
 
-| Command                      | Description                                                        |
-| ---------------------------- | ------------------------------------------------------------------ |
-| `cs config`                  | Create or update a profile (no flags = show it)                    |
-| `cs use <profile>`           | Activate a profile; writes the global settings, renders the files  |
-| `cs current`                 | Show the active profile and the profiles that have a rendered file |
-| `cs list` (`ls`)             | List all profiles                                                  |
-| `cs remove <profile>` (`rm`) | Delete one or more profiles (`default` cannot be removed)          |
-| `cs reset`                   | Delete every profile except `default`, restore its official values |
-| `cs env`                     | Interactive editor for extra env vars (global or per-profile)      |
-| `cs alias <name> <profile>`  | Create or re-point the `claude-<name>` launcher for a profile      |
-| `cs alias remove <alias...>` | Delete an alias and its `claude-<name>` launcher                   |
+| Command                             | Description                                                        |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `cs config`                         | Create or update a profile (no flags = show it)                    |
+| `cs use <profile>`                  | Activate a profile; writes the global settings, renders the files  |
+| `cs current`                        | Show the active profile and the profiles that have a rendered file |
+| `cs list` (`ls`)                    | List all profiles                                                  |
+| `cs remove <profile>` (`rm`)        | Delete one or more profiles (`default` cannot be removed)          |
+| `cs reset`                          | Delete every profile except `default`, restore its official values |
+| `cs env`                            | Interactive editor for extra env vars (global or per-profile)      |
+| `cs alias <name> <profile>`         | Create or re-point the `claude-<name>` launcher for a profile      |
+| `cs alias remove <alias...>` (`rm`) | Delete an alias and its `claude-<name>` launcher                   |
 
 Run `cs <command> --help` for full usage.
 

@@ -1,3 +1,5 @@
+import { Fragment } from 'react';
+
 import { COMMANDS } from '@/constants/commands.constant';
 import { ARTIFACTS, CONFIG_OPTIONS, EXIT_CODES } from '@/constants/reference.constant';
 import DocPage from '@/pages/Docs/components/DocPage/DocPage';
@@ -53,6 +55,14 @@ const Reference = () => {
 										<tr key={command.name}>
 											<td>
 												<code>cs {command.name}</code>
+												{command.aliases?.map((alias) => {
+													return (
+														<Fragment key={alias}>
+															{' '}
+															(<code>{alias}</code>)
+														</Fragment>
+													);
+												})}
 											</td>
 											<td>
 												<RichText text={command.summary} />

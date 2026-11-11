@@ -1,9 +1,11 @@
 /**
- * The nine commands, from `src/commands/` and the README's command table. The summary is the
+ * The eight commands, from `src/commands/` and the README's command table. The summary is the
  * command's own description; the details are what the command actually does.
  */
 export type CommandInfo = {
 	name: string;
+	/** Shorter names the command also answers to. */
+	aliases?: readonly string[];
 	/** The docs page that explains the command. */
 	slug: string;
 	/** The command line the reader runs. */
@@ -39,6 +41,7 @@ export const COMMANDS: readonly CommandInfo[] = [
 	},
 	{
 		name: 'list',
+		aliases: ['ls'],
 		slug: 'reference',
 		command: 'cs list',
 		summary: 'List all profiles.',
@@ -47,6 +50,7 @@ export const COMMANDS: readonly CommandInfo[] = [
 	},
 	{
 		name: 'remove',
+		aliases: ['rm'],
 		slug: 'reference',
 		command: 'cs remove work',
 		summary: 'Delete a profile.',
@@ -75,6 +79,6 @@ export const COMMANDS: readonly CommandInfo[] = [
 		command: 'cs alias <name> <profile>',
 		summary: 'Create a launcher.',
 		details:
-			'Only aliases create launchers: `cs alias work work` writes `claude-work` into `~/.config/cs/bin`, a launcher that runs Claude Code with that profile’s rendered file. `cs alias remove <alias...>` deletes them.'
+			'Only aliases create launchers: `cs alias work work` writes `claude-work` into `~/.config/cs/bin`, a launcher that runs Claude Code with that profile’s rendered file. `cs alias remove <alias...>` (`rm`) deletes them.'
 	}
 ];
