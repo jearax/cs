@@ -108,24 +108,16 @@ describe('the alias launcher', () => {
 		expect(stdout).toContain('planner → work');
 	});
 
-	it('keeps the profile name free of the alias it points at', async () => {
+	it('keeps an alias pointed at its target when a profile takes the same name', async () => {
 		await seedProfile('work');
 		await runCli(['alias', 'planner', 'work']);
-
-		const { stderr, exitCode } = await runCli(['config', '-n', 'planner', '-u', 'https://x.example.com']);
-
-		expect(stderr).toContain('Name "planner" is already used by an alias');
-		expect(exitCode).toBe(1);
-	});
-
-	it('frees the name again when the target profile is removed', async () => {
-		await seedProfile('work');
-		await runCli(['alias', 'planner', 'work']);
-
-		await runCli(['remove', 'work']);
 
 		const { exitCode } = await runCli(['config', '-n', 'planner', '-u', 'https://x.example.com']);
 
 		expect(exitCode).toBe(0);
+
+		const launcher = await readFile(launcherPath('planner'), 'utf8');
+
+		expect(launcher).toContain('exec claude --settings ~/.config/cs/profiles/work.json');
 	});
 });

@@ -47,14 +47,6 @@ export const runAlias = async (name: string, profileName: string): Promise<Alias
 
 	const { config, notices } = await loadCsConfig();
 
-	// One name, one launcher: an alias may not shadow a profile of the same name.
-	if (findProfile(config, aliasName) !== undefined) {
-		throw new CliError(`Alias "${aliasName}" collides with the profile of the same name.`, {
-			hint: 'Pick another alias name, or remove the profile first.',
-			commands: [`cs remove ${aliasName}`]
-		});
-	}
-
 	const target = findProfile(config, targetName);
 
 	if (target === undefined) {

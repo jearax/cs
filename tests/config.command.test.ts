@@ -235,19 +235,19 @@ describe('cs config', () => {
 		expect(await exists(profileArtifactPath('claude'))).toBe(true);
 	});
 
-	it('refuses a show-create when the name is taken by an alias', async () => {
+	it('show-creates a profile whose name an alias already uses', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-secret-token']);
 		await runCli(['alias', 'planner', 'work']);
 
-		const { stderr, exitCode } = await runCli(['config', '-n', 'planner']);
+		const { exitCode } = await runCli(['config', '-n', 'planner']);
 
-		expect(stderr).toContain('already used by an alias');
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 
 		const config = await readJson(csConfigPath());
 		const profiles = config['profiles'] as Record<string, Record<string, string>>;
 
-		expect(profiles['planner']).toBeUndefined();
+		expect(profiles['planner']).toBeDefined();
+		expect(config['aliases']).toEqual({ planner: 'work' });
 	});
 
 	it('writes the oauth token into the rendered env', async () => {

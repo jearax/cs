@@ -77,15 +77,30 @@ describe('cs alias', () => {
 		expect(await readAliases()).toEqual({ planner: 'default' });
 	});
 
-	it('rejects an alias name that collides with a profile name', async () => {
+	it('accepts an alias that shares the name of the profile it points at', async () => {
+		await runCli(['config', '-n', 'glm', '-u', 'https://example.com', '-t', 'sk-fake-token']);
+
+		const { stdout, exitCode } = await runCli(['alias', 'glm', 'glm']);
+
+		expect(stdout).toContain('Alias "glm" created at profile "glm"');
+		expect(exitCode).toBe(0);
+
+		expect(await readAliases()).toEqual({ glm: 'glm' });
+
+		const launcher = await readFile(launcherPath('glm'), 'utf8');
+
+		expect(launcher).toContain('exec claude --settings ~/.config/cs/profiles/glm.json');
+	});
+
+	it('accepts an alias that shares a profile name but points elsewhere', async () => {
 		await runCli(['config', '-n', 'work', '-u', 'https://example.com', '-t', 'sk-fake-token']);
 
-		const { stderr, exitCode } = await runCli(['alias', 'work', 'default']);
+		const { exitCode } = await runCli(['alias', 'work', 'default']);
 
-		expect(stderr).toContain('Alias "work" collides with the profile of the same name');
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 
-		expect(await readAliases()).toEqual({});
+		expect(await readAliases()).toEqual({ work: 'default' });
+		expect(await exists(profileArtifactPath('work'))).toBe(true);
 	});
 
 	it('rejects a target profile that does not exist', async () => {

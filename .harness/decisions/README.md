@@ -41,3 +41,4 @@ from [`../templates/decision.md`](../templates/decision.md).
 | 0034 | The hero terminal keeps auto-advancing after the reader picks a tab                                               | Accepted           | 2026-11-11 |
 | 0035 | The hero use tab pages through three Claude Code sessions, each ended with /exit and a typed clear                | Accepted           | 2026-11-11 |
 | 0036 | The hero terminal has a play/pause toggle left of replay that freezes everything, the Claude Code screen included | Accepted           | 2026-11-11 |
+| 0037 | Alias and profile names are independent — an alias may share a profile's name                                     | Accepted           | 2026-11-13 |

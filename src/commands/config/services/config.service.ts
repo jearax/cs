@@ -6,13 +6,7 @@ import { BOTH_TOKENS_HINT, hasBothTokens } from '@/modules/profiles/checks/token
 import { EMPTY_PROFILE, OFFICIAL_PROFILE } from '@/modules/profiles/constants/profile.constant';
 import { ensureBinPath } from '@/modules/profiles/services/ensure-bin-path.service';
 import { renderProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
-import {
-	findAliasTarget,
-	findProfile,
-	loadCsConfig,
-	saveCsConfig,
-	upsertProfile
-} from '@/modules/profiles/services/storage.service';
+import { findProfile, loadCsConfig, saveCsConfig, upsertProfile } from '@/modules/profiles/services/storage.service';
 
 import type { BinPathOutcome } from '@/core/ui/artifact.ui';
 import type { ProfileArtifacts } from '@/modules/profiles/services/render-artifacts.service';
@@ -98,17 +92,6 @@ const applyProfileRecord = (
 	existing: Profile | undefined,
 	update: ProfileUpdate
 ): { profile: Profile; inherited: boolean } => {
-	// One name, one launcher: an alias may not shadow a profile of the same name, and the other
-	// way round. The alias name stays taken until its target profile is removed.
-	const aliasTarget = findAliasTarget(config, name);
-
-	if (existing === undefined && aliasTarget !== undefined) {
-		throw new CliError(`Name "${name}" is already used by an alias.`, {
-			hint: `The alias points at "${aliasTarget}". Remove that profile to free the name.`,
-			commands: [`cs remove ${aliasTarget}`]
-		});
-	}
-
 	// Creation inherits the fields the flags leave unspecified from the default record, like
 	// function default params; updates keep the profile's own values.
 	const defaults = existing ?? findProfile(config, 'default') ?? OFFICIAL_PROFILE;
