@@ -18,8 +18,8 @@ created: 2026-11-11
 The hero terminal's tab strip has a play/pause button immediately left of the replay button, on
 both sites:
 
-- cs: `/Users/tandm/Documents/jearax/npm/cs/site`
-- jss-devtools: `/Users/tandm/Documents/jearax/npm/jss-devtools/site`
+- cs: `~/Documents/jearax/npm/cs/site`
+- jss-devtools: `~/Documents/jearax/npm/jss-devtools/site`
 
 Pause freezes everything the window is doing at that instant: typing, line reveals, carets, the
 Claude Code screen, the wait after a typed `clear`, the wait before the next tab. Play resumes from
@@ -28,7 +28,7 @@ the exact same point. Nothing restarts.
 Purpose: a visitor pauses the hero to read a sample command at their own pace, then plays on.
 
 User's words: "tôi muốn có 1 button play/pause ở cạnh button reload của terminal"; "Sửa chung cho
-site ở `/Users/tandm/Documents/jearax/npm/jss-devtools` luôn."; "mục đích / chủ ý thiết kế là để
+site ở `~/Documents/jearax/npm/jss-devtools` luôn."; "mục đích / chủ ý thiết kế là để
 client pause / play để xem command mẫu ở terminal"; "Pause/Play nằm bên trái Reload"; "Luôn hiện
 cùng Reload, toggle Pause/Play"; "Pause thì dừng Screen" (the Claude Code screen freezes too).
 

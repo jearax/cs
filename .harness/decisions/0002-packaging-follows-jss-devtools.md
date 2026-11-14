@@ -12,7 +12,7 @@ supersedes: none
 
 `cs` is a from-scratch refactor of the old `cs-cli` (bun, dual ESM/CJS, Node >= 18). The question
 was whether the new repo keeps the old packaging compatibility or adopts the conventions of the
-reference repo `/Users/tandm/Documents/jearax/npm/jss-devtools`.
+reference repo `../jss-devtools` beside cs.
 
 ## Decision
 

@@ -1,8 +1,9 @@
 # cs-cli feature inventory (behavioural reference)
 
-Complete behaviour map of the old CLI at `/Users/tandm/Documents/jearax/npm/cs-cli` v0.3.1
-(~1,150 LOC, bun + citty + @clack/prompts + consola + figlet). Per decision 0001 this is a
-reference, not a compatibility contract: copy behaviours deliberately, not by default.
+Complete behaviour map of the old `cs-cli` v0.3.1 (~1,150 LOC, bun + citty + @clack/prompts +
+consola + figlet); no checkout of it exists any more, this file is the only reference. Per
+decision 0001 this is a reference, not a compatibility contract: copy behaviours deliberately,
+not by default.
 
 ## Domain model
 

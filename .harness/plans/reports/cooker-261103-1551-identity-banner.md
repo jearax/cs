@@ -1,7 +1,7 @@
 # Report: cs identity (decision 0006) and the jss-devtools banner
 
 Task: brief from the planner, no plan file (small task).
-Reference: `/Users/tandm/Documents/jearax/npm/jss-devtools` (read-only, unmodified).
+Reference: `~/Documents/jearax/npm/jss-devtools` (read-only, unmodified).
 Date: 2026-11-03
 
 Decision 0006 is implemented end to end: the package is `@jjuidev/cs`, the product says "Claude code

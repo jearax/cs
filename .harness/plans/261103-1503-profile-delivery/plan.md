@@ -39,7 +39,7 @@ workflow on 2026-11-03. The harness module port is đợt 2, a separate plan.
   for everything ported (copy behaviours deliberately, flag every deviation in the report).
 - Layout rules enforced by `tests/support/architecture-rules.ts` — commands wire CLI, module
   services return data and print nothing, output goes through `core/ui`.
-- The old repo (`/Users/tandm/Documents/jearax/npm/cs-cli`) is read-only reference; its code is
+- The old repo (`~/Documents/jearax/npm/cs-cli`) is read-only reference; its code is
   never copied — behaviour is ported per the inventory.
 
 ## Non-goals

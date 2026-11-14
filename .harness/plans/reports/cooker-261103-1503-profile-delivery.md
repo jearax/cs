@@ -2,7 +2,7 @@
 
 Plan: [../261103-1503-profile-delivery/plan.md](../261103-1503-profile-delivery/plan.md)
 Behaviour contract: [../../docs/cs-cli-feature-inventory.md](../../docs/cs-cli-feature-inventory.md)
-Old CLI (read-only reference): `/Users/tandm/Documents/jearax/npm/cs-cli` — no code copied.
+Old CLI (read-only reference): `~/Documents/jearax/npm/cs-cli` — no code copied.
 Date: 2026-11-03
 
 All four phases landed. The seven commands of the old CLI are ported, decision 0004's dual delivery

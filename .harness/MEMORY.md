@@ -19,7 +19,7 @@ Short facts about this repository, injected at every session start. Size limits 
 - `scripts/package-info.d.mts` is required (allowJs off, else TS7016).
 - Profiles live in `~/.config/cs/cs.json` (0600); a profile renders only `profiles/<name>.json` (0013); only `cs alias` creates launchers (0024).
 - `cs.json` is schema 1, nothing migrated (0012); save rewrites from the fields cs owns (`toCsConfig`) — hand-added keys are lost.
-- Plans: `.harness/plans/<YYMMDD>-<HHMM>-<slug>/`; CLAUDE.md's `active/`+`completed/` layout is stale.
+- Plans: `.harness/plans/<YYMMDD>-<HHMM>-<slug>/`.
 - Public repo `github.com/jearax/cs`; install script served at cs.jjuidev.com/install.sh; HTTPS remote, no SSH key. Commits: conventional, no AI attribution.
 - Node floor declared 3x (script, engines, site NODE_FLOOR); `--version` must be bare when piped; tsconfig excludes `site/`; no local shellcheck — .harness/docs/build-notes.md
 - Porting into cs or reviewing a port: .claude/skills/cross-repo-port/SKILL.md

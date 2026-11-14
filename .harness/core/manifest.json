@@ -1,5 +1,5 @@
 {
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"files": [
 		{
 			"path": ".harness/.gitignore",
@@ -9,17 +9,12 @@
 		{
 			"path": ".harness/config.json",
 			"kind": "config",
-			"sha256": "64fae5263250b749247e580f4c074022feac9428c3335f15092b95cad36cfc36"
-		},
-		{
-			"path": ".harness/plans/README.md",
-			"kind": "managed",
-			"sha256": "2b894aff7b4cc4aca8d08d21d94c8df9e012d6dbaef3c04686b20f3c04243639"
+			"sha256": "4e2ce9947e8f30bc747ea8ef0682bca11a5a600221cf33193fd57109052b37e6"
 		},
 		{
 			"path": ".harness/templates/README.md",
 			"kind": "managed",
-			"sha256": "a41b9819c39361266f624ad9bdac1c72d846a9605fc3310194bc0dd4f1205b52"
+			"sha256": "b9d0a5cdba25aedfc6bc928dff5759d08b85558ee1ad6cadd00c2ca2a6bf3441"
 		},
 		{
 			"path": ".harness/templates/decision.md",
@@ -34,7 +29,7 @@
 		{
 			"path": ".harness/templates/plan.md",
 			"kind": "managed",
-			"sha256": "4be50483b8b36012a393546ca72bb13481f93b71974f9b9ebd7f19f7b90cd054"
+			"sha256": "ef02d61b8a753a533625c97d8653fa98518f38c2f21c36df70bbe361dd778b1c"
 		},
 		{
 			"path": ".harness/templates/docs/topic.md",
@@ -54,22 +49,22 @@
 		{
 			"path": ".claude/skills/harness-onboard/SKILL.md",
 			"kind": "managed",
-			"sha256": "0ed75a3930f5c396a838e1cc12a0a70d3c0b00b1ca6e18bfb3beb34c4f822fa8"
+			"sha256": "e0254ece0df21cf3022cb8908285867bcdf278a87a9f1b3650913470307c1572"
 		},
 		{
 			"path": ".claude/skills/harness-review/SKILL.md",
 			"kind": "managed",
-			"sha256": "79091d73002697f8e926ac2174203cef3c0019237ae7d302f29b26026901cabb"
+			"sha256": "3621b11127848ca40fad2d1f1d807ba58d7b1f0a49b8496fd2bb672775d9ab49"
 		},
 		{
 			"path": ".claude/skills/harness-curate/SKILL.md",
 			"kind": "managed",
-			"sha256": "f07f1552b6fbb8c43c840f8d8bf70356cc462457764cd852d23a75e87e7080cc"
+			"sha256": "869614d4ab916b08192c16df880d3bc8d469ce7e63571c669896aa28472129d3"
 		},
 		{
 			"path": ".harness/bin/hooks.mjs",
 			"kind": "managed",
-			"sha256": "5a9e9c8bccead2c26667461b2f0fe017183a788b4db4d26c3cb1544d840a5996"
+			"sha256": "50ab65b8aa3dde5045905179462d202397ce32f62e6b8616df4de9b17d27739c"
 		},
 		{
 			"path": ".harness/bin/harness-hook.mjs",
@@ -79,7 +74,7 @@
 		{
 			"path": "CLAUDE.md",
 			"kind": "block",
-			"sha256": "14491e3844cd28111bcdc414919005140a051ef507226de3f9dce096dc8a2117"
+			"sha256": "4f6b5621538fbbd419bf8b805d5ccd86d3155162be98ef3114f62f62617f4e23"
 		}
 	]
 }

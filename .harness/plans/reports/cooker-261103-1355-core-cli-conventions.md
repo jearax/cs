@@ -1,7 +1,7 @@
 # Report: Port jss-devtools core CLI conventions into cs
 
 Plan: [../261103-1348-core-cli-conventions/plan.md](../261103-1348-core-cli-conventions/plan.md)
-Source manifest: `/Users/tandm/Documents/jearax/npm/jss-devtools` (read-only, unmodified)
+Source manifest: `~/Documents/jearax/npm/jss-devtools` (read-only, unmodified)
 Date: 2026-11-03
 
 All four phases landed. Nothing was committed. `jss-devtools` and `.harness/{bin,core,templates}`

@@ -17,7 +17,7 @@ parser decision is commander (reference ADR 0004, citty rejected there).
 
 | File | Action |
 | ---- | ------ |
-| `src/cli.ts` | new — port of `/Users/tandm/Documents/jearax/npm/jss-devtools/src/cli.ts`, adapted: `PACKAGE` constant supplies name/description/version; no subcommand registration (register functions come with each future command); keep the `exitOverride` program option and the `CommanderError` / `CliError` / fatal error paths |
+| `src/cli.ts` | new — port of `~/Documents/jearax/npm/jss-devtools/src/cli.ts`, adapted: `PACKAGE` constant supplies name/description/version; no subcommand registration (register functions come with each future command); keep the `exitOverride` program option and the `CommanderError` / `CliError` / fatal error paths |
 | `src/core/constants/exit-code.constant.ts` | new — `ExitCode = { ok: 0, failure: 1 }` |
 | `src/core/constants/package.constant.ts` | new — reads the package facts (`scripts/package-info.mjs`) |
 | `src/core/errors/cli.error.ts` | new — port from the reference `src/core/errors/cli.error.ts` |

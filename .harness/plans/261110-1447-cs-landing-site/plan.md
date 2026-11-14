@@ -16,8 +16,8 @@ created: 2026-11-10
 
 | Item | Value |
 | ---- | ----- |
-| Source repo | `/Users/tandm/Documents/jearax/npm/jss-devtools` @ `8d68349` (main) — MIT, same owner |
-| Design system repo | `/Users/tandm/Documents/jearax/dokploy/design-system` @ `949cb89`; packages `react`/`styles` both `0.0.1` |
+| Source repo | `~/Documents/jearax/npm/jss-devtools` @ `8d68349` (main) — MIT, same owner |
+| Design system repo | `~/Documents/jearax/dokploy/design-system` @ `949cb89`; packages `react`/`styles` both `0.0.1` |
 | Scoped source paths | `site/` (whole project), `.github/workflows/ci.yml`, `docker/`, `ci/smoke-site-image.sh`, `scripts/stage-release.mjs`, root `package.json` scripts, `.prettierignore` |
 | Target | this repo, new `site/` dir + root wiring + CI + docker. Version shown: root `package.json` `0.1.0` (injected at build via `__CLI_VERSION__`) |
 

@@ -12,7 +12,6 @@ with them. Read an index first, then only the file the task needs.
 | Fact, trap, convention, user correction | one line in `.harness/MEMORY.md`                             | its header                       |
 | Topic longer than a line                | `.harness/docs/<topic>.md`, and a memory line pointing to it | `.harness/docs/README.md`        |
 | User decision                           | `.harness/decisions/NNNN-<slug>.md`, quoting the user        | `.harness/templates/decision.md` |
-| Work spanning sessions                  | `.harness/plans/active/<YYMMDD>-<slug>.md`                   | `.harness/plans/README.md`       |
 | Reusable procedure                      | `.claude/skills/<name>/SKILL.md`, a learned skill            | `.harness/templates/skill.md`    |
 
 - Add or remove the row in the folder's `README.md` in the same change as the file.
@@ -28,7 +27,7 @@ with them. Read an index first, then only the file the task needs.
 
 - Question, review, diagnosis: read only, answer with evidence, change nothing.
 - Bounded change: read the affected code and tests, make the smallest change, run the checks.
-- Work spanning sessions: a plan, as the table above says.
+- Work spanning sessions: a plan, as the skill that owns the plan folder says.
 
 ## Hooks
 
@@ -48,6 +47,8 @@ the `harness-review` skill.
 ## Done means proven
 
 Claim done only with commands you ran and output you saw. Report what changed, how you checked it,
-what you did not check, and what harness knowledge changed. Commit harness changes with the work;
-the harness never commits.
+what you did not check, and what harness knowledge changed. Knowledge follows
+`knowledge.share` in `.harness/config.json`, which session start states: shared knowledge is
+committed with the work; private knowledge is gitignored and stays on this machine, so list what
+changed and ask for no commit. The harness never commits.
 <!-- HARNESS:END -->

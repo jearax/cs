@@ -16,7 +16,7 @@ created: 2026-11-03
 
 ## Overview
 
-Give `cs` the same skeleton quality as the reference repo `/Users/tandm/Documents/jearax/npm/jss-devtools`:
+Give `cs` the same skeleton quality as the reference repo `~/Documents/jearax/npm/jss-devtools`:
 a commander entry point, a `core/` layer with `CliError` and exit codes, role-suffix file naming
 enforced by an architecture test with negative fixtures, a tsdown single-bundle build, tests at the
 repo root, and conventions documented once in `.harness/docs/`. Product commands are **not** in

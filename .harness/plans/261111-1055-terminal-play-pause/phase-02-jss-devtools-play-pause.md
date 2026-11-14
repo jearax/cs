@@ -6,7 +6,7 @@ status: completed
 
 # Phase 02: jss-devtools play/pause
 
-Repository: `/Users/tandm/Documents/jearax/npm/jss-devtools`. Read its `CLAUDE.md` first; its site
+Repository: `~/Documents/jearax/npm/jss-devtools`. Read its `CLAUDE.md` first; its site
 commands and conventions apply. Starts after phase 01 is reviewed.
 
 ## Files

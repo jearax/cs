@@ -1,10 +1,9 @@
 # Plans
 
-Work that spans sessions. One file per plan; its folder is its state.
+Work that spans sessions. The plan skill that owns this folder decides the layout: a plan is a
+folder with its plan and its phase files.
 
-- `active/<YYMMDD>-<slug>.md`: in progress or blocked.
-- `completed/<YYMMDD>-<slug>.md`: done, kept as a record, never rewritten.
+Keep this file the index of the folder: add or remove a row in the same change as the plan.
 
-Start from [`../templates/plan.md`](../templates/plan.md). When done, fill its Result and
-`git mv` it to `completed/`. A user decision goes to `../decisions/`, lasting knowledge to
-`../docs/` or `../MEMORY.md`.
+| Plan | Status | Summary |
+| ---- | ------ | ------- |

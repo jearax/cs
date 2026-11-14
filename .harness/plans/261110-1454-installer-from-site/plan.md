@@ -16,7 +16,7 @@ created: 2026-11-10
 
 | Item | Value |
 | ---- | ----- |
-| Source repo | `/Users/tandm/Documents/jearax/npm/jss-devtools` @ `8d68349` (main) — MIT, same owner |
+| Source repo | `~/Documents/jearax/npm/jss-devtools` @ `8d68349` (main) — MIT, same owner |
 | Scoped source files | `scripts/install.sh` (the whole pattern), `tests/install.test.ts` (test shape) |
 | Target | `scripts/install.sh` (rewrite), `tests/install.test.ts` (new), `README.md` (install section) |
 

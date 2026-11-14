@@ -17,7 +17,7 @@ A long heredoc or Write call can land corrupted mid-stream: duplicated lines, in
 The shell cwd persists between calls. After `cd site`, relative writes that were meant for the
 repo root landed as `site/docker/`, `site/ci/` and `site/scripts/`.
 
-- Write repo-root files with absolute paths, or reset with `cd /Users/tandm/Documents/jearax/npm/cs`.
+- Write repo-root files with absolute paths, or reset with `cd "$(git rev-parse --show-toplevel)"`.
 
 ## Verify the moved tree, not the working copy
 
