@@ -29,6 +29,12 @@ count, learned skills and secret-shaped values in every harness file.
   trap can trip it again if it quotes the pattern.
 - Doctor is a compiled binary: to find the flagged text, run it against the file one line at a
   time (restore the file afterwards with `git checkout`).
+- Doctor failing on files an edit never touched means a harness/CLI version skew tightened its
+  checks (home-path hits in old plans and reports) — run `jss-devtools harness update`, do not
+  chase each flagged line.
+- Prose that cites a decision goes stale silently when that decision is superseded: the supersede
+  flow touches only the decision file and the index, never the citing docs. When reconciling docs,
+  check the `status:` of every cited decision, not just the content around it.
 - A blind string replace of a fake token (for example in reports) also hits file names that contain
   it; check `git diff -U0` straight after.
 

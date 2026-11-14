@@ -10,7 +10,7 @@ this file records only what code cannot express. Decisions live in
 `cs` (package `@jjuidev/cs`) — **Claude code switch** — switches Claude Code between API providers
 and model sets through named profiles. `cs use` writes the global `~/.claude/settings.json`; the
 rendered profile files and the `claude-<alias>` launchers are the `claude --settings` delivery
-(decisions 0011, 0013 — only an alias creates a launcher). macOS-first: the old CLI was macOS-only
+(decision 0013 — only an alias creates a launcher). macOS-first: the old CLI was macOS-only
 by choice, and no cross-platform request exists.
 
 ## Confirmed boundaries
@@ -41,9 +41,10 @@ by choice, and no cross-platform request exists.
 - **Owned keys** — the `settings.json` keys cs itself added (tracked in cs's own config); the only
   keys cs may ever remove from that file.
 - **Role alias** — a second launcher for a profile (`claude-planner`), re-pointable with
-  `cs alias <name> <profile>`; the map in cs.json owns it, never the filename in `bin/`. There is
-  no unalias command: re-pointing is the lifecycle. `bin/claude-<name>` serves both kinds, so the
-  cleanup scan that lists the files by name sees an alias launcher as a profile name — the
-  registry is the only ownership record.
-- **Behavioural reference** — `/Users/tandm/Documents/jearax/npm/cs-cli`, read-only. Its code is
-  never copied into this repository.
+  `cs alias <name> <profile>` and removable with `cs alias remove|rm <alias...>` (decision 0024).
+  The map in cs.json owns it, never the filename in `bin/`, which holds alias launchers only — a
+  profile renders its artifact, never a launcher (decision 0013). Alias and profile names are
+  independent: an alias may share a profile's name, whatever its target (decision 0037).
+- **Behavioural reference** — [cs-cli-feature-inventory.md](./cs-cli-feature-inventory.md), the
+  frozen behaviour map of the old CLI. No cs-cli checkout exists beside this repository, and its
+  code is never copied in.

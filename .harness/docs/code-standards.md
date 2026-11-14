@@ -93,12 +93,14 @@ that peer range binding rather than advisory.
 
 ## Layout
 
-`src/` has two folders, and a file name says what the file is.
+`src/` has three folders, and a file name says what the file is.
 
 ```
 src/
 ├─ cli.ts                     the program, the exit code, the global handlers
 ├─ core/                      shared; imports no command and no commander
+├─ modules/
+│  └─ <name>/                 one folder per shared module; imports no command
 └─ commands/
    └─ <name>/                 one folder per command
 ```
@@ -119,6 +121,10 @@ src/
 
 `src/cli.ts` is the file without a suffix: it is the CLI entry point. A new role needs an entry in
 this table, in `tests/support/architecture-rules.ts` and in a negative fixture, together.
+
+`src/modules/<name>/` mirrors a command's roles minus the command and the template (`services/`,
+`checks/`, `types/`, `constants/`, `utils/`): the rows above apply with `modules/<name>/` in place
+of `commands/<name>/`.
 
 ## Import rules
 
@@ -152,6 +158,7 @@ this table is a copy.
 | `file-role-suffix`                               | Every file under `src/` except `cli.ts` carries the suffix its folder allows                        |
 | `core-imports-no-command`                        | `src/core/**` never imports from `src/commands/**`                                                  |
 | `command-imports-no-other-command`               | `src/commands/<a>/**` never imports `src/commands/<b>/**`; logic two commands share goes to `core/` |
+| `module-imports-no-command`                      | `src/modules/**` never imports from `src/commands/**`                                               |
 | `commander-in-command-files-only`                | `commander` only in `*.command.ts` and `cli.ts`                                                     |
 | `clack-in-ui-layer-only`                         | `@clack/prompts` only in `*.ui.ts`, `*.command.ts` and `cli.ts`                                     |
 | `output-in-ui-layer-only`                        | `process.stdout`, `process.stderr`, `console.` only in `*.ui.ts`, `*.command.ts` and `cli.ts`       |
@@ -162,8 +169,7 @@ this table is a copy.
 A rule with no negative fixture is a comment, not a rule. Each fixture under
 `tests/fixtures/architecture/` breaks exactly one rule, and `tests/architecture.test.ts` proves it.
 
-`runner-in-adapters-only` and the `src/modules/` rules are not in the set yet: they arrive with the
-first adapter and the first module.
+`runner-in-adapters-only` is not in the set yet: it arrives with the first adapter.
 
 ## CLI
 

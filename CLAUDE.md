@@ -62,5 +62,5 @@ profiles stored in `~/.config/cs/cs.json`. It is a rewrite, not a port, of `cs-c
 - Do not port a cs-cli workflow unless the user named it (decision 0001); packaging follows
   jss-devtools (decision 0002).
 - Delivery is dual: `cs use` writes `~/.claude/settings.json` by default, and every profile also
-  renders `~/.config/cs/profiles/<name>.json` plus the launcher `~/.config/cs/bin/claude-<name>`
-  from the same renderer (decision 0004).
+  renders `~/.config/cs/profiles/<name>.json` from the same renderer; only `cs alias` creates a
+  launcher `~/.config/cs/bin/claude-<name>` (decisions 0013, 0024).
